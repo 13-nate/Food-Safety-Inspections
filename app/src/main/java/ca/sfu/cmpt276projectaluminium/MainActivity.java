@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager manager = new RestaurantManager();
     // dumby list for  temp data
     // need a collection of data
-    private List<Restaurant> restaurantArray  = new ArrayList<>();
+    private List<Restaurant> restaurantArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +35,16 @@ public class MainActivity extends AppCompatActivity {
         manager.add(new Restaurant("Macas", "low", 5, "May 24th"));
         manager.add(new Restaurant("BP", "moderate", 20, "24 days" ));
         manager.add(new Restaurant("Browns", "high",80, "May 2018"));
+
+        for(Restaurant r: manager){
+            restaurantArray.add(r);
+        }
     }
 
     private void populateListView() {
         // change string to what holds resteraunt data type
         // myListAdapter lets me work with the objects
-        for(Restaurant r: manager){
-            restaurantArray.add(r);
-        }
+
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
         list.setAdapter(adapter);
@@ -67,11 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
             // find resteraunt to work with want different hazard images, name, and date and number of issues
             Restaurant currerntResteraunt = restaurantArray.get(position);
-
             // fill the view
 
             // display restaurant name
-            TextView nameTxt = findViewById(R.id. txtRestaurentName);
+            TextView nameTxt =  itemView.findViewById(R.id.txtRestaurentName);
             nameTxt.setText(currerntResteraunt.getName());
 
             // display hazard image
@@ -87,11 +88,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // display number of issues
-            TextView issuesNumberTxt = findViewById(R.id.txtIssuesNumber);
-            issuesNumberTxt.setText(currerntResteraunt.getNumOfIssues());
+            TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
+            issuesNumberTxt.setText("Issues" + currerntResteraunt.getNumOfIssues());
 
             // display date
-            TextView dateTxt = findViewById(R.id.txtdate);
+            TextView dateTxt = itemView.findViewById(R.id.txtdate);
             dateTxt.setText(currerntResteraunt.getLastInspectionData());
 
             return  itemView;
