@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
         populateRestaurantsList();
         populateListView();
+        registerClickCallBack();
     }
 
     private void populateRestaurantsList() {
+        // test data
         manager.add(new Restaurant("Macas", "low", 5, "May 24th"));
         manager.add(new Restaurant("BP", "moderate", 20, "24 days" ));
         manager.add(new Restaurant("Browns", "high",80, "May 2018"));
@@ -42,17 +47,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateListView() {
-        // change string to what holds resteraunt data type
+        // change string to what holds restaurant data type
         // myListAdapter lets me work with the objects
-
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
         list.setAdapter(adapter);
     }
 
-    // inner class has reference to outer class
+    private void registerClickCallBack() {
+        ListView list = findViewById(R.id.restaurantListView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Restaurant clickedRestaurant = restaurantArray.get(position);
+                String message = "You clicked position" + position
+                        + "which is: " + clickedRestaurant.getName();
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Inner class has reference to outer class
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
-        // don't need to pass arguments because has references to outer class
+        // Don't need to pass arguments because has references to outer class
         public MyListAdapter() {
             super(MainActivity.this, R.layout.item_view, restaurantArray);
         }
@@ -67,37 +85,34 @@ public class MainActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
 
-            // find resteraunt to work with want different hazard images, name, and date and number of issues
-            Restaurant currerntResteraunt = restaurantArray.get(position);
-            // fill the view
+            // find restaurant to work with want different hazard images, name, and date and number of issues
+            Restaurant currantRestaurant = restaurantArray.get(position);
 
+            // fill the view
             // display restaurant name
             TextView nameTxt =  itemView.findViewById(R.id.txtRestaurentName);
-            nameTxt.setText(currerntResteraunt.getName());
+            nameTxt.setText(currantRestaurant.getName());
 
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-            if (currerntResteraunt.getHazardLevel() == "low") {
+            if (currantRestaurant.getHazardLevel() == "low") {
                 hazardImage.setImageResource(R.drawable.cutlery_crossbones_green);
 
-            } else if (currerntResteraunt.getHazardLevel() == "moderate") {
+            } else if (currantRestaurant.getHazardLevel() == "moderate") {
                 hazardImage.setImageResource(R.drawable.cutlery_crossbones_yellow);
 
             } else {
                 hazardImage.setImageResource(R.drawable.cutlery_crossbones_red);
             }
-
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-            issuesNumberTxt.setText("Issues" + currerntResteraunt.getNumOfIssues());
+            issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.getNumOfIssues());
 
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
-            dateTxt.setText(currerntResteraunt.getLastInspectionData());
+            dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
 
             return  itemView;
         }
     }
-
-
 }
