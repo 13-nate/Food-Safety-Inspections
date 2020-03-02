@@ -3,9 +3,10 @@ package ca.sfu.cmpt276projectaluminium.model;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,6 +16,7 @@ import java.util.Iterator;
  * https://stackoverflow.com/questions/2649322/how-do-i-close-a-file-after-catching-an-ioexception-in-java
  * https://javarevisited.blogspot.com/2015/12/how-to-split-comma-separated-string-in-java-example.html
  * https://www.techiedelight.com/differences-between-iterator-and-iterable-in-java/
+ * https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
  */
 
 /**
@@ -22,24 +24,30 @@ import java.util.Iterator;
  */
 public class RestaurantManager {
     private static final String TAG = "RestaurantManager";
-    private static final String RESTAURANT_FILE_PATH = "";
-    private ArrayList<Restaurant> restaurantList = new ArrayList<>();
+    private static ArrayList<Restaurant> restaurantList = new ArrayList<>();
+
+    /**
+     * Fills the ArrayList variable with objects based on provided csv data
+     * Should be called once, on program initialization
+     */
+    public static void initialize(InputStream is) {
+        // Get data out of the restaurants file and store it in a readable way.
+        ArrayList<String> restaurantData = getFileData(is);
+
+        // Fill arrayList with restaurant objects by properly initializing restaurants.
+        initializeRestaurantList(restaurantData);
+    }
 
     /**
      * Extracts restaurant info line by line and stores it in a list
      * @return A list of strings (each string holds a line of restaurant data)
      */
-    private ArrayList<String> getFileData() {
+    private static ArrayList<String> getFileData(InputStream is) {
         ArrayList<String> restaurantData = new ArrayList<>();
-        BufferedReader reader;
 
-        // Attempt to open file
-        try {
-            reader = new BufferedReader(new FileReader(RESTAURANT_FILE_PATH));
-        } catch (FileNotFoundException ex) {
-            Log.i(TAG, "Could not read file at path: " + RESTAURANT_FILE_PATH, ex);
-            return restaurantData;
-        }
+        // Initialize the reader for the csv file
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is,
+                Charset.forName("UTF-8")));
 
         // Read each line into the ArrayList
         try {
@@ -67,36 +75,45 @@ public class RestaurantManager {
      * Initialize restaurantList with data by parsing restaurantData to extract the relevant data
      * @param restaurantData A list of strings (each string holds a line of restaurant data)
      */
-    private void initializeRestaurantList(ArrayList<String> restaurantData) {
+    private static void initializeRestaurantList(ArrayList<String> restaurantData) {
         // For each line of csv data, create a restaurant with it and put it in the restaurant list
         for (String dataLine : restaurantData) {
             // Separate the comma-spliced-values
             String[] restaurantValues = dataLine.split("\\s*,\\s*");
 
-            // Extract the comma-spliced-values into variables
-            String trackingNumber = restaurantValues[0];
-            String name = restaurantValues[1];
-            String address = restaurantValues[2];
-            String city = restaurantValues[3];
-            String type = restaurantValues[4];
-            double latitude = Double.parseDouble(restaurantValues[5]);
-            double longitude = Double.parseDouble(restaurantValues[6]);
+            // Remove any quotations from entries
+            for (int i = 0; i < restaurantValues.length; i++) {
+                String str = restaurantValues[i];
+                str = str.replaceAll("\"", "");
+                restaurantValues[i] = str;
+            }
 
-            // Create a restaurant
-            Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                                                    latitude, longitude);
+            // If the current csv row is data (and not the title), then add it to the list
+            if (!(restaurantValues[0].equals("TRACKINGNUMBER"))) {
+                // Extract the comma-spliced-values into variables
+                String trackingNumber = restaurantValues[0];
+                String name = restaurantValues[1];
+                String address = restaurantValues[2];
+                String city = restaurantValues[3];
+                String type = restaurantValues[4];
+                double latitude = Double.parseDouble(restaurantValues[5]);
+                double longitude = Double.parseDouble(restaurantValues[6]);
 
-            // Store the restaurant inside the list of restaurants
-            this.restaurantList.add(restaurant);
+                // Create a restaurant
+                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                        latitude, longitude);
+
+                // Store the restaurant inside the list of restaurants
+                restaurantList.add(restaurant);
+            }
         }
     }
 
+    /**
+     * Nothing special needs to be done for constructor because setup is done by initialize()
+     */
     public RestaurantManager() {
-        // Get data out of the restaurants file and store it in a readable way.
-        ArrayList<String> restaurantData = getFileData();
 
-        // Whilst filling arrayList with restaurant objects by properly initializing restaurants.
-        initializeRestaurantList(restaurantData);
     }
 
     public int getSize() {

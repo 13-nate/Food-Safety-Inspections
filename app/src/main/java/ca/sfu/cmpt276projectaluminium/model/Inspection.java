@@ -7,11 +7,11 @@ import java.util.ArrayList;
  */
 public class Inspection {
     private String trackingNumber;
-    private String inspectionDate;
+    private int inspectionDate;
     private String type;
-    private String hazardRating;
     private int numCriticalViolations;
     private int numNonCriticalViolations;
+    private String hazardRating;
 
     /**
      * Private constructor so that inspections are only instantiated in ways that are allowed
@@ -21,21 +21,21 @@ public class Inspection {
     /**
      * Constructor is package private as it should only be called by InspectionManager
      */
-    Inspection(String trackingNumber, String inspectionDate, String type, String hazardRating,
-                      int numCriticalViolations, int numNonCriticalViolations) {
+    Inspection(String trackingNumber, int inspectionDate, String type, int numCriticalViolations,
+               int numNonCriticalViolations, String hazardRating) {
         this.trackingNumber = trackingNumber;
         this.inspectionDate = inspectionDate;
         this.type = type;
-        this.hazardRating = hazardRating;
         this.numCriticalViolations = numCriticalViolations;
         this.numNonCriticalViolations = numNonCriticalViolations;
+        this.hazardRating = hazardRating;
     }
 
     public String getTrackingNumber() {
         return trackingNumber;
     }
 
-    public String getInspectionDate() {
+    public int getInspectionDate() {
         return inspectionDate;
     }
 
