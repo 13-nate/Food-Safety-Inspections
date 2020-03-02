@@ -18,7 +18,7 @@ public class Restaurant {
     private Restaurant() {}
 
     /**
-     * Constructor is package private as it should only be called by RestaurantManager.
+     * Constructor is package private as it should only be called by RestaurantManager
      */
     Restaurant(String trackingNumber, String name, String address, String city, String type,
                double latitude, double longitude) {
@@ -57,5 +57,13 @@ public class Restaurant {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    /**
+     * Create an inspectionManager that can be used to get inspections this restaurant has had
+     * @return An inspection manager filled with all inspections this restaurant has had
+     */
+    public InspectionManager createInspectionManager() {
+        return new InspectionManager(this.trackingNumber);
     }
 }
