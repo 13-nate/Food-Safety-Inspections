@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
         // Don't need to pass arguments because has references to outer class
         public MyListAdapter() {
-            super(MainActivity.this, R.layout.item_view, restaurantArray);
+            super(MainActivity.this, R.layout.restaurants_view, restaurantArray);
         }
 
         @NonNull
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             // make sure we have a view to work with (may have been given null
             View itemView = convertView;
             if (itemView == null) {
-                itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
+                itemView = getLayoutInflater().inflate(R.layout.restaurants_view, parent, false);
             }
 
             // find restaurant to work with want different hazard images, name, and date and number of issues
@@ -96,13 +95,13 @@ public class MainActivity extends AppCompatActivity {
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
             if (currantRestaurant.getHazardLevel() == "low") {
-                hazardImage.setImageResource(R.drawable.cutlery_crossbones_green);
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
 
             } else if (currantRestaurant.getHazardLevel() == "moderate") {
-                hazardImage.setImageResource(R.drawable.cutlery_crossbones_yellow);
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
 
             } else {
-                hazardImage.setImageResource(R.drawable.cutlery_crossbones_red);
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
             }
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);

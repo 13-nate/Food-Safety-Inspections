@@ -2,4 +2,7 @@
     <string name="app_name">CMPT 276 Project Aluminium</string>
     <string name="issues">Issues:</string>
     <string name="Last_inspection">Last Inspection:</string>
+    <string name="restaurent_name">Restaurent Name</string>
+    <string name="of_issues"># of Issues</string>
+    <string name="date">Date</string>
 </resources>
