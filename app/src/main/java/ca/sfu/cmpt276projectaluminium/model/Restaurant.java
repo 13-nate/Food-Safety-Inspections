@@ -16,7 +16,8 @@ public class Restaurant {
      * Constructor is package private as it should only be called by the Restaurant manager.
      * The only thing creating a restaurant object is the restaurant manager
      */
-    Restaurant(String trackingNumber, String name, String address, String city, String type, double latitude, double longitude) {
+    Restaurant(String trackingNumber, String name, String address, String city, String type,
+               double latitude, double longitude) {
         this.trackingNumber = trackingNumber;
         this.name = name;
         this.address = address;
