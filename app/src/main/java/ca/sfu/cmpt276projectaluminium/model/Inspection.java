@@ -17,7 +17,7 @@ public class Inspection {
     private Inspection() {}
 
     /**
-     * Constructor is package private as it should only be called by InspectionManager.
+     * Constructor is package private as it should only be called by InspectionManager
      */
     public Inspection(String trackingNumber, String inspectionDate, String type, String hazardRating,
                       int numCriticalViolations, int numNonCriticalViolations) {
