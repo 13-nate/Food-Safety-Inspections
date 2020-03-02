@@ -11,8 +11,22 @@ public class Inspection {
     private int numCriticalViolations;
     private int numNonCriticalViolations;
 
-    Inspection() {
+    /**
+     * Private constructor so that inspections are only instantiated in ways that are allowed
+     */
+    private Inspection() {}
 
+    /**
+     * Constructor is package private as it should only be called by InspectionManager.
+     */
+    public Inspection(String trackingNumber, String inspectionDate, String type, String hazardRating,
+                      int numCriticalViolations, int numNonCriticalViolations) {
+        this.trackingNumber = trackingNumber;
+        this.inspectionDate = inspectionDate;
+        this.type = type;
+        this.hazardRating = hazardRating;
+        this.numCriticalViolations = numCriticalViolations;
+        this.numNonCriticalViolations = numNonCriticalViolations;
     }
 
     public String getTrackingNumber() {
