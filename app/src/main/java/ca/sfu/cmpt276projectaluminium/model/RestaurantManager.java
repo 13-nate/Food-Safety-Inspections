@@ -7,12 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
  * https://stackoverflow.com/questions/6488339/using-filereader-causes-a-compiler-error-unhandled-exception-type-filenotfounde
  * https://stackoverflow.com/questions/2649322/how-do-i-close-a-file-after-catching-an-ioexception-in-java
  * https://javarevisited.blogspot.com/2015/12/how-to-split-comma-separated-string-in-java-example.html
+ * https://www.techiedelight.com/differences-between-iterator-and-iterable-in-java/
  */
 
 /**
@@ -97,13 +99,10 @@ public class RestaurantManager {
         initializeRestaurantList(restaurantData);
     }
 
-    public ArrayList<Restaurant> getRestaurants() {
-        return restaurantList;
-    }
-
     public int getSize() {
         return restaurantList.size();
     }
 
-    // Implement an iterator that lets them call for each on it - that way they don't modify the list directly
+    // Lets users iterate through RestaurantManager as if it is a list.
+    Iterator<Restaurant> Iterator = restaurantList.iterator();
 }
