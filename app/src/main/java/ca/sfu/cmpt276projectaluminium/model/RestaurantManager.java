@@ -103,6 +103,8 @@ public class RestaurantManager {
         return restaurantList.size();
     }
 
-    // Lets users iterate through RestaurantManager as if it is a list.
+    /**
+     * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
+     */
     Iterator<Restaurant> Iterator = restaurantList.iterator();
 }
