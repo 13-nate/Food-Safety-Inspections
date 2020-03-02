@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
  * https://stackoverflow.com/questions/6488339/using-filereader-causes-a-compiler-error-unhandled-exception-type-filenotfounde
  * https://stackoverflow.com/questions/2649322/how-do-i-close-a-file-after-catching-an-ioexception-in-java
+ * https://javarevisited.blogspot.com/2015/12/how-to-split-comma-separated-string-in-java-example.html
  */
 
 /**
@@ -65,6 +66,27 @@ public class RestaurantManager {
      * @param restaurantData A list of strings (each string holds a line of restaurant data)
      */
     private void initializeRestaurantList(ArrayList<String> restaurantData) {
+        // For each line of csv data, create a restaurant with it and put it in the restaurant list
+        for (String dataLine : restaurantData) {
+            // Separate the comma-spliced-values
+            String[] restaurantValues = dataLine.split("\\s*,\\s*");
+
+            // Extract the comma-spliced-values into variables
+            String trackingNumber = restaurantValues[0];
+            String name = restaurantValues[1];
+            String address = restaurantValues[2];
+            String city = restaurantValues[3];
+            String type = restaurantValues[4];
+            double latitude = Double.parseDouble(restaurantValues[5]);
+            double longitude = Double.parseDouble(restaurantValues[6]);
+
+            // Create a restaurant
+            Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                                                    latitude, longitude);
+
+            // Store the restaurant inside the list of restaurants
+            restaurantList.add(restaurant);
+        }
     }
 
     RestaurantManager() {
