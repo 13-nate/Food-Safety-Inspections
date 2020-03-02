@@ -13,8 +13,12 @@ public class Restaurant {
     private double longitude;
 
     /**
-     * Constructor is package private as it should only be called by the Restaurant manager.
-     * The only thing creating a restaurant object is the restaurant manager
+     * Private constructor so that restaurants are only instantiated in ways that are allowed
+     */
+    private Restaurant() {}
+
+    /**
+     * Constructor is package private as it should only be called by RestaurantManager.
      */
     Restaurant(String trackingNumber, String name, String address, String city, String type,
                double latitude, double longitude) {

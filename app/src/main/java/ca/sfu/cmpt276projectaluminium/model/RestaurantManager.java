@@ -22,7 +22,7 @@ import java.util.Iterator;
  */
 public class RestaurantManager {
     private static final String TAG = "RestaurantManager";
-    private static final String FILE_PATH = "";
+    private static final String RESTAURANT_FILE_PATH = "";
     private ArrayList<Restaurant> restaurantList = new ArrayList<>();
 
     /**
@@ -35,9 +35,9 @@ public class RestaurantManager {
 
         // Attempt to open file
         try {
-            reader = new BufferedReader(new FileReader(FILE_PATH));
+            reader = new BufferedReader(new FileReader(RESTAURANT_FILE_PATH));
         } catch (FileNotFoundException ex) {
-            Log.i(TAG, "Could not read file at path: " + FILE_PATH, ex);
+            Log.i(TAG, "Could not read file at path: " + RESTAURANT_FILE_PATH, ex);
             return restaurantData;
         }
 
@@ -87,15 +87,15 @@ public class RestaurantManager {
                                                     latitude, longitude);
 
             // Store the restaurant inside the list of restaurants
-            restaurantList.add(restaurant);
+            this.restaurantList.add(restaurant);
         }
     }
 
-    RestaurantManager() {
+    public RestaurantManager() {
         // Get data out of the restaurants file and store it in a readable way.
         ArrayList<String> restaurantData = getFileData();
 
-        // Whilst filling arrayList with restaurant objects, initialize a restaurant.
+        // Whilst filling arrayList with restaurant objects by properly initializing restaurants.
         initializeRestaurantList(restaurantData);
     }
 
