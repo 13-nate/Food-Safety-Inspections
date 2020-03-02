@@ -16,9 +16,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
-
+    /**
+     * Displays a list of restaurants and some info on the most most recent inspection report for
+     * each of the restaurants displayed 
+     */
     private RestaurantManager manager = new RestaurantManager();
     // dumby list for  temp data
     // need a collection of data
