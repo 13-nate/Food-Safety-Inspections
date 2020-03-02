@@ -106,5 +106,5 @@ public class RestaurantManager {
     /**
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
-    Iterator<Restaurant> Iterator = restaurantList.iterator();
+    public Iterator<Restaurant> Iterator = restaurantList.iterator();
 }

@@ -110,5 +110,5 @@ public class InspectionManager {
     /**
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
-    java.util.Iterator<Inspection> Iterator = inspectionList.iterator();
+    public Iterator<Inspection> Iterator = inspectionList.iterator();
 }
