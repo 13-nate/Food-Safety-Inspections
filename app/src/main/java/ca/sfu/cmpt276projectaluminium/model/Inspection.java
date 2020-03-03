@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Manages data about inspection reports by storing it and providing getters in an organized manner
  */
-public class Inspection {
+public class Inspection implements Comparable<Inspection> {
     private String trackingNumber;
     private int inspectionDate;
     private String type;
@@ -16,7 +16,8 @@ public class Inspection {
     /**
      * Private constructor so that inspections are only instantiated in ways that are allowed
      */
-    private Inspection() {}
+    private Inspection() {
+    }
 
     /**
      * Constructor is package private as it should only be called by InspectionManager
@@ -70,4 +71,20 @@ public class Inspection {
 
         return violations;
     }
+    /**
+     * Allows the RestaurantManager to be sorted by its Name
+     */
+    /* Sources:
+    https://dzone.com/articles/java-comparable-interface-in-five-minutes
+    https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
+     */
+    @Override
+    public int compareTo(Inspection other) {
+        if (this.inspectionDate < other.inspectionDate) {
+            return -1;
+        }
+        if (this.inspectionDate == other.inspectionDate) {
+            return 0;
+        }
+        return 1;    }
 }
