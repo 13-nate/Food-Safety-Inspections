@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="310dp"
-        android:text="Restaurants"
+        android:text="@string/restaurants"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Hazard Raiting:"
+        android:text="@string/hazard_raiting"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
@@ -66,7 +66,7 @@
             android:id="@+id/txtLow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Low"
+            android:text="@string/low"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -91,7 +91,7 @@
             android:id="@+id/txtHigh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High"
+            android:text="@string/high"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -116,7 +116,7 @@
             android:id="@+id/txtMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium"
+            android:text="@string/medium"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -140,7 +140,7 @@
             android:id="@+id/txtNone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Not Available"
+            android:text="@string/not_available"
             android:textSize="18sp" />
     </LinearLayout>
 

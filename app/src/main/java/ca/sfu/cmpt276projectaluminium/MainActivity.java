@@ -69,9 +69,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                /* Can pass the clicked restaurants tracking number in an intent when clicked
+                to make a new activity with that restaurants tracking number
+
+                The Inspections can then be gotten for that restaurant when in the next activity
+                with using the tracking number
+                */
+
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                String message = "You clicked position" + position
-                        + "which is: " + clickedRestaurant.getName();
+                String message = clickedRestaurant.getName() + " "
+                        + clickedRestaurant.getTrackingNumber();
+
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
@@ -97,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
             // find restaurant to work with want different hazard images, name, and date and number of issues
             Restaurant currantRestaurant = restaurantArray.get(position);
             InspectionManager inspectionManager = currantRestaurant.createInspectionManager();
-            List<Inspection> inspectionArray = new ArrayList<>();
-
             Inspection newestInspection = inspectionManager.getMostRecentInspection();
 
             // fill the view
@@ -117,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (hazardRating.equals("High")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
+            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_black);
 
 
             // display number of issues
