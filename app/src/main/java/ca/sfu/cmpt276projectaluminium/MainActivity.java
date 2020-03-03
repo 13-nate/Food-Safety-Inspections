@@ -48,17 +48,6 @@ public class MainActivity extends AppCompatActivity {
         registerClickCallBack();
     }
 
-    /*private void populateRestaurantsList() {
-        // test data
-        restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
-        restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
-        restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
-
-        *//*for(Restaurant r: manager){
-            restaurantArray.add(r);
-        }
-         *//*
-    }*/
 
     private void populateListView() {
         // change string to what holds restaurant data type
