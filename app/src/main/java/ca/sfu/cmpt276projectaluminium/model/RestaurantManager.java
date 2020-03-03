@@ -126,4 +126,5 @@ public class RestaurantManager implements Iterable<Restaurant>{
     @Override
     public Iterator<Restaurant> iterator() {
         return restaurantList.iterator();
-    }}
+    }
+}
