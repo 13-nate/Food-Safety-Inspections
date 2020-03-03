@@ -110,6 +110,25 @@ public class RestaurantManager {
     }
 
     /**
+     * Creates and returns the restaurant object that correlates to the passed in parameter
+     * This can be used to create a restaurant after passing the argument between activities.
+     * @param trackingNumber The number that uniquely identifies a restaurant.
+     * @return A restaurant that matches the parameter
+     */
+    public static Restaurant recreateRestaurant(String trackingNumber) {
+        // Find a restaurant that matches the trackingNumber and return it.
+        for (Restaurant restaurant : restaurantList) {
+            boolean trackingNumberMatches = restaurant.getTrackingNumber().equals(trackingNumber);
+            if (trackingNumberMatches) {
+                return restaurant;
+            }
+        }
+
+        // This should only be returned if an invalid trackingNumber was passed in
+        return null;
+    }
+
+    /**
      * Nothing special needs to be done for constructor because setup is done by initialize()
      */
     public RestaurantManager() {
