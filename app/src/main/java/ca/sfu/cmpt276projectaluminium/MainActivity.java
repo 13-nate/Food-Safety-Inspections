@@ -14,22 +14,35 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+
 import java.util.ArrayList;
 import java.util.List;
 public class MainActivity extends AppCompatActivity {
     /**
      * Displays a list of restaurants and some info on the most most recent inspection report for
-     * each of the restaurants displayed 
+     * each of the restaurants displayed
      */
-    private RestaurantManager manager = new RestaurantManager();
+    // private RestaurantManager manager = new RestaurantManager();
     // dumby list for  temp data
     // need a collection of data
     private List<Restaurant> restaurantArray = new ArrayList<>();
+
+    //Give the csv files to the data classes so that the csv files can be read
+    void initializeDataClasses() {
+        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
+        RestaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
+
+        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+        InspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initializeDataClasses();
 
         populateRestaurantsList();
         populateListView();
@@ -38,13 +51,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateRestaurantsList() {
         // test data
-        manager.add(new Restaurant("Macas", "low", 5, "May 24th"));
-        manager.add(new Restaurant("BP", "moderate", 20, "24 days" ));
-        manager.add(new Restaurant("Browns", "high",80, "May 2018"));
+        restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
+        restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
+        restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
 
-        for(Restaurant r: manager){
+        /*for(Restaurant r: manager){
             restaurantArray.add(r);
         }
+         */
     }
 
     private void populateListView() {
