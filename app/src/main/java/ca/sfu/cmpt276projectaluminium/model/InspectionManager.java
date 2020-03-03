@@ -124,6 +124,27 @@ public class InspectionManager {
     }
 
     /**
+     * Creates and returns the inspection object that correlates to the passed in parameters
+     * This can be used to create a inspection after passing the arguments between activities.
+     * @param trackingNumber The trackingNumber of the inspection being searched for.
+     * @param inspectionDate the date of the inspection being searched for.
+     * @return An inspection that exactly matches both parameters
+     */
+    public static Inspection recreateInspection(String trackingNumber, int inspectionDate) {
+        // Find an inspection that matches both the trackingNumber and date, then return it
+        for (Inspection inspection : completeInspectionList) {
+            boolean trackingNumberMatches = inspection.getTrackingNumber().equals(trackingNumber);
+            boolean dateMatches = inspection.getInspectionDate() == inspectionDate;
+            if (trackingNumberMatches && dateMatches) {
+                return inspection;
+            }
+        }
+
+        // This should only be returned if an invalid trackingNumber/date combo was passed in
+        return null;
+    }
+
+    /**
      * CSV setup is done by initialize(), but we still need to filter our inspections down to ones
      * that are relevant to the restaurant that is creating this InspectionManager
      */
