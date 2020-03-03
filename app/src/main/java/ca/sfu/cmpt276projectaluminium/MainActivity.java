@@ -108,13 +108,14 @@ public class MainActivity extends AppCompatActivity {
 
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-            if (newestInspection.getHazardRating() == "low") {
+            String hazardRating = newestInspection.getHazardRating();
+            if (hazardRating.equals("Low")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
 
-            } else if (newestInspection.getHazardRating() == "moderate") {
+            } else if (hazardRating.equals("Moderate")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
 
-            } else {
+            } else if (hazardRating.equals("High")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
             }
 
