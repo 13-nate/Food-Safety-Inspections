@@ -24,7 +24,7 @@ import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 /**
  * Manages data about restaurants by storing them all in an easily accessible list
  */
-public class RestaurantManager {
+public class RestaurantManager{
     private static final String TAG = "RestaurantManager";
     private static ArrayList<Restaurant> restaurantList = new ArrayList<>();
 
