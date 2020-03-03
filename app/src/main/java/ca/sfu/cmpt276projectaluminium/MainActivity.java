@@ -117,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (hazardRating.equals("High")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            }
+            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
+
 
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);

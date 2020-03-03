@@ -10,10 +10,11 @@
         android:id="@+id/txtRestaurants"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="69dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="310dp"
         android:text="Restaurants"
-        android:textSize="24sp"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/restaurantListView"
@@ -24,12 +25,123 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="1dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRestaurants" />
+
+    <TextView
+        android:id="@+id/txtHazardLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Hazard Raiting:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layoutLow" />
+
+    <LinearLayout
+        android:id="@+id/layoutLow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/layoutHigh"
+        app:layout_constraintStart_toEndOf="@+id/txtHazardLevel"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantListView">
+
+        <ImageView
+            android:id="@+id/imgLow"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/cancel_cutlery_green" />
+
+        <TextView
+            android:id="@+id/txtLow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Low"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutHigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutLow"
+        app:layout_constraintTop_toBottomOf="@+id/layoutLow">
+
+        <ImageView
+            android:id="@+id/imgHigh"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/cancel_cutlery_red" />
+
+        <TextView
+            android:id="@+id/txtHigh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="High"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutLow"
+        app:layout_constraintStart_toEndOf="@+id/layoutLow"
+        app:layout_constraintTop_toTopOf="@+id/layoutLow">
+
+        <ImageView
+            android:id="@+id/imgMedium"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/cancel_cutlery_orange" />
+
+        <TextView
+            android:id="@+id/txtMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medium"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutNone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
+        app:layout_constraintStart_toEndOf="@+id/layoutHigh"
+        app:layout_constraintTop_toTopOf="@+id/layoutHigh">
+
+        <ImageView
+            android:id="@+id/imgNone"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/cancel_cutlery_black" />
+
+        <TextView
+            android:id="@+id/txtNone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Available"
+            android:textSize="18sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
