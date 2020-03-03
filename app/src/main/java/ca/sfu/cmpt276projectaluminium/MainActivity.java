@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
             // find restaurant to work with want different hazard images, name, and date and number of issues
             Restaurant currantRestaurant = restaurantArray.get(position);
+            InspectionManager inspectionManager = currantRestaurant.createInspectionManager();
+            List<Inspection> inspectionArray = new ArrayList<>();
+
+            Inspection newestInspection = inspectionManager.getMostRecentInspection();
 
             // fill the view
             // display restaurant name
@@ -102,23 +107,26 @@ public class MainActivity extends AppCompatActivity {
             nameTxt.setText(currantRestaurant.getName());
 
             // display hazard image
-           /* ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-            if (currantRestaurant.getHazardLevel() == "low") {
+            ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
+            if (newestInspection.getHazardRating() == "low") {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
 
-            } else if (currantRestaurant.getHazardLevel() == "moderate") {
+            } else if (newestInspection.getHazardRating() == "moderate") {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
 
             } else {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            }*/
+            }
+
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-           // issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.get());
+            issuesNumberTxt.setText(getString(R.string.issues) + " "
+                    + newestInspection.getNumTotalViolatinos());
 
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
-           // dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
+            dateTxt.setText(getString(R.string.Last_inspection) + " "
+                    + newestInspection.getInspectionDate());
 
             return  itemView;
         }
