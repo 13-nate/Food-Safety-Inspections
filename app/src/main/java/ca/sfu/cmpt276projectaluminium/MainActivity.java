@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 import java.util.ArrayList;
@@ -24,9 +25,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays a list of restaurants and some info on the most most recent inspection report for
      * each of the restaurants displayed
      */
-    // private RestaurantManager manager = new RestaurantManager();
-    // dumby list for  temp data
-    // need a collection of data
+    private RestaurantManager manager = new RestaurantManager();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -44,28 +43,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initializeDataClasses();
 
-        populateRestaurantsList();
+       // populateRestaurantsList();
         populateListView();
         registerClickCallBack();
     }
 
-    private void populateRestaurantsList() {
+    /*private void populateRestaurantsList() {
         // test data
         restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
         restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
         restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
 
-        /*for(Restaurant r: manager){
+        *//*for(Restaurant r: manager){
             restaurantArray.add(r);
         }
-         */
-    }
+         *//*
+    }*/
 
     private void populateListView() {
         // change string to what holds restaurant data type
         // myListAdapter lets me work with the objects
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
+
+        for(Restaurant r: manager){
+            restaurantArray.add(r);
+        }
+
         list.setAdapter(adapter);
     }
 
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             nameTxt.setText(currantRestaurant.getName());
 
             // display hazard image
-            ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
+           /* ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
             if (currantRestaurant.getHazardLevel() == "low") {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
 
@@ -118,14 +122,14 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            }
+            }*/
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-            issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.getNumOfIssues());
+           // issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.get());
 
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
-            dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
+           // dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
 
             return  itemView;
         }
