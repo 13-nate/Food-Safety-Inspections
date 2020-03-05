@@ -1,6 +1,11 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Manages data about inspection reports by storing it and providing getters in an organized manner
@@ -74,6 +79,22 @@ public class Inspection implements Comparable<Inspection> {
     /**
      * Allows the RestaurantManager to be sorted by its Name
      */
+    public void intelligentDate() {
+        SimpleDateFormat formatDate =new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        String dateToFormat = String.valueOf(inspectionDate);
+        Date inspectionDay;
+        try {
+            inspectionDay = formatDate.parse(dateToFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date today = Calendar.getInstance().getTime();
+
+        Date differnce = today - inspectionDay;
+        if()
+    }
+
+
     /* Sources:
     https://dzone.com/articles/java-comparable-interface-in-five-minutes
     https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
