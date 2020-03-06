@@ -14,7 +14,7 @@ import java.util.Iterator;
 /**
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
-public class InspectionManager {
+public class InspectionManager implements Iterable<Inspection> {
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
@@ -124,6 +124,27 @@ public class InspectionManager {
     }
 
     /**
+     * Creates and returns the inspection object that correlates to the passed in parameters
+     * This can be used to create a inspection after passing the arguments between activities.
+     * @param trackingNumber The trackingNumber of the inspection being searched for.
+     * @param inspectionDate the date of the inspection being searched for.
+     * @return An inspection that exactly matches both parameters
+     */
+    public static Inspection recreateInspection(String trackingNumber, int inspectionDate) {
+        // Find an inspection that matches both the trackingNumber and date, then return it
+        for (Inspection inspection : completeInspectionList) {
+            boolean trackingNumberMatches = inspection.getTrackingNumber().equals(trackingNumber);
+            boolean dateMatches = inspection.getInspectionDate() == inspectionDate;
+            if (trackingNumberMatches && dateMatches) {
+                return inspection;
+            }
+        }
+
+        // This should only be returned if an invalid trackingNumber/date combo was passed in
+        return null;
+    }
+
+    /**
      * CSV setup is done by initialize(), but we still need to filter our inspections down to ones
      * that are relevant to the restaurant that is creating this InspectionManager
      */
@@ -139,5 +160,8 @@ public class InspectionManager {
     /**
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
-    public Iterator<Inspection> Iterator = restaurantInspectionList.iterator();
+    @Override
+    public Iterator<Inspection> iterator() {
+        return restaurantInspectionList.iterator();
+    }
 }
