@@ -125,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
             } else hazardImage.setImageResource(R.drawable.cancel_cutlery_black);
 
+            // display address
+            TextView addressTxt = itemView.findViewById(R.id.txtAddress);
+            addressTxt.setText("Address: " + currantRestaurant.getAddress());
 
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
