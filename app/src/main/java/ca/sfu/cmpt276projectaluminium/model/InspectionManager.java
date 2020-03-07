@@ -15,7 +15,7 @@ import java.util.Iterator;
 /**
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
-public class InspectionManager implements Iterable<Inspection>{
+public class InspectionManager implements Iterable<Inspection> {
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
@@ -164,5 +164,4 @@ public class InspectionManager implements Iterable<Inspection>{
     public Iterator<Inspection> iterator() {
         return restaurantInspectionList.iterator();
     }
-
 }

@@ -24,7 +24,7 @@ import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 /**
  * Manages data about restaurants by storing them all in an easily accessible list
  */
-public class RestaurantManager{
+public class RestaurantManager implements Iterable<Restaurant>{
     private static final String TAG = "RestaurantManager";
     private static ArrayList<Restaurant> restaurantList = new ArrayList<>();
 
@@ -130,7 +130,6 @@ public class RestaurantManager{
         return null;
     }
 
-
     /**
      * Nothing special needs to be done for constructor because setup is done by initialize()
      */
@@ -145,5 +144,8 @@ public class RestaurantManager{
     /**
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
-    public Iterator<Restaurant> Iterator = restaurantList.iterator();
+    @Override
+    public Iterator<Restaurant> iterator() {
+        return restaurantList.iterator();
+    }
 }
