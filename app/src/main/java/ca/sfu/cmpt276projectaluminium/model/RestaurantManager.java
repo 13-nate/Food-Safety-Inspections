@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -146,7 +145,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
     @Override
-    public Iterator<Restaurant> iterator () {
+    public Iterator<Restaurant> iterator() {
         return restaurantList.iterator();
     }
 }
