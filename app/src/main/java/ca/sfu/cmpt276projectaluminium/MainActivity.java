@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
             dateTxt.setText(getString(R.string.Last_inspection) + " "
-                    + newestInspection.getInspectionDate());
+                    + newestInspection.intelligentDate());
 
             return  itemView;
         }
