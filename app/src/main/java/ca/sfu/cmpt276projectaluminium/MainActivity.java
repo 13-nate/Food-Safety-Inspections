@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 import java.util.ArrayList;
@@ -51,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateRestaurantsList() {
         // test data
-        restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
-        restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
-        restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
+//        restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
+//        restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
+//        restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
 
         /*for(Restaurant r: manager){
             restaurantArray.add(r);
@@ -110,22 +111,22 @@ public class MainActivity extends AppCompatActivity {
 
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-            if (currantRestaurant.getHazardLevel() == "low") {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
-
-            } else if (currantRestaurant.getHazardLevel() == "moderate") {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
-
-            } else {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            }
-            // display number of issues
-            TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-            issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.getNumOfIssues());
-
-            // display date
-            TextView dateTxt = itemView.findViewById(R.id.txtdate);
-            dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
+//            if (currantRestaurant.getHazardLevel() == "low") {
+//                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
+//
+//            } else if (currantRestaurant.getHazardLevel() == "moderate") {
+//                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
+//
+//            } else {
+//                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
+//            }
+//            // display number of issues
+//            TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
+//            issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.getNumOfIssues());
+//
+//            // display date
+//            TextView dateTxt = itemView.findViewById(R.id.txtdate);
+//            dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
 
             return  itemView;
         }
