@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
@@ -48,9 +49,7 @@ public class MainActivity extends AppCompatActivity {
         registerClickCallBack();
     }
 
-
     private void populateListView() {
-        // change string to what holds restaurant data type
         // myListAdapter lets me work with the objects
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
@@ -68,9 +67,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                /* Can pass the clicked restaurants tracking number in an intent when clicked
+                to make a new activity with that restaurants tracking number
+
+                The Inspections can then be gotten for that restaurant when in the next activity
+                with using the tracking number
+                */
+
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                String message = "You clicked position" + position
-                        + "which is: " + clickedRestaurant.getName();
+                String message = clickedRestaurant.getName() + " "
+                        + clickedRestaurant.getTrackingNumber();
+
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
@@ -95,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
             // find restaurant to work with want different hazard images, name, and date and number of issues
             Restaurant currantRestaurant = restaurantArray.get(position);
+            InspectionManager inspectionManager = currantRestaurant.createInspectionManager();
+            Inspection newestInspection = inspectionManager.getMostRecentInspection();
 
             // fill the view
             // display restaurant name
@@ -102,23 +111,31 @@ public class MainActivity extends AppCompatActivity {
             nameTxt.setText(currantRestaurant.getName());
 
             // display hazard image
-           /* ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-            if (currantRestaurant.getHazardLevel() == "low") {
+            ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
+            String hazardRating = newestInspection.getHazardRating();
+            if (hazardRating.equals("Low")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
 
-            } else if (currantRestaurant.getHazardLevel() == "moderate") {
+            } else if (hazardRating.equals("Moderate")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
 
-            } else {
+            } else if (hazardRating.equals("High")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            }*/
+            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_black);
+
+            // display address
+            TextView addressTxt = itemView.findViewById(R.id.txtAddress);
+            addressTxt.setText("Address: " + currantRestaurant.getAddress());
+
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-           // issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.get());
+            issuesNumberTxt.setText(getString(R.string.issues) + " "
+                    + newestInspection.getNumTotalViolatinos());
 
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
-           // dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
+            dateTxt.setText(getString(R.string.Last_inspection) + " "
+                    + newestInspection.intelligentDate());
 
             return  itemView;
         }
