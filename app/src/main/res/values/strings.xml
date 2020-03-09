@@ -5,4 +5,10 @@
     <string name="restaurent_name">Restaurent Name</string>
     <string name="of_issues"># of Issues</string>
     <string name="date">Date</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="hazard_raiting">Hazard Raiting:</string>
+    <string name="low">Low</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="not_available">Not Available</string>
 </resources>
