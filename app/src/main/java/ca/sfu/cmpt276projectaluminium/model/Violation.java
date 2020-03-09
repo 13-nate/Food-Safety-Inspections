@@ -3,7 +3,7 @@ package ca.sfu.cmpt276projectaluminium.model;
 /**
  * Manages data about violations by storing it and providing getters in an organized manner
  */
-public class Violation {
+public class Violation implements Comparable<Violation> {
     private int ID;
     private String severity;  // Critical vs non-critical
     private String description;  // A full description (including section number)
@@ -24,5 +24,10 @@ public class Violation {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public int compareTo(Violation o) {
+        return this.ID - o.getID();
     }
 }
