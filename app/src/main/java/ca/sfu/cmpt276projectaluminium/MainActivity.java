@@ -49,9 +49,7 @@ public class MainActivity extends AppCompatActivity {
         registerClickCallBack();
     }
 
-
     private void populateListView() {
-        // change string to what holds restaurant data type
         // myListAdapter lets me work with the objects
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);

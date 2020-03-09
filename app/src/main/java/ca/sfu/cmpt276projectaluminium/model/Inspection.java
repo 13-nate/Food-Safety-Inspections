@@ -84,22 +84,29 @@ public class Inspection implements Comparable<Inspection> {
     /**
      * Returns information about the inspection date based of today's date
      * if the inspection was less than 30 days ago return how many days ago it was
-     * if the inspection was less than a 365 days ago return the month and year
+     * if the inspection was less than a 365 days ago return the month and day
      * if the inspection was more than 365 days return the month and year
      *
      */
     public String intelligentDate() {
+        // Used to format the inspection day String into a date
         SimpleDateFormat formatDate =new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-        String dateToFormat = String.valueOf(inspectionDate);
 
-        // set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
-        //  date base of if else statements
+        // Used to format the inspection date to get the year, month, or day respectively
+        SimpleDateFormat formatYear =new SimpleDateFormat("yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatMonth =new SimpleDateFormat("MMM", Locale.ENGLISH);
+        SimpleDateFormat formatDay =new SimpleDateFormat("dd", Locale.ENGLISH);
+
+        // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
+        // date base of if else statements
         String smartDate = "N/A";
         try {
-            // change date string into a Date data type
+            // change inspection from an int to a string then finally to a date data type
+            String dateToFormat = String.valueOf(inspectionDate);
             Date inspectionDay = formatDate.parse(dateToFormat);
-            Date today = Calendar.getInstance().getTime();
 
+            // Get today's date find the difference between it and the inspection date
+            Date today = Calendar.getInstance().getTime();
             long differenceInMilliSec = today.getTime() - inspectionDay.getTime();
             long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
 
@@ -107,15 +114,10 @@ public class Inspection implements Comparable<Inspection> {
                 smartDate = diffInDays + " days";
 
             } else if (diffInDays < DAYS365) {
-                SimpleDateFormat formatMonth =new SimpleDateFormat("MMM", Locale.ENGLISH);
-                SimpleDateFormat formatDay =new SimpleDateFormat("dd", Locale.ENGLISH);
 
                 smartDate = formatMonth.format(inspectionDay) + " " + formatDay.format(inspectionDay);
 
             } else {
-                SimpleDateFormat formatYear =new SimpleDateFormat("yyyy", Locale.ENGLISH);
-                SimpleDateFormat formatMonth =new SimpleDateFormat("MMM", Locale.ENGLISH);
-
                 smartDate = formatMonth.format(inspectionDay) + " " + formatYear.format(inspectionDay);
             }
 
