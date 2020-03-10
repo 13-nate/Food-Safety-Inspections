@@ -1,4 +1,4 @@
-package ca.sfu.cmpt276projectaluminium;
+package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
@@ -115,13 +116,20 @@ public class MainActivity extends AppCompatActivity {
             String hazardRating = newestInspection.getHazardRating();
             if (hazardRating.equals("Low")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
+                itemView.setBackground(getDrawable(R.drawable.border_green));
 
             } else if (hazardRating.equals("Moderate")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
+                itemView.setBackground(getDrawable(R.drawable.border_yellow));
 
             } else if (hazardRating.equals("High")) {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_black);
+                itemView.setBackground(getDrawable(R.drawable.border_red));
+
+            } else {
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_white);
+                itemView.setBackground(getDrawable(R.drawable.border_white));
+            }
 
             // display address
             TextView addressTxt = itemView.findViewById(R.id.txtAddress);
