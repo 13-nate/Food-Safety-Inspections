@@ -15,12 +15,18 @@ import java.util.Iterator;
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
 public class InspectionManager implements Iterable<Inspection> {
+    private static final int NUM_OF_VIOLATION_ATTRIBUTES = 3;
+    private static final int ID_SUBSTRING_INDEX = 0;
+    private static final int SEVERITY_SUBSTRING_INDEX = 1;
+    private static final int DESCRIPTION_SUBSTRING_INDEX = 2;
+
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
 
     Inspection noInpection = new Inspection("none", 0, "no type",
-            0,0, "no raiting");
+            0,0, "no raiting",
+            new ArrayList<Violation>());
 
     /**
      * Private constructor so that InspectionManagers are only instantiated in ways that are allowed
@@ -99,9 +105,42 @@ public class InspectionManager implements Iterable<Inspection> {
                 int numNonCriticalViolations = Integer.parseInt(inspectionValues[4]);
                 String hazardRating = inspectionValues[5];
 
+                // We should deal with the violation lump now
+
+                ArrayList<Violation> violationList = new ArrayList<>();
+
+                int ID = -1;
+                String description, severity = "";
+
+                for (int inspectionStringIndex = 6; inspectionStringIndex < inspectionValues.length;
+                     inspectionStringIndex++) {
+                    int subStringIndex = inspectionStringIndex % NUM_OF_VIOLATION_ATTRIBUTES;
+                    if (subStringIndex == ID_SUBSTRING_INDEX) {
+                        // ID
+                        ID = Integer.parseInt(inspectionValues[inspectionStringIndex]);
+
+                    } else if (subStringIndex == SEVERITY_SUBSTRING_INDEX) {
+                        // SEVERITY
+                        severity = inspectionValues[inspectionStringIndex];
+                    } else if (subStringIndex == DESCRIPTION_SUBSTRING_INDEX) {
+                        // DESCRIPTION
+                        description = inspectionValues[inspectionStringIndex];
+                        // We've finished creating the violation attributes so now we can create the object
+                        Violation violation = new Violation(ID, severity, description);
+
+                        // Now we can add that object to a list
+                        violationList.add(violation);
+                    }
+                }
+
+                // After the loop finishes, we have all applicable violations for the inspection
+                // We can give the completed violation list to the inspection we're creating as
+                // part of the below constructor
+
                 // Create an inspection
                 Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
-                        numCriticalViolations, numNonCriticalViolations, hazardRating);
+                        numCriticalViolations, numNonCriticalViolations, hazardRating,
+                        violationList);
 
                 // Store the inspection inside the list of inspections
                 completeInspectionList.add(inspection);
@@ -128,7 +167,7 @@ public class InspectionManager implements Iterable<Inspection> {
 
     /**
      * Creates and returns the inspection object that correlates to the passed in parameters
-     * This can be used to create a inspection after passing the arguments between activities.
+         * This can be used to create a inspection after passing the arguments between activities.
      * @param trackingNumber The trackingNumber of the inspection being searched for.
      * @param inspectionDate the date of the inspection being searched for.
      * @return An inspection that exactly matches both parameters

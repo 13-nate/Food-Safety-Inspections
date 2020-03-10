@@ -21,6 +21,7 @@ public class Inspection implements Comparable<Inspection> {
     private int numCriticalViolations;
     private int numNonCriticalViolations;
     private String hazardRating;
+    private ArrayList<Violation> violationList;
 
     /**
      * Private constructor so that inspections are only instantiated in ways that are allowed
@@ -32,13 +33,15 @@ public class Inspection implements Comparable<Inspection> {
      * Constructor is package private as it should only be called by InspectionManager
      */
     Inspection(String trackingNumber, int inspectionDate, String type, int numCriticalViolations,
-               int numNonCriticalViolations, String hazardRating) {
+               int numNonCriticalViolations, String hazardRating,
+               ArrayList<Violation> violationList) {
         this.trackingNumber = trackingNumber;
         this.inspectionDate = inspectionDate;
         this.type = type;
         this.numCriticalViolations = numCriticalViolations;
         this.numNonCriticalViolations = numNonCriticalViolations;
         this.hazardRating = hazardRating;
+        this.violationList = violationList;
     }
 
     public String getTrackingNumber() {
@@ -73,12 +76,7 @@ public class Inspection implements Comparable<Inspection> {
      * Currently returns a hard-coded example set of data as it's unimplemented.
      */
     public ArrayList<Violation> getViolations() {
-        ArrayList<Violation> violations = new ArrayList<>();
-        violations.add(new Violation(101, "Not Critical", "Plans/construction/alterations not in accordance with the Regulation [s. 3; s. 4]"));
-        violations.add(new Violation(404, "Not Critical", "Employee smoking in food preparation/processing/storage areas [s. 21(2)]"));
-        violations.add(new Violation(203, "Critical", "Food not cooled in an acceptable manner [s. 12(a)]"));
-
-        return violations;
+        return violationList;
     }
 
     /**
