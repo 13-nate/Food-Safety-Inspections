@@ -145,7 +145,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
     @Override
-    public Iterator<Restaurant> iterator() {
+    public Iterator<Restaurant> iterator () {
         return restaurantList.iterator();
     }
 }
