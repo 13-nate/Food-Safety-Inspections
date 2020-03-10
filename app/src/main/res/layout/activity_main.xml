@@ -21,11 +21,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/restaurantListView"
-        app:layout_constraintTop_toTopOf="parent" /><![CDATA[
-
-    />
-
-    ]]>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/restaurantListView"
@@ -34,18 +30,17 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/border_white"
+        android:layout_marginBottom="1dp"
+        android:paddingBottom="8dp"
         android:dividerHeight="10.0sp"
-        android:padding="15dp"
         android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/layoutLow"
+        app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRestaurants"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.6" />
 
     <TextView
         android:id="@+id/txtHazardLevel"
@@ -169,5 +164,14 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="4dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/layoutLow"
+        tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

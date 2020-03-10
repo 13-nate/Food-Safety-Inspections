@@ -19,8 +19,8 @@ public class InspectionManager implements Iterable<Inspection> {
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
 
-    Inspection noInpection = new Inspection("none", 0, "no type",
-            0,0, "no raiting");
+    Inspection noInspection = new Inspection("none", 0, "no type",
+            0,0, "no rating");
 
     /**
      * Private constructor so that InspectionManagers are only instantiated in ways that are allowed
@@ -163,7 +163,7 @@ public class InspectionManager implements Iterable<Inspection> {
         if(restaurantInspectionList.size() != 0){
             return restaurantInspectionList.get(0);
         } else  {
-            return noInpection;
+            return noInspection;
         }
 
     }
