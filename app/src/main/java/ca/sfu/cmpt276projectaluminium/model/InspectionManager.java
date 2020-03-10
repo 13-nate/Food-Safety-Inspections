@@ -15,10 +15,11 @@ import java.util.Iterator;
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
 public class InspectionManager implements Iterable<Inspection> {
-    private static final int NUM_OF_VIOLATION_ATTRIBUTES = 3;
-    private static final int ID_SUBSTRING_INDEX = 0;
-    private static final int SEVERITY_SUBSTRING_INDEX = 1;
-    private static final int DESCRIPTION_SUBSTRING_INDEX = 2;
+    private static final int NUM_OF_VIOLATION_ATTRIBUTES = 4;
+    private static final int ID_SUBSTRING_INDEX = 2;
+    private static final int SEVERITY_SUBSTRING_INDEX = 3;
+    private static final int DESCRIPTION_SUBSTRING_INDEX = 0;
+    private static final int REPEAT_SUBSTRING_INDEX = 1;
 
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
@@ -80,11 +81,11 @@ public class InspectionManager implements Iterable<Inspection> {
 
     /**
      * The inspection Values starting at index 6 will be formatted like:
-     *      "ID", "Severity", "Description", "ID", "Severity, "Description", etc...
+     *      "ID", "Severity", "Description", "Repeat", "ID, "Severity", etc...
      * Where the index values are
      *      6, 7, 8, 9, 10, 11, etc...
-     * This method takes ID, severity, and description, turns it into a violation, and puts that
-     * violation in a list which it then returns.
+     * This method takes ID, severity, description, and repeat, turns it into a violation, and puts
+     * that violation in a list which it then returns.
      * @param inspectionValues is a list of strings that correspond to each comma-spliced section of
      *                        an inspection line.
      * @return A list of violation objects that correspond to data inside the inspection
@@ -92,14 +93,11 @@ public class InspectionManager implements Iterable<Inspection> {
     private static ArrayList<Violation> populateViolationList(String[] inspectionValues) {
         ArrayList<Violation> violationList = new ArrayList<>();
         int ID = -1;
-        String description, severity = "";
+        String repeat, description = "", severity = "";
 
-        Log.e(TAG, "OMTOOAIJTOIAEJROLIAEJROIAEJROLIAEJROIAERJ");
-
-        // Create violation objects and store them by looping through ID, severity, and description
+        // Create violations and store them by looping through ID, severity, description, and repeat
         for (int inspectionStringIndex = 6; inspectionStringIndex < inspectionValues.length;
              inspectionStringIndex++) {
-            Log.e(TAG, inspectionValues[inspectionStringIndex]);
 
             // Calculate which violation attribute we currently have
             int subStringIndex = inspectionStringIndex % NUM_OF_VIOLATION_ATTRIBUTES;
@@ -109,18 +107,14 @@ public class InspectionManager implements Iterable<Inspection> {
                 ID = Integer.parseInt(inspectionValues[inspectionStringIndex]);
             } else if (subStringIndex == SEVERITY_SUBSTRING_INDEX) {
                 severity = inspectionValues[inspectionStringIndex];
-
-                // Remove the double quotes from the data
-                severity = severity.replace("\"", "");
             } else if (subStringIndex == DESCRIPTION_SUBSTRING_INDEX) {
                 description = inspectionValues[inspectionStringIndex];
-
-                // Remove the double quotes from the data
-                description = description.replace("\"", "");
+            } else if (subStringIndex == REPEAT_SUBSTRING_INDEX) {
+                repeat = inspectionValues[inspectionStringIndex];
 
                 // Reaching this point means that the violation object is now ready to be created
                 // Thus, we create the violation
-                Violation violation = new Violation(ID, severity, description);
+                Violation violation = new Violation(ID, severity, description, repeat);
 
                 // We then store the violation in a list for future use
                 violationList.add(violation);
@@ -137,8 +131,8 @@ public class InspectionManager implements Iterable<Inspection> {
     private static void initializeInspectionList(ArrayList<String> inspectionRawData) {
         // For each line of csv data, create a inspection with it and put it in the inspection list
         for (String dataLine : inspectionRawData) {
-            // Separate the comma-spliced-values
-            String[] inspectionValues = dataLine.split("\\s*,\\s*");
+            // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
+            String[] inspectionValues = dataLine.split("\\s*,\\s*|\\|");
 
             // Remove any quotations from entries
             for (int i = 0; i < inspectionValues.length; i++) {
