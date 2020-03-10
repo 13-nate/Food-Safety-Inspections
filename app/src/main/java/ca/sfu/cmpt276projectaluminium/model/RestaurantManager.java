@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
+
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
  * https://stackoverflow.com/questions/6488339/using-filereader-causes-a-compiler-error-unhandled-exception-type-filenotfounde
@@ -145,7 +147,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
      */
     @Override
-    public Iterator<Restaurant> iterator() {
+    public Iterator<Restaurant> iterator () {
         return restaurantList.iterator();
     }
 }

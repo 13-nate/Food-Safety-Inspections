@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -47,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initializeDataClasses();
 
-        // populateRestaurantsList();
         populateListView();
         registerClickCallBack();
     }
@@ -78,10 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 */
 
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                String message = clickedRestaurant.getName() + " "
-                        + clickedRestaurant.getTrackingNumber();
-
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                startActivity(intent);
             }
         });
     }
