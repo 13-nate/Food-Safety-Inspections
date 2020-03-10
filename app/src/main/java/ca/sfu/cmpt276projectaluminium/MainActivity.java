@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
@@ -25,9 +27,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays a list of restaurants and some info on the most most recent inspection report for
      * each of the restaurants displayed
      */
-    // private RestaurantManager manager = new RestaurantManager();
-    // dumby list for  temp data
-    // need a collection of data
+    private RestaurantManager manager = new RestaurantManager();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -45,28 +45,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initializeDataClasses();
 
-        populateRestaurantsList();
+       // populateRestaurantsList();
         populateListView();
         registerClickCallBack();
     }
 
-    private void populateRestaurantsList() {
-        // test data
-//        restaurantArray.add(new Restaurant("Macas", "low", 5, "May 24th"));
-//        restaurantArray.add(new Restaurant("BP", "moderate", 20, "24 days" ));
-//        restaurantArray.add(new Restaurant("Browns", "high",80, "May 2018"));
-
-        /*for(Restaurant r: manager){
-            restaurantArray.add(r);
-        }
-         */
-    }
-
     private void populateListView() {
-        // change string to what holds restaurant data type
         // myListAdapter lets me work with the objects
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
+
+        for(Restaurant r: manager){
+            restaurantArray.add(r);
+        }
+
         list.setAdapter(adapter);
     }
 
@@ -76,10 +68,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                /* Can pass the clicked restaurants tracking number in an intent when clicked
+                to make a new activity with that restaurants tracking number
+
+                The Inspections can then be gotten for that restaurant when in the next activity
+                with using the tracking number
+                */
+
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                String message = "You clicked position" + position
-                        + "which is: " + clickedRestaurant.getName();
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                startActivity(intent);
             }
         });
     }
@@ -103,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
             // find restaurant to work with want different hazard images, name, and date and number of issues
             Restaurant currantRestaurant = restaurantArray.get(position);
+            InspectionManager inspectionManager = currantRestaurant.createInspectionManager();
+            Inspection newestInspection = inspectionManager.getMostRecentInspection();
 
             // fill the view
             // display restaurant name
@@ -111,22 +111,30 @@ public class MainActivity extends AppCompatActivity {
 
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
-//            if (currantRestaurant.getHazardLevel() == "low") {
-//                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
-//
-//            } else if (currantRestaurant.getHazardLevel() == "moderate") {
-//                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
-//
-//            } else {
-//                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
-//            }
-//            // display number of issues
-//            TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
-//            issuesNumberTxt.setText(getString(R.string.issues) + " " + currantRestaurant.getNumOfIssues());
-//
-//            // display date
-//            TextView dateTxt = itemView.findViewById(R.id.txtdate);
-//            dateTxt.setText(getString(R.string.Last_inspection) + " " + currantRestaurant.getLastInspectionData());
+            String hazardRating = newestInspection.getHazardRating();
+            if (hazardRating.equals("Low")) {
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
+
+            } else if (hazardRating.equals("Moderate")) {
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
+
+            } else if (hazardRating.equals("High")) {
+                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
+            } else hazardImage.setImageResource(R.drawable.cancel_cutlery_black);
+
+            // display address
+            TextView addressTxt = itemView.findViewById(R.id.txtAddress);
+            addressTxt.setText("Address: " + currantRestaurant.getAddress());
+
+            // display number of issues
+            TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
+            issuesNumberTxt.setText(getString(R.string.issues) + " "
+                    + newestInspection.getNumTotalViolatinos());
+
+            // display date
+            TextView dateTxt = itemView.findViewById(R.id.txtdate);
+            dateTxt.setText(getString(R.string.Last_inspection) + " "
+                    + newestInspection.intelligentDate());
 
             return  itemView;
         }

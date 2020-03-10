@@ -5,7 +5,7 @@ import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 /**
  * Contains the data about a restaurant and provides getters in an organized manner
  */
-public class Restaurant {
+public class Restaurant implements Comparable<Restaurant> {
     private String trackingNumber;
     private String name;
     private String address;
@@ -67,5 +67,17 @@ public class Restaurant {
      */
     public InspectionManager createInspectionManager() {
         return new InspectionManager(this.trackingNumber);
+    }
+
+    /**
+     * Allows the RestaurantManager to be sorted by its Name
+     */
+    /* Sources:
+    https://dzone.com/articles/java-comparable-interface-in-five-minutes
+    https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
+     */
+    @Override
+    public int compareTo(Restaurant other) {
+        return this.name.compareTo(other.name);
     }
 }

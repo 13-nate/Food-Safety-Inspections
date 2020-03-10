@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">CMPT 276 Project Aluminium</string>
-<<<<<<< app/src/main/res/values/strings.xml
     <string name="critical_issues">Critical Issues: </string>
     <string name="non_critical_issues">Non-Critical Issues: </string>
     <string name="inspection_date">Inspection Date: </string>
@@ -15,5 +14,11 @@
     <string name="restaurent_name">Restaurent Name</string>
     <string name="of_issues"># of Issues</string>
     <string name="date">Date</string>
->>>>>>> app/src/main/res/values/strings.xml
+    <string name="restaurants">Restaurants</string>
+    <string name="hazard_raiting">Hazard Raiting:</string>
+    <string name="low">Low</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="not_available">Not Available</string>
+    <string name="textview">TextView</string>
 </resources>

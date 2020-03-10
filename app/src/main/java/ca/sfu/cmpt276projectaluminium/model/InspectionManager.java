@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -19,6 +20,9 @@ public class InspectionManager implements Iterable<Inspection> {
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
+
+    Inspection noInpection = new Inspection("none", 0, "no type",
+            0,0, "no raiting");
 
     /**
      * Private constructor so that InspectionManagers are only instantiated in ways that are allowed
@@ -121,6 +125,7 @@ public class InspectionManager implements Iterable<Inspection> {
                 restaurantInspectionList.add(inspection);
             }
         }
+        Collections.sort(restaurantInspectionList);
     }
 
     /**
@@ -151,6 +156,18 @@ public class InspectionManager implements Iterable<Inspection> {
     InspectionManager (String restaurantTrackingNumber) {
         // Filter irrelevant inspections out so restaurantInspectionList only contains relevant ones
         populateRestaurantInspectionList(restaurantTrackingNumber);
+    }
+
+    /**
+     * Inspections are sorted when they are created so the most recent inspection is the first one
+     */
+    public Inspection getMostRecentInspection() {
+        if(restaurantInspectionList.size() != 0){
+            return restaurantInspectionList.get(0);
+        } else  {
+            return noInpection;
+        }
+
     }
 
     public int getSize() {

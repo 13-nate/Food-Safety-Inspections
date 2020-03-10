@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -33,6 +34,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 public class RestaurantDetail extends AppCompatActivity {
 
+    private static final String TAG = "RestaurantId";
     private List<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
 
@@ -40,11 +42,6 @@ public class RestaurantDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
-
-        RestaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
-
-        // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
 
         initalizeVariables();
         populateListView();
@@ -54,12 +51,12 @@ public class RestaurantDetail extends AppCompatActivity {
 
 
     private void initalizeVariables() {
-        //String id = getIntent().getStringExtra(TAG);
-        String id = "SDFO-8HKP7E";
+        String id = getIntent().getStringExtra(TAG);
 
         restaurant = RestaurantManager.recreateRestaurant(id);
 
         InspectionManager inspectionManager = restaurant.createInspectionManager();
+        //if null pointer thrown, an invalid id was passed
 
         for (Inspection inspection : inspectionManager){
             inspections.add(inspection);
@@ -92,6 +89,12 @@ public class RestaurantDetail extends AppCompatActivity {
 
     }
 
+    public static Intent makeIntent(Context context, String restaurantId){
+        Intent intent = new Intent(context, RestaurantDetail.class);
+        intent.putExtra(TAG, restaurantId);
+        return intent;
+    }
+
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
 
         inspectionAdapter(){
@@ -114,11 +117,13 @@ public class RestaurantDetail extends AppCompatActivity {
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
 
             if (inspection.getHazardRating().toLowerCase().equals("low")){
-                imageView.setImageResource(R.drawable.foodgreen);
+                imageView.setImageResource(R.drawable.cancel_cutlery_green);
             } else if (inspection.getHazardRating().toLowerCase().equals("moderate")){
-                imageView.setImageResource(R.drawable.foodorange);
+                imageView.setImageResource(R.drawable.cancel_cutlery_orange);
             } else if (inspection.getHazardRating().toLowerCase().equals("high")){
-                imageView.setImageResource(R.drawable.foodred);
+                imageView.setImageResource(R.drawable.cancel_cutlery_red);
+            } else {
+                imageView.setImageResource(R.drawable.cancel_cutlery_black);
             }
 
             TextView date = listView.findViewById(R.id.Date);
@@ -129,7 +134,7 @@ public class RestaurantDetail extends AppCompatActivity {
             String criticalViolations = getString(R.string.critical_issues);
             String nonCriticalViolations = getString(R.string.non_critical_issues);
 
-            inspectionDate = inspectionDate + inspection.getInspectionDate();
+            inspectionDate = inspectionDate + inspection.intelligentDate();
             criticalViolations = criticalViolations + inspection.getNumCriticalViolations();
             nonCriticalViolations = nonCriticalViolations + inspection.getNumNonCriticalViolations();
 
