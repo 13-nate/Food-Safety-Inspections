@@ -138,10 +138,10 @@ public class Inspection implements Comparable<Inspection> {
     @Override
     public int compareTo(Inspection other) {
         if (this.inspectionDate < other.inspectionDate) {
-            return -1;
+            return 1;
         }
         if (this.inspectionDate == other.inspectionDate) {
             return 0;
         }
-        return 1;    }
+        return -1;    }
 }
