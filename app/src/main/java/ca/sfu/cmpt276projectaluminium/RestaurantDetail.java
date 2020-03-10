@@ -43,14 +43,14 @@ public class RestaurantDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
 
-        initalizeVariables();
+        initializeVariables();
         populateListView();
         loadText();
     }
 
 
 
-    private void initalizeVariables() {
+    private void initializeVariables() {
         String id = getIntent().getStringExtra(TAG);
 
         restaurant = RestaurantManager.recreateRestaurant(id);
@@ -134,9 +134,9 @@ public class RestaurantDetail extends AppCompatActivity {
             String criticalViolations = getString(R.string.critical_issues);
             String nonCriticalViolations = getString(R.string.non_critical_issues);
 
-            inspectionDate = inspectionDate + inspection.intelligentDate();
-            criticalViolations = criticalViolations + inspection.getNumCriticalViolations();
-            nonCriticalViolations = nonCriticalViolations + inspection.getNumNonCriticalViolations();
+            inspectionDate = inspectionDate + " " + inspection.intelligentDate();
+            criticalViolations = criticalViolations + " " + inspection.getNumCriticalViolations();
+            nonCriticalViolations = nonCriticalViolations + " " + inspection.getNumNonCriticalViolations();
 
             date.setText(inspectionDate);
             critical.setText(criticalViolations);

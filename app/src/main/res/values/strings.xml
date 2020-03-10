@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">CMPT 276 Project Aluminium</string>
-    <string name="critical_issues">Critical Issues: </string>
-    <string name="non_critical_issues">Non-Critical Issues: </string>
-    <string name="inspection_date">Inspection Date: </string>
+    <string name="critical_issues">Critical Issues:</string>
+    <string name="non_critical_issues">Non-Critical Issues:</string>
+    <string name="inspection_date">Inspection Date:</string>
     <string name="restaurant_details">Restaurant Details:</string>
     <string name="name">Name:</string>
     <string name="address">Address:</string>
