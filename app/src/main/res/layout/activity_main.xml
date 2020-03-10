@@ -11,7 +11,7 @@
         android:id="@+id/txtRestaurants"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="310dp"
         android:text="@string/restaurants"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -21,27 +21,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/restaurantListView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" /><![CDATA[
+
+    />
+
+    ]]>
 
     <ListView
         android:id="@+id/restaurantListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="80dp"
-        android:scrollbarSize="10dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/border_white"
+        android:dividerHeight="10.0sp"
+        android:padding="15dp"
+        android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/layoutLow"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRestaurants"
-        android:dividerHeight="10.0sp"/>/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/txtHazardLevel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="67dp"
+        android:layout_height="48dp"
         android:layout_marginStart="20dp"
         android:text="@string/hazard_raiting"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -57,12 +66,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/border_green"
         android:orientation="horizontal"
+        android:padding="5dp"
         app:layout_constraintBottom_toTopOf="@+id/layoutHigh"
-        app:layout_constraintStart_toEndOf="@+id/txtHazardLevel"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantListView">
+        app:layout_constraintStart_toEndOf="@+id/txtHazardLevel">
 
         <ImageView
             android:id="@+id/imgLow"
@@ -83,12 +92,12 @@
         android:id="@+id/layoutHigh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/border_red"
         android:orientation="horizontal"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutLow"
-        app:layout_constraintTop_toBottomOf="@+id/layoutLow">
+        app:layout_constraintStart_toStartOf="@+id/layoutLow">
 
         <ImageView
             android:id="@+id/imgHigh"
@@ -111,6 +120,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:padding="5dp"
+        android:background="@drawable/border_yellow"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/layoutLow"
         app:layout_constraintStart_toEndOf="@+id/layoutLow"
@@ -136,7 +147,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:background="@drawable/border_blue"
+
         android:orientation="horizontal"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
         app:layout_constraintStart_toEndOf="@+id/layoutHigh"
         app:layout_constraintTop_toTopOf="@+id/layoutHigh">

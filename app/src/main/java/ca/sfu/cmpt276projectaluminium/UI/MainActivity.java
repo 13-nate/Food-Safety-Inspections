@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initializeDataClasses();
 
-       // populateRestaurantsList();
+        // populateRestaurantsList();
         populateListView();
         registerClickCallBack();
     }
@@ -128,12 +130,12 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
                 hazardImage.setImageResource(R.drawable.cancel_cutlery_white);
-                itemView.setBackground(getDrawable(R.drawable.border_white));
+                itemView.setBackground(getDrawable(R.drawable.border_blue));
             }
 
             // display address
             TextView addressTxt = itemView.findViewById(R.id.txtAddress);
-            addressTxt.setText("Address: " + currantRestaurant.getAddress());
+            addressTxt.setText(currantRestaurant.getAddress());
 
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
