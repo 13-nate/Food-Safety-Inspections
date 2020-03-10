@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
+
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
  * https://stackoverflow.com/questions/6488339/using-filereader-causes-a-compiler-error-unhandled-exception-type-filenotfounde

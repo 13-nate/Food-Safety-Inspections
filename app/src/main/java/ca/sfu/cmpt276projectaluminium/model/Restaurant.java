@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+
 /**
  * Contains the data about a restaurant and provides getters in an organized manner
  */
