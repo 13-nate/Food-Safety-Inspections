@@ -24,8 +24,8 @@ public class InspectionManager implements Iterable<Inspection> {
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
     private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
 
-    Inspection noInpection = new Inspection("none", 0, "no type",
-            0,0, "no raiting",
+    private Inspection noInspection = new Inspection("None", 0, "No type",
+            0,0, "No rating",
             new ArrayList<Violation>());
 
     /**
@@ -79,6 +79,58 @@ public class InspectionManager implements Iterable<Inspection> {
     }
 
     /**
+     * The inspection Values starting at index 6 will be formatted like:
+     *      "ID", "Severity", "Description", "ID", "Severity, "Description", etc...
+     * Where the index values are
+     *      6, 7, 8, 9, 10, 11, etc...
+     * This method takes ID, severity, and description, turns it into a violation, and puts that
+     * violation in a list which it then returns.
+     * @param inspectionValues is a list of strings that correspond to each comma-spliced section of
+     *                        an inspection line.
+     * @return A list of violation objects that correspond to data inside the inspection
+     */
+    private static ArrayList<Violation> populateViolationList(String[] inspectionValues) {
+        ArrayList<Violation> violationList = new ArrayList<>();
+        int ID = -1;
+        String description, severity = "";
+
+        Log.e(TAG, "OMTOOAIJTOIAEJROLIAEJROIAEJROLIAEJROIAERJ");
+
+        // Create violation objects and store them by looping through ID, severity, and description
+        for (int inspectionStringIndex = 6; inspectionStringIndex < inspectionValues.length;
+             inspectionStringIndex++) {
+            Log.e(TAG, inspectionValues[inspectionStringIndex]);
+
+            // Calculate which violation attribute we currently have
+            int subStringIndex = inspectionStringIndex % NUM_OF_VIOLATION_ATTRIBUTES;
+
+            // Based on which violation attribute it is, perform a different action
+            if (subStringIndex == ID_SUBSTRING_INDEX) {
+                ID = Integer.parseInt(inspectionValues[inspectionStringIndex]);
+            } else if (subStringIndex == SEVERITY_SUBSTRING_INDEX) {
+                severity = inspectionValues[inspectionStringIndex];
+
+                // Remove the double quotes from the data
+                severity = severity.replace("\"", "");
+            } else if (subStringIndex == DESCRIPTION_SUBSTRING_INDEX) {
+                description = inspectionValues[inspectionStringIndex];
+
+                // Remove the double quotes from the data
+                description = description.replace("\"", "");
+
+                // Reaching this point means that the violation object is now ready to be created
+                // Thus, we create the violation
+                Violation violation = new Violation(ID, severity, description);
+
+                // We then store the violation in a list for future use
+                violationList.add(violation);
+            }
+        }
+
+        return violationList;
+    }
+
+    /**
      * Initialize inspectionList with data by parsing inspectionRawData to extract the relevant data
      * @param inspectionRawData A list of strings (each string holds a line of inspection data)
      */
@@ -105,37 +157,8 @@ public class InspectionManager implements Iterable<Inspection> {
                 int numNonCriticalViolations = Integer.parseInt(inspectionValues[4]);
                 String hazardRating = inspectionValues[5];
 
-                // We should deal with the violation lump now
-
-                ArrayList<Violation> violationList = new ArrayList<>();
-
-                int ID = -1;
-                String description, severity = "";
-
-                for (int inspectionStringIndex = 6; inspectionStringIndex < inspectionValues.length;
-                     inspectionStringIndex++) {
-                    int subStringIndex = inspectionStringIndex % NUM_OF_VIOLATION_ATTRIBUTES;
-                    if (subStringIndex == ID_SUBSTRING_INDEX) {
-                        // ID
-                        ID = Integer.parseInt(inspectionValues[inspectionStringIndex]);
-
-                    } else if (subStringIndex == SEVERITY_SUBSTRING_INDEX) {
-                        // SEVERITY
-                        severity = inspectionValues[inspectionStringIndex];
-                    } else if (subStringIndex == DESCRIPTION_SUBSTRING_INDEX) {
-                        // DESCRIPTION
-                        description = inspectionValues[inspectionStringIndex];
-                        // We've finished creating the violation attributes so now we can create the object
-                        Violation violation = new Violation(ID, severity, description);
-
-                        // Now we can add that object to a list
-                        violationList.add(violation);
-                    }
-                }
-
-                // After the loop finishes, we have all applicable violations for the inspection
-                // We can give the completed violation list to the inspection we're creating as
-                // part of the below constructor
+                // Extract violations out of the inspection csv and store them in an organized way
+                ArrayList<Violation> violationList = populateViolationList(inspectionValues);
 
                 // Create an inspection
                 Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
@@ -202,7 +225,7 @@ public class InspectionManager implements Iterable<Inspection> {
         if(restaurantInspectionList.size() != 0){
             return restaurantInspectionList.get(0);
         } else  {
-            return noInpection;
+            return noInspection;
         }
 
     }

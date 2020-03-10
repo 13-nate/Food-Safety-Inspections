@@ -2,7 +2,6 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.MonthDay;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,8 +12,8 @@ import java.util.concurrent.TimeUnit;
  * Manages data about inspection reports by storing it and providing getters in an organized manner
  */
 public class Inspection implements Comparable<Inspection> {
-    public static final int DAYS30 = 30;
-    public static final int DAYS365 = 365;
+    private static final int DAYS30 = 30;
+    private static final int DAYS365 = 365;
     private String trackingNumber;
     private int inspectionDate;
     private String type;
@@ -68,13 +67,10 @@ public class Inspection implements Comparable<Inspection> {
         return numNonCriticalViolations;
     }
 
-    public int getNumTotalViolatinos() {
+    public int getNumTotalViolations() {
         return numCriticalViolations + numNonCriticalViolations;
     }
 
-    /**
-     * Currently returns a hard-coded example set of data as it's unimplemented.
-     */
     public ArrayList<Violation> getViolations() {
         return violationList;
     }
@@ -88,12 +84,12 @@ public class Inspection implements Comparable<Inspection> {
      */
     public String intelligentDate() {
         // Used to format the inspection day String into a date
-        SimpleDateFormat formatDate =new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear =new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth =new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay =new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements
@@ -135,11 +131,6 @@ public class Inspection implements Comparable<Inspection> {
      */
     @Override
     public int compareTo(Inspection other) {
-        if (this.inspectionDate < other.inspectionDate) {
-            return -1;
-        }
-        if (this.inspectionDate == other.inspectionDate) {
-            return 0;
-        }
-        return 1;    }
+        return Integer.compare(this.inspectionDate, other.inspectionDate);
+    }
 }

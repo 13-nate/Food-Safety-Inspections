@@ -19,6 +19,7 @@ import java.util.Iterator;
  * https://www.techiedelight.com/differences-between-iterator-and-iterable-in-java/
  * https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
  * https://stackoverflow.com/questions/18895915/how-to-sort-an-array-of-objects-in-java
+ * https://stackoverflow.com/questions/19316394/removing-double-quotes-from-a-string-in-java/19316426
  */
 
 /**
