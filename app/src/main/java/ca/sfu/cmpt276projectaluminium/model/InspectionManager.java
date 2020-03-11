@@ -102,7 +102,6 @@ public class InspectionManager implements Iterable<Inspection> {
         // Create violations and store them by looping through ID, severity, description, and repeat
         for (int listIndex = violationDataStartIndex;
              listIndex < inspectionData.length; listIndex++) {
-
             // Calculate which violation attribute we currently have
             int violationData = listIndex % NUM_OF_VIOLATION_ATTRIBUTES;
 
