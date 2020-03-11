@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays a list of restaurants and some info on the most most recent inspection report for
      * each of the restaurants displayed
      */
-    private RestaurantManager manager = new RestaurantManager();
+    private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
     //Give the csv files to the data classes so that the csv files can be read

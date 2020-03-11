@@ -29,6 +29,22 @@ public class RestaurantManager implements Iterable<Restaurant>{
     private static final String TAG = "RestaurantManager";
     private static ArrayList<Restaurant> restaurantList = new ArrayList<>();
 
+    /*
+        Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
+     */
+
+    private static RestaurantManager instance;
+    private RestaurantManager() {
+        // Private to prevent anyone else from instantiating
+    }
+    public static RestaurantManager getInstance() {
+        if (instance == null) {
+            instance = new RestaurantManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Fills the ArrayList variable with objects based on provided csv data
      * Should be called once, on program initialization
@@ -130,13 +146,6 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
         // This should only be returned if an invalid trackingNumber was passed in
         return null;
-    }
-
-    /**
-     * Nothing special needs to be done for constructor because setup is done by initialize()
-     */
-    public RestaurantManager() {
-
     }
 
     public int getSize() {
