@@ -16,10 +16,10 @@ import java.util.Iterator;
  */
 public class InspectionManager implements Iterable<Inspection> {
     private static final int NUM_OF_VIOLATION_ATTRIBUTES = 4;
-    private static final int ID_SUBSTRING_INDEX = 2;
-    private static final int SEVERITY_SUBSTRING_INDEX = 3;
-    private static final int DESCRIPTION_SUBSTRING_INDEX = 0;
-    private static final int REPEAT_SUBSTRING_INDEX = 1;
+    private static final int ATTRIBUTE_ID = 2;
+    private static final int ATTRIBUTE_SEVERITY = 3;
+    private static final int ATTRIBUTE_DESCRIPTION = 0;
+    private static final int ATTRIBUTE_REPEAT = 1;
 
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
@@ -80,37 +80,41 @@ public class InspectionManager implements Iterable<Inspection> {
     }
 
     /**
-     * The inspection Values starting at index 6 will be formatted like:
+     * To create all violations that an inspection has, we need to extract the information from the
+     * list of data.  All information that is important for violations begins at index 6, which is
+     * why the loop in this function starts searching from index 6.
+     *
+     * This is what the inspection data looks like starting at index 6:
      *      "ID", "Severity", "Description", "Repeat", "ID, "Severity", etc...
-     * Where the index values are
-     *      6, 7, 8, 9, 10, 11, etc...
-     * This method takes ID, severity, description, and repeat, turns it into a violation, and puts
-     * that violation in a list which it then returns.
-     * @param inspectionValues is a list of strings that correspond to each comma-spliced section of
-     *                        an inspection line.
-     * @return A list of violation objects that correspond to data inside the inspection
+     *
+     * This method loops through the above data, creates a violation with it, then puts it in a list
+     *
+     * @param inspectionData A list of inspection information - stored as a list of strings
+     * @return A list of violations that are inside the inspection
      */
-    private static ArrayList<Violation> populateViolationList(String[] inspectionValues) {
+    private static ArrayList<Violation> populateViolationList(String[] inspectionData) {
         ArrayList<Violation> violationList = new ArrayList<>();
         int ID = -1;
         String repeat, description = "", severity = "";
 
+        int violationDataStartIndex = 6;
+
         // Create violations and store them by looping through ID, severity, description, and repeat
-        for (int inspectionStringIndex = 6; inspectionStringIndex < inspectionValues.length;
-             inspectionStringIndex++) {
+        for (int listIndex = violationDataStartIndex;
+             listIndex < inspectionData.length; listIndex++) {
 
             // Calculate which violation attribute we currently have
-            int subStringIndex = inspectionStringIndex % NUM_OF_VIOLATION_ATTRIBUTES;
+            int violationData = listIndex % NUM_OF_VIOLATION_ATTRIBUTES;
 
             // Based on which violation attribute it is, perform a different action
-            if (subStringIndex == ID_SUBSTRING_INDEX) {
-                ID = Integer.parseInt(inspectionValues[inspectionStringIndex]);
-            } else if (subStringIndex == SEVERITY_SUBSTRING_INDEX) {
-                severity = inspectionValues[inspectionStringIndex];
-            } else if (subStringIndex == DESCRIPTION_SUBSTRING_INDEX) {
-                description = inspectionValues[inspectionStringIndex];
-            } else if (subStringIndex == REPEAT_SUBSTRING_INDEX) {
-                repeat = inspectionValues[inspectionStringIndex];
+            if (violationData == ATTRIBUTE_ID) {
+                ID = Integer.parseInt(inspectionData[listIndex]);
+            } else if (violationData == ATTRIBUTE_SEVERITY) {
+                severity = inspectionData[listIndex];
+            } else if (violationData == ATTRIBUTE_DESCRIPTION) {
+                description = inspectionData[listIndex];
+            } else {
+                repeat = inspectionData[listIndex];
 
                 // Reaching this point means that the violation object is now ready to be created
                 // Thus, we create the violation
