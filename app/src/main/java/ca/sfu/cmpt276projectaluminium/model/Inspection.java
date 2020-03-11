@@ -81,21 +81,25 @@ public class Inspection implements Comparable<Inspection> {
         return violations;
     }
 
+
     /**
      * Returns information about the inspection date based of today's date
      * if the inspection was less than 30 days ago return how many days ago it was
      * if the inspection was less than a 365 days ago return the month and day
      * if the inspection was more than 365 days return the month and year
-     *
+     */
+    /*Sources
+    https://stackoverflow.com/questions/13624442/getting-last-day-of-the-month-in-a-given-string-date
+    https://stackoverflow.com/questions/7829571/milliseconds-to-days
      */
     public String intelligentDate() {
         // Used to format the inspection day String into a date
         SimpleDateFormat formatDate =new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear =new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth =new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay =new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements

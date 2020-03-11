@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("Restaurants");
         initializeDataClasses();
 
         populateListView();
@@ -112,19 +113,19 @@ public class MainActivity extends AppCompatActivity {
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
             String hazardRating = newestInspection.getHazardRating();
             if (hazardRating.equals("Low")) {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_green);
+                hazardImage.setImageResource(R.drawable.hazard_low);
                 itemView.setBackground(getDrawable(R.drawable.border_green));
 
             } else if (hazardRating.equals("Moderate")) {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_orange);
+                hazardImage.setImageResource(R.drawable.hazard_medium);
                 itemView.setBackground(getDrawable(R.drawable.border_yellow));
 
             } else if (hazardRating.equals("High")) {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_red);
+                hazardImage.setImageResource(R.drawable.hazard_high);
                 itemView.setBackground(getDrawable(R.drawable.border_red));
 
             } else {
-                hazardImage.setImageResource(R.drawable.cancel_cutlery_white);
+                hazardImage.setImageResource(R.drawable.not_available);
                 itemView.setBackground(getDrawable(R.drawable.border_blue));
             }
 

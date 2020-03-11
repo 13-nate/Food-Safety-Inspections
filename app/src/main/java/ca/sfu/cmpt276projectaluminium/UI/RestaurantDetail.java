@@ -43,7 +43,6 @@ public class RestaurantDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
-
         initializeVariables();
         populateListView();
         loadText();
@@ -73,17 +72,19 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void loadText() {
-        TextView name = findViewById(R.id.nameText);
+        //TextView name = findViewById(R.id.nameText);
         TextView address = findViewById(R.id.addressText);
         TextView latitude = findViewById(R.id.latitudeText);
         TextView longitude = findViewById(R.id.longitudeText);
+
 
         String tempName = restaurant.getName();
         String tempAddress = restaurant.getAddress();
         String tempLatitude = "" + restaurant.getLatitude();
         String tempLongitude = "" + restaurant.getLongitude();
 
-        name.setText(tempName);
+        getSupportActionBar().setTitle(tempName);
+        //name.setText(tempName);
         address.setText(tempAddress);
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
@@ -118,13 +119,17 @@ public class RestaurantDetail extends AppCompatActivity {
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
 
             if (inspection.getHazardRating().toLowerCase().equals("low")){
-                imageView.setImageResource(R.drawable.cancel_cutlery_green);
+                imageView.setImageResource(R.drawable.hazard_low);
+                listView.setBackground(getDrawable(R.drawable.border_green));
             } else if (inspection.getHazardRating().toLowerCase().equals("moderate")){
-                imageView.setImageResource(R.drawable.cancel_cutlery_orange);
+                imageView.setImageResource(R.drawable.hazard_medium);
+                listView.setBackground(getDrawable(R.drawable.border_yellow));
             } else if (inspection.getHazardRating().toLowerCase().equals("high")){
-                imageView.setImageResource(R.drawable.cancel_cutlery_red);
+                imageView.setImageResource(R.drawable.hazard_high);
+                listView.setBackground(getDrawable(R.drawable.border_red));
             } else {
-                imageView.setImageResource(R.drawable.cancel_cutlery_black);
+                imageView.setImageResource(R.drawable.not_available);
+                listView.setBackground(getDrawable(R.drawable.border_blue));
             }
 
             TextView date = listView.findViewById(R.id.Date);

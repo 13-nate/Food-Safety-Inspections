@@ -7,22 +7,6 @@
     android:background="@android:color/black"
     tools:context=".UI.MainActivity">
 
-    <TextView
-        android:id="@+id/txtRestaurants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="310dp"
-        android:text="@string/restaurants"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/restaurantListView"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ListView
         android:id="@+id/restaurantListView"
         android:layout_width="0dp"
@@ -31,16 +15,15 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="1dp"
-        android:paddingBottom="8dp"
         android:dividerHeight="10.0sp"
+        android:paddingBottom="8dp"
         android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRestaurants"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txtHazardLevel"
@@ -72,7 +55,7 @@
             android:id="@+id/imgLow"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/cancel_cutlery_green" />
+            app:srcCompat="@drawable/hazard_low" />
 
         <TextView
             android:id="@+id/txtLow"
@@ -98,7 +81,7 @@
             android:id="@+id/imgHigh"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/cancel_cutlery_red" />
+            app:srcCompat="@drawable/hazard_high" />
 
         <TextView
             android:id="@+id/txtHigh"
@@ -126,7 +109,7 @@
             android:id="@+id/imgMedium"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/cancel_cutlery_orange" />
+            app:srcCompat="@drawable/hazard_medium" />
 
         <TextView
             android:id="@+id/txtMedium"
@@ -154,7 +137,7 @@
             android:id="@+id/imgNone"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/cancel_cutlery_white" />
+            app:srcCompat="@drawable/not_available" />
 
         <TextView
             android:id="@+id/txtNone"
