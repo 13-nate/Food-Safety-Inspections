@@ -131,6 +131,11 @@ public class Inspection implements Comparable<Inspection> {
      */
     @Override
     public int compareTo(Inspection other) {
-        return Integer.compare(this.inspectionDate, other.inspectionDate);
-    }
+        if (this.inspectionDate < other.inspectionDate) {
+            return 1;
+        }
+        if (this.inspectionDate == other.inspectionDate) {
+            return 0;
+        }
+        return -1;    }
 }

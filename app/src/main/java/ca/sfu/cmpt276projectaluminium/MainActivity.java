@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,10 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 */
 
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                String message = clickedRestaurant.getName() + " "
-                        + clickedRestaurant.getTrackingNumber();
-
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                startActivity(intent);
             }
         });
     }
