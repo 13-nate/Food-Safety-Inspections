@@ -99,13 +99,13 @@ public class InspectionManager implements Iterable<Inspection> {
 
         int violationDataStartIndex = 6;
 
-        // Create violations and store them by looping through ID, severity, description, and repeat
+        // Create violations and store them by looping through the data inside the list
         for (int listIndex = violationDataStartIndex;
              listIndex < inspectionData.length; listIndex++) {
-            // Calculate which violation attribute we currently have
+            // Calculate which violation attribute is in the string
             int violationData = listIndex % NUM_OF_VIOLATION_ATTRIBUTES;
 
-            // Based on which violation attribute it is, perform a different action
+            // Depending on which attribute is in the string, assign the attribute to a variable
             if (violationData == ID) {
                 id = Integer.parseInt(inspectionData[listIndex]);
             } else if (violationData == SEVERITY) {
