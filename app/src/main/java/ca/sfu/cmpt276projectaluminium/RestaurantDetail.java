@@ -49,14 +49,7 @@ public class RestaurantDetail extends AppCompatActivity {
         populateListView();
         loadText();
 
-        Button btn = (Button)findViewById(R.id.retbtn);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(RestaurantDetail.this,MainActivity.class));
-                finish();
-            }
-        });
+
     }
 
 
