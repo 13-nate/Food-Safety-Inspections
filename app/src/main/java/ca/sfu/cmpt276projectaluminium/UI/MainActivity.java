@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
             issuesNumberTxt.setText(getString(R.string.issues) + " "
-                    + newestInspection.getNumTotalViolatinos());
+                    + newestInspection.getNumTotalViolations());
 
             // display date
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
