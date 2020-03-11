@@ -16,10 +16,10 @@ import java.util.Iterator;
  */
 public class InspectionManager implements Iterable<Inspection> {
     private static final int NUM_OF_VIOLATION_ATTRIBUTES = 4;
-    private static final int ATTRIBUTE_ID = 2;
-    private static final int ATTRIBUTE_SEVERITY = 3;
-    private static final int ATTRIBUTE_DESCRIPTION = 0;
-    private static final int ATTRIBUTE_REPEAT = 1;
+    private static final int ID = 2;
+    private static final int SEVERITY = 3;
+    private static final int DESCRIPTION = 0;
+    private static final int REPEAT = 1;
 
     private static final String TAG = "InspectionManager";
     private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
@@ -94,7 +94,7 @@ public class InspectionManager implements Iterable<Inspection> {
      */
     private static ArrayList<Violation> populateViolationList(String[] inspectionData) {
         ArrayList<Violation> violationList = new ArrayList<>();
-        int ID = -1;
+        int id = -1;
         String repeat, description = "", severity = "";
 
         int violationDataStartIndex = 6;
@@ -106,18 +106,18 @@ public class InspectionManager implements Iterable<Inspection> {
             int violationData = listIndex % NUM_OF_VIOLATION_ATTRIBUTES;
 
             // Based on which violation attribute it is, perform a different action
-            if (violationData == ATTRIBUTE_ID) {
-                ID = Integer.parseInt(inspectionData[listIndex]);
-            } else if (violationData == ATTRIBUTE_SEVERITY) {
+            if (violationData == ID) {
+                id = Integer.parseInt(inspectionData[listIndex]);
+            } else if (violationData == SEVERITY) {
                 severity = inspectionData[listIndex];
-            } else if (violationData == ATTRIBUTE_DESCRIPTION) {
+            } else if (violationData == DESCRIPTION) {
                 description = inspectionData[listIndex];
             } else {
                 repeat = inspectionData[listIndex];
 
                 // Reaching this point means that the violation object is now ready to be created
                 // Thus, we create the violation
-                Violation violation = new Violation(ID, severity, description, repeat);
+                Violation violation = new Violation(id, severity, description, repeat);
 
                 // We then store the violation in a list for future use
                 violationList.add(violation);
