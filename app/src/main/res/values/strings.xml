@@ -22,6 +22,7 @@
     <string name="address">Address</string>
     <string name="critical">Critical Issues:</string>
     <string name="non_critical">Non-Critical Issues:</string>
+    <string name="inspectiontype">Inspection Type:</string>
     <string name="id">ID:</string>
     <string name="textview">textview</string>
     <string name="violation101">Plans/construction not regulation</string>
@@ -61,4 +62,7 @@
     <string name="violation501">Operator missing FOODSAFE</string>
     <string name="violation502">Staff missing FOODSAFE</string>
     <string name="invalid_id">invalid ID</string>
+    <string name="violations">Violations:</string>
+    <string name="hazard_level">Hazard Level:</string>
+    <string name="short_description">Short Description</string>
 </resources>

@@ -166,7 +166,8 @@ public class InspectionDetails extends AppCompatActivity {
 
         // get string values
         String tempDate = inspection.intelligentDate();
-        String tempType = inspection.getType();
+        String tempType = getString(R.string.inspectiontype) + " "
+                + inspection.getType();
         String tempCritical = getString(R.string.critical) +  " "
                 + inspection.getNumCriticalViolations();
 

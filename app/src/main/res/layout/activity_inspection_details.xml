@@ -11,12 +11,25 @@
         android:id="@+id/txtType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/hazardLayout"
-        app:layout_constraintTop_toBottomOf="@+id/hazardLayout" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txthazardLevel" />
+
+    <TextView
+        android:id="@+id/txthazardLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/hazard_level"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txtCritical"
@@ -24,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,10 +59,11 @@
         android:id="@+id/hazardLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:padding="5dp"
-        app:layout_constraintStart_toStartOf="@+id/txtCritical"
+        app:layout_constraintStart_toEndOf="@+id/txthazardLevel"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -62,7 +76,7 @@
             android:id="@+id/txtHazardLvl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="hazard Level"
+            android:text="@string/hazard_level"
             android:textColor="@android:color/white"
 
             android:textSize="18sp"
@@ -91,10 +105,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Violations: "
+        android:text="@string/violations"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/txtNonCritical"
         app:layout_constraintTop_toBottomOf="@+id/txtNonCritical" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
