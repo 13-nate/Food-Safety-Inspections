@@ -45,6 +45,7 @@ public class RestaurantDetail extends AppCompatActivity {
         initializeVariables();
         populateListView();
         loadText();
+        registerClickCallBack();
 
 
     }
@@ -163,6 +164,5 @@ public class RestaurantDetail extends AppCompatActivity {
             }
         });
     }
-
 }
 
