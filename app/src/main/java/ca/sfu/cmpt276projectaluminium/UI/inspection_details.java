@@ -39,7 +39,7 @@ public class inspection_details extends AppCompatActivity {
 
     private void populateListView(){
         ArrayAdapter<Violation> adapter = new inspection_details.violationAdapter();
-        ListView list = findViewById(R.id.inspectionList);
+        ListView list = findViewById(R.id.violationList);
         list.setAdapter(adapter);
 
 
