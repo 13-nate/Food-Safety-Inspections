@@ -6,13 +6,13 @@ package ca.sfu.cmpt276projectaluminium.model;
 public class Violation implements Comparable<Violation> {
     private int ID;
     private String severity;  // Critical vs non-critical
-    private String description;  // A full description (including section number)
+    private String fullDescription;  // A full description (including section number)
     private String repeat;  // Repeat vs Not Repeat
 
-    Violation(int ID, String severity, String description, String repeat) {
+    Violation(int ID, String severity, String fullDescription, String repeat) {
         this.ID = ID;
         this.severity = severity;
-        this.description = description;
+        this.fullDescription = fullDescription;
         this.repeat = repeat;
     }
 
@@ -24,8 +24,8 @@ public class Violation implements Comparable<Violation> {
         return severity;
     }
 
-    public String getDescription() {
-        return description;
+    public String getFullDescription() {
+        return fullDescription;
     }
 
     public String getRepeat() {
