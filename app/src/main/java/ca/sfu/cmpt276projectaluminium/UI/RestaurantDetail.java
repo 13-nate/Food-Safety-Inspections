@@ -26,8 +26,8 @@ import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 /**
- * Implements ListView and gets data for it
- *
+ * Implements Restaurant details and gets data for it
+ * Also grants access to the inspection details activity
  *
  */
 

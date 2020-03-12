@@ -30,6 +30,12 @@ import ca.sfu.cmpt276projectaluminium.model.Violation;
 //credits
 //https://stackoverflow.com/questions/7524892/onitemclick-listener-on-getview-method
 
+/**
+ * Implements inspection details and gets data for it
+ * Also responsible for grabbing the short descriptions from strings.xml
+ *
+ */
+
 public class InspectionDetails extends AppCompatActivity {
 
     private static final String INSPECTION_ID = "violationId";
@@ -58,7 +64,6 @@ public class InspectionDetails extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
-
 
     private String getShortDescription(int ID) {
         switch (ID) {
@@ -163,9 +168,8 @@ public class InspectionDetails extends AppCompatActivity {
         TextView nonCritical = findViewById(R.id.txtNonCritical);
         TextView hazard = findViewById(R.id.txtHazardLvl);
 
-
         // get string values
-        String tempDate = inspection.intelligentDate();
+        String tempDate = inspection.fullDate();
         String tempType = getString(R.string.inspectiontype) + " "
                 + inspection.getType();
         String tempCritical = getString(R.string.critical) +  " "

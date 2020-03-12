@@ -125,6 +125,30 @@ public class Inspection implements Comparable<Inspection> {
         return smartDate;
     }
 
+    public String fullDate() {
+        // Used to format the inspection day String into a date
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+
+        // Used to format the inspection date to get the year, month, or day respectively
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
+
+        // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
+        // date base of if else statements
+        String smartDate = "N/A";
+        try {
+            // change inspection from an int to a string then finally to a date data type
+            String dateToFormat = String.valueOf(inspectionDate);
+            Date inspectionDay = formatDate.parse(dateToFormat);
+            smartDate =  formatMonth.format(inspectionDay) + " " + formatDay.format(inspectionDay) + ", " + formatYear.format(inspectionDay);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return smartDate;
+    }
+
     /* Sources:
     https://dzone.com/articles/java-comparable-interface-in-five-minutes
     https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t

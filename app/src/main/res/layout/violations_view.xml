@@ -39,6 +39,7 @@
         android:text="@string/short_description"
         android:textColor="@android:color/white"
         android:textSize="18sp"
+        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/imgViolation"
         app:layout_constraintStart_toStartOf="@+id/imgCritical"
