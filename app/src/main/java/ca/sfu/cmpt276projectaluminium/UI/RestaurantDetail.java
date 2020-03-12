@@ -167,7 +167,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
             return listView;
         }
-        
+
     }
 }
 
