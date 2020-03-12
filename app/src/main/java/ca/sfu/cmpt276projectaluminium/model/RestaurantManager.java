@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import ca.sfu.cmpt276projectaluminium.model.Restaurant;
-
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
  * https://stackoverflow.com/questions/6488339/using-filereader-causes-a-compiler-error-unhandled-exception-type-filenotfounde
@@ -29,12 +27,12 @@ import ca.sfu.cmpt276projectaluminium.model.Restaurant;
  */
 public class RestaurantManager implements Iterable<Restaurant>{
     private static final String TAG = "RestaurantManager";
-    private static ArrayList<Restaurant> restaurantList = new ArrayList<>();
+
+    private ArrayList<Restaurant> restaurantList = new ArrayList<>();
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
      */
-
     private static RestaurantManager instance;
     private RestaurantManager() {
         // Private to prevent anyone else from instantiating
@@ -51,7 +49,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Fills the ArrayList variable with objects based on provided csv data
      * Should be called once, on program initialization
      */
-    public static void initialize(InputStream is) {
+    public void initialize(InputStream is) {
         // Get data out of the restaurants file and store it in a readable way.
         ArrayList<String> restaurantData = getFileData(is);
 
@@ -63,7 +61,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Extracts restaurant info line by line and stores it in a list
      * @return A list of strings (each string holds a line of restaurant data)
      */
-    private static ArrayList<String> getFileData(InputStream is) {
+    private ArrayList<String> getFileData(InputStream is) {
         ArrayList<String> restaurantData = new ArrayList<>();
 
         // Initialize the reader for the csv file
@@ -96,7 +94,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Initialize restaurantList with data by parsing restaurantData to extract the relevant data
      * @param restaurantData A list of strings (each string holds a line of restaurant data)
      */
-    private static void initializeRestaurantList(ArrayList<String> restaurantData) {
+    private void initializeRestaurantList(ArrayList<String> restaurantData) {
         // For each line of csv data, create a restaurant with it and put it in the restaurant list
         for (String dataLine : restaurantData) {
             // Separate the comma-spliced-values
@@ -125,10 +123,10 @@ public class RestaurantManager implements Iterable<Restaurant>{
                         latitude, longitude);
 
                 // Store the restaurant inside the list of restaurants
-                restaurantList.add(restaurant);
+                this.restaurantList.add(restaurant);
             }
         }
-        Collections.sort(restaurantList);
+        Collections.sort(this.restaurantList);
     }
 
     /**
@@ -137,9 +135,9 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * @param trackingNumber The number that uniquely identifies a restaurant.
      * @return A restaurant that matches the parameter
      */
-    public static Restaurant recreateRestaurant(String trackingNumber) {
+    public Restaurant recreateRestaurant(String trackingNumber) {
         // Find a restaurant that matches the trackingNumber and return it.
-        for (Restaurant restaurant : restaurantList) {
+        for (Restaurant restaurant : this.restaurantList) {
             boolean trackingNumberMatches = restaurant.getTrackingNumber().equals(trackingNumber);
             if (trackingNumberMatches) {
                 return restaurant;
@@ -151,7 +149,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
     }
 
     public int getSize() {
-        return restaurantList.size();
+        return this.restaurantList.size();
     }
 
     /**
@@ -159,6 +157,6 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     @Override
     public Iterator<Restaurant> iterator () {
-        return restaurantList.iterator();
+        return this.restaurantList.iterator();
     }
 }
