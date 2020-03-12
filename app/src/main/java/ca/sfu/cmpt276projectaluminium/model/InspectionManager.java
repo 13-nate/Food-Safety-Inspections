@@ -2,8 +2,6 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,36 +9,44 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
-public class InspectionManager implements Iterable<Inspection> {
+public class InspectionManager {
     private static final int NUM_OF_VIOLATION_ATTRIBUTES = 4;
     private static final int ID = 2;
     private static final int SEVERITY = 3;
     private static final int DESCRIPTION = 0;
     private static final int REPEAT = 1;
-
     private static final String TAG = "InspectionManager";
-    private static ArrayList<Inspection> completeInspectionList = new ArrayList<>();
-    private ArrayList<Inspection> restaurantInspectionList = new ArrayList<>();
+
+    private ArrayList<Inspection> completeInspectionList = new ArrayList<>();
 
     private Inspection noInspection = new Inspection("None", 0, "No type",
             0,0, "No rating",
             new ArrayList<Violation>());
 
-    /**
-     * Private constructor so that InspectionManagers are only instantiated in ways that are allowed
+    /*
+        Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
      */
-    private InspectionManager() {}
+    private static InspectionManager instance;
+    private InspectionManager() {
+        // Private to prevent anyone else from instantiating
+    }
+    public static InspectionManager getInstance() {
+        if (instance == null) {
+            instance = new InspectionManager();
+        }
+
+        return instance;
+    }
 
     /**
      * Fills the ArrayList variable with objects based on provided csv data
      * Should be called once, on program initialization
      */
-    public static void initialize(InputStream is) {
+    public void initialize(InputStream is) {
         // Get data out of the inspections file and store it in a readable way.
         ArrayList<String> inspectionRawData = getFileData(is);
 
@@ -52,7 +58,7 @@ public class InspectionManager implements Iterable<Inspection> {
      * Extracts inspection info line by line and stores it in a list
      * @return A list of strings (each string holds a line of inspection data)
      */
-    private static ArrayList<String> getFileData(InputStream is) {
+    private ArrayList<String> getFileData(InputStream is) {
         ArrayList<String> inspectionRawData = new ArrayList<>();
 
         // Initialize the reader for the csv file
@@ -94,7 +100,7 @@ public class InspectionManager implements Iterable<Inspection> {
      * @param inspectionData A list of inspection information - stored as a list of strings
      * @return A list of violations that are inside the inspection
      */
-    private static ArrayList<Violation> populateViolationList(String[] inspectionData) {
+    private ArrayList<Violation> populateViolationList(String[] inspectionData) {
         ArrayList<Violation> violationList = new ArrayList<>();
         int id = -1;
         String repeat, description = "", severity = "";
@@ -133,7 +139,7 @@ public class InspectionManager implements Iterable<Inspection> {
      * Initialize inspectionList with data by parsing inspectionRawData to extract the relevant data
      * @param inspectionRawData A list of strings (each string holds a line of inspection data)
      */
-    private static void initializeInspectionList(ArrayList<String> inspectionRawData) {
+    private void initializeInspectionList(ArrayList<String> inspectionRawData) {
         // For each line of csv data, create a inspection with it and put it in the inspection list
         for (String dataLine : inspectionRawData) {
             // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
@@ -165,26 +171,9 @@ public class InspectionManager implements Iterable<Inspection> {
                         violationList);
 
                 // Store the inspection inside the list of inspections
-                completeInspectionList.add(inspection);
+                this.completeInspectionList.add(inspection);
             }
         }
-    }
-
-    /**
-     * Filter inspections so that the only inspections accessible are those that are associated
-     * the restaurant that is creating this InspectionManager
-     * @param restaurantTrackingNumber The ID of the restaurant that is creating the manager
-     */
-    private void populateRestaurantInspectionList(String restaurantTrackingNumber) {
-        // For every inspection across all restaurants...
-        for (Inspection inspection : completeInspectionList) {
-            // Add the inspection to the filtered list if it is associated with the restaurant
-            String inspectionTrackingNumber = inspection.getTrackingNumber();
-            if (inspectionTrackingNumber.equals(restaurantTrackingNumber)) {
-                restaurantInspectionList.add(inspection);
-            }
-        }
-        Collections.sort(restaurantInspectionList);
     }
 
     /**
@@ -194,9 +183,9 @@ public class InspectionManager implements Iterable<Inspection> {
      * @param inspectionDate the date of the inspection being searched for.
      * @return An inspection that exactly matches both parameters
      */
-    public static Inspection recreateInspection(String trackingNumber, int inspectionDate) {
+    public Inspection recreateInspection(String trackingNumber, int inspectionDate) {
         // Find an inspection that matches both the trackingNumber and date, then return it
-        for (Inspection inspection : completeInspectionList) {
+        for (Inspection inspection : this.completeInspectionList) {
             boolean trackingNumberMatches = inspection.getTrackingNumber().equals(trackingNumber);
             boolean dateMatches = inspection.getInspectionDate() == inspectionDate;
             if (trackingNumberMatches && dateMatches) {
@@ -209,35 +198,36 @@ public class InspectionManager implements Iterable<Inspection> {
     }
 
     /**
-     * CSV setup is done by initialize(), but we still need to filter our inspections down to ones
-     * that are relevant to the restaurant that is creating this InspectionManager
+     * Puts all inspections associated with the specified restaurant in a list and returns that list
+     * @param restaurantTrackingNumber The ID of the restaurant that is looking for its inspections
      */
-    InspectionManager (String restaurantTrackingNumber) {
-        // Filter irrelevant inspections out so restaurantInspectionList only contains relevant ones
-        populateRestaurantInspectionList(restaurantTrackingNumber);
+    public ArrayList<Inspection> getInspections(String restaurantTrackingNumber) {
+        ArrayList<Inspection> inspections = new ArrayList<>();
+
+        // For every inspection across all restaurants...
+        for (Inspection inspection : this.completeInspectionList) {
+            // Add the inspection to the list if it is associated with the restaurant's trackingNum
+            String inspectionTrackingNumber = inspection.getTrackingNumber();
+            if (inspectionTrackingNumber.equals(restaurantTrackingNumber)) {
+                inspections.add(inspection);
+            }
+        }
+        Collections.sort(inspections);
+
+        return inspections;
     }
 
     /**
-     * Inspections are sorted when they are created so the most recent inspection is the first one
+     * If the inspection list is sorted, the most recent inspection will be the first inspection.
      */
-    public Inspection getMostRecentInspection() {
-        if(restaurantInspectionList.size() != 0){
-            return restaurantInspectionList.get(0);
-        } else  {
+    public Inspection getMostRecentInspection(ArrayList<Inspection> inspections) {
+        // Ensure that the list is sorted
+        Collections.sort(inspections);
+
+        if (!inspections.isEmpty()) {
+            return inspections.get(0);
+        } else {
             return noInspection;
         }
-
-    }
-
-    public int getSize() {
-        return restaurantInspectionList.size();
-    }
-
-    /**
-     * Allows for the iteration of RestaurantManager in a for-each loop as if it were a list
-     */
-    @Override
-    public Iterator<Inspection> iterator() {
-        return restaurantInspectionList.iterator();
     }
 }
