@@ -71,11 +71,6 @@
         android:scrollbarThumbVertical="@android:color/white"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
-    <ExpandableListView
-        android:id="@+id/expand_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <TextView
         android:id="@+id/addressText"
         android:layout_width="wrap_content"
