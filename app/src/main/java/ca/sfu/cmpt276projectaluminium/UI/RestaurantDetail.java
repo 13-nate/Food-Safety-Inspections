@@ -3,6 +3,7 @@ package ca.sfu.cmpt276projectaluminium.UI;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.TextViewCompat;
 
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -95,6 +96,7 @@ public class RestaurantDetail extends AppCompatActivity {
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
 
+
     }
 
     public static Intent makeIntent(Context context, String restaurantId){
@@ -153,6 +155,7 @@ public class RestaurantDetail extends AppCompatActivity {
             date.setText(inspectionDate);
             critical.setText(criticalViolations);
             noncritical.setText(nonCriticalViolations);
+
 
             return listView;
         }

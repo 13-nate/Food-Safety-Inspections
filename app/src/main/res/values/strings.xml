@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CMPT 276 Project Aluminium</string>
-    <string name="critical_issues">Critical Issues:</string>
-    <string name="non_critical_issues">Non-Critical Issues:</string>
+    <string name="critical_issues">Critical:</string>
+    <string name="non_critical_issues">Non-Critical:</string>
     <string name="inspection_date">Inspection Date:</string>
     <string name="restaurant_details">Restaurant Details:</string>
     <string name="name">Name:</string>
@@ -18,7 +18,7 @@
     <string name="low">Low</string>
     <string name="high">High</string>
     <string name="medium">Medium</string>
-    <string name="not_available">Not Available</string>
+    <string name="not_available">N/A</string>
     <string name="address">Address</string>
     <string name="textview">TextView</string>
 </resources>
