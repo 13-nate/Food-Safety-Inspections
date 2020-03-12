@@ -10,14 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".UI.InspectionDetails"
-            android:parentActivityName=".UI.RestaurantDetail"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".UI.RestaurantDetail"
             android:configChanges="orientation|keyboardHidden"
-            android:parentActivityName=".UI.MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.MainActivity"
