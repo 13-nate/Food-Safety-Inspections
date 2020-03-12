@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -136,33 +137,50 @@ public class InspectionDetails extends AppCompatActivity {
     }
 
     private void loadData() {
+        // get text views
         TextView type = findViewById(R.id.txtType);
         TextView critical = findViewById(R.id.txtCritical);
         TextView nonCritical = findViewById(R.id.txtNonCritical);
+        TextView hazard = findViewById(R.id.txtHazardLvl);
 
+
+        // get string values
         String tempDate = inspection.intelligentDate();
         String tempType = inspection.getType();
         String tempCritical = "Critical Issues: " + inspection.getNumCriticalViolations();
         String tempNonCritical = "Non-Critical Issues: " + inspection.getNumNonCriticalViolations();
-        getSupportActionBar().setTitle(tempDate);
 
+        // load values into UI elements
+        getSupportActionBar().setTitle(tempDate);
         type.setText(tempType);
         critical.setText(tempCritical);
         nonCritical.setText(tempNonCritical);
+        hazard.setText(inspection.getHazardRating());
 
+        //find places for images
         ImageView hazardImage = findViewById(R.id.imgHazardLvl);
+        LinearLayout hazardLayout = findViewById(R.id.hazardLayout);
+
+        //set images
         String hazardRating = inspection.getHazardRating();
         if (hazardRating.equals("Low")) {
             hazardImage.setImageResource(R.drawable.hazard_low);
+            hazardLayout.setBackground(getDrawable(R.drawable.border_green));
 
         } else if (hazardRating.equals("Moderate")) {
             hazardImage.setImageResource(R.drawable.hazard_medium);
+            hazardLayout.setBackground(getDrawable(R.drawable.border_yellow));
+
 
         } else if (hazardRating.equals("High")) {
             hazardImage.setImageResource(R.drawable.hazard_high);
+            hazardLayout.setBackground(getDrawable(R.drawable.border_red));
+
 
         } else {
             hazardImage.setImageResource(R.drawable.not_available);
+            hazardLayout.setBackground(getDrawable(R.drawable.border_blue));
+
         }
 
     }
@@ -190,6 +208,11 @@ public class InspectionDetails extends AppCompatActivity {
             }
             Violation violation = violations.get(position);
 
+            // set violation number
+            TextView idTextview = listView.findViewById(R.id.txtViolaionId);
+            String idString = "ID: " + violation.getID();
+            idTextview.setText(idString);
+
             //set description text
             TextView description = listView.findViewById(R.id.txtShortDescription);
             String detailOfViolation = getShortDescription(violation.getID());
@@ -203,10 +226,13 @@ public class InspectionDetails extends AppCompatActivity {
             //set critical image
             String severity = violation.getSeverity();
             ImageView criticalImage = listView.findViewById(R.id.imgCritical);
-            if (violation.getSeverity() == "Not Critical") {
-                criticalImage.setImageResource(R.drawable.non_critical_violation);
-            } else {
+            if (severity.equals("Not Critical")) {
+                criticalImage.setImageResource(R.drawable.non_critical);
+                listView.setBackground(getDrawable(R.drawable.border_green));
+            } else if (severity.equals("Critical")) {
                 criticalImage.setImageResource(R.drawable.critical_violation);
+                listView.setBackground(getDrawable(R.drawable.border_red));
+
             }
             return listView;
         }
@@ -254,9 +280,9 @@ public class InspectionDetails extends AppCompatActivity {
             case 305:
                 return (R.drawable.pests);
             case 306:
-                return (R.mipmap.dirty_place);
+                return (R.drawable.dirty_place);
             case 307:
-                return (R.drawable.document_error);
+                return (R.mipmap.dirty_dishes);
             case 308:
                 return (R.drawable.no_food);
             case 309:
@@ -270,7 +296,7 @@ public class InspectionDetails extends AppCompatActivity {
             case 313:
                 return (R.drawable.no_pets);
             case 314:
-                return (R.mipmap.dirty_place);
+                return (R.drawable.dirty_place);
             case 315:
                 return (R.mipmap.no_thermometer);
             case 401:
