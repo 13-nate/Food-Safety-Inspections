@@ -158,9 +158,10 @@ public class RestaurantDetail extends AppCompatActivity {
                 Inspection clickedInspection = inspections.get(position);
                 String trackingNumber = clickedInspection.getTrackingNumber();
                 int date = clickedInspection.getInspectionDate();
+                String type = clickedInspection.getType();
 
                 Intent intent = InspectionDetails.makeIntent(RestaurantDetail.this,
-                        trackingNumber, date);
+                        trackingNumber, date, type);
                 startActivity(intent);
             }
         });

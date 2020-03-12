@@ -27,6 +27,7 @@ public class InspectionDetails extends AppCompatActivity {
 
     private static final String INSPECTION_ID = "violationId";
     public static final String INSPECTION_DATE = "inspection Date for violation";
+    public static final String INSPECTION_TYPE = "inspectionType";
     private List<Violation> violations = new ArrayList<>();
     Inspection inspection;
     InspectionManager inspectionManager;
@@ -130,9 +131,10 @@ public class InspectionDetails extends AppCompatActivity {
         Intent intent = getIntent();
         String trackingNum = intent.getStringExtra(INSPECTION_ID);
         int date = intent.getIntExtra(INSPECTION_DATE, 0);
+        String type = intent.getStringExtra(INSPECTION_TYPE);
 
         inspectionManager = InspectionManager.getInstance();
-        inspection = inspectionManager.recreateInspection(trackingNum, date);
+        inspection = inspectionManager.recreateInspection(trackingNum, date, type);
         violations = inspection.getViolations();
     }
 
@@ -185,10 +187,11 @@ public class InspectionDetails extends AppCompatActivity {
 
     }
 
-    public static Intent makeIntent(Context context, String inspectionId, int date) {
+    public static Intent makeIntent(Context context, String inspectionId, int date, String type) {
         Intent intent = new Intent(context, InspectionDetails.class);
         intent.putExtra(INSPECTION_ID, inspectionId);
         intent.putExtra(INSPECTION_DATE, date);
+        intent.putExtra(INSPECTION_TYPE, type);
         return intent;
     }
 
