@@ -78,7 +78,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
     private void populateListView(){
         ArrayAdapter<Inspection> adapter = new inspectionAdapter();
-        ListView list = findViewById(R.id.violationList);
+        ListView list = findViewById(R.id.inspectionList);
         list.setAdapter(adapter);
 
     }
@@ -164,7 +164,7 @@ public class RestaurantDetail extends AppCompatActivity {
         }
     }
     private void registerClickCallBack() {
-        ListView list = findViewById(R.id.violationList);
+        ListView list = findViewById(R.id.inspectionList);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

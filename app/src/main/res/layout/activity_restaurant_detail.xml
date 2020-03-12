@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <ListView
-        android:id="@+id/violationList"
+        android:id="@+id/inspectionList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="7dp"

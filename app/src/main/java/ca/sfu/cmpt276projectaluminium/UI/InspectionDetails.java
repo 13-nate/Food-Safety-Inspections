@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,9 @@ import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Violation;
+
+//credits
+//https://stackoverflow.com/questions/7524892/onitemclick-listener-on-getview-method
 
 public class InspectionDetails extends AppCompatActivity {
 
@@ -136,7 +141,7 @@ public class InspectionDetails extends AppCompatActivity {
 
     private void populateListView() {
         ArrayAdapter<Violation> adapter = new InspectionDetails.violationAdapter();
-        ListView list = findViewById(R.id.violationsListView);
+        ListView list = findViewById(R.id.violationList);
         list.setAdapter(adapter);
     }
 
@@ -251,8 +256,16 @@ public class InspectionDetails extends AppCompatActivity {
             } else if (severity.equals("Critical")) {
                 criticalImage.setImageResource(R.drawable.critical_violation);
                 listView.setBackground(getDrawable(R.drawable.border_red));
-
             }
+
+            listView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(InspectionDetails.this, violation.getFullDescription(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
             return listView;
         }
     }
