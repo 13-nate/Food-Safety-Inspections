@@ -25,81 +25,82 @@ public class Violation implements Comparable<Violation> {
     }
 
     public String getShortDescription() {
-        if (this.ID == 101) {
-            return "Plans/construction not regulation";
-        } else if (this.ID == 102) {
-            return "Unapproved operation of premises";
-        } else if (this.ID == 103) {
-            return "Does not possess valid permit";
-        } else if (this.ID == 104) {
-            return "Permit not placed conspicuously";
-        } else if (this.ID == 201) {
-            return "Food contaminated or unsafe to eat";
-        } else if (this.ID == 202) {
-            return "Food not processed safely";
-        } else if (this.ID == 203) {
-            return "Food not cooled safely";
-        } else if (this.ID == 204) {
-            return "Food not heated safely";
-        } else if (this.ID == 205) {
-            return "Food improperly stored above 4°C";
-        } else if (this.ID == 206) {
-            return "Food improperly stored below 60°C";
-        } else if (this.ID == 208) {
-            return "Food improperly obtained";
-        } else if (this.ID == 209) {
-            return "Food improperly protected";
-        } else if (this.ID == 210) {
-            return "Food improperly thawed";
-        } else if (this.ID == 211) {
-            return "Food improperly stored above -18°C";
-        } else if (this.ID == 212) {
-            return "Food handling manual not provided";
-        } else if (this.ID == 301) {
-            return "Equipment in unsanitary condition";
-        } else if (this.ID == 302) {
-            return "Equipment not properly washed";
-        } else if (this.ID == 303) {
-            return "Equipment not adequate";
-        } else if (this.ID == 304) {
-            return "Premises not pest-free";
-        } else if (this.ID == 305) {
-            return "Insufficient pest prevention";
-        } else if (this.ID == 306) {
-            return "Premises in unsanitary condition";
-        } else if (this.ID == 307) {
-            return "Equipment not of proper material";
-        } else if (this.ID == 308) {
-            return "Equipment not in working order";
-        } else if (this.ID == 309) {
-            return "Chemicals improperly stored";
-        } else if (this.ID == 310) {
-            return "Disposable utensils are reused";
-        } else if (this.ID == 311) {
-            return "Premises not maintained";
-        } else if (this.ID == 312) {
-            return "Unrelated items kept on premises";
-        } else if (this.ID == 313) {
-            return "Live animals on premises";
-        } else if (this.ID == 314) {
-            return "Sanitation manual not provided";
-        } else if (this.ID == 315) {
-            return "Thermometers are missing";
-        } else if (this.ID == 401) {
-            return "Handwashing stations inadequate";
-        } else if (this.ID == 402) {
-            return "Employee didn't wash hands";
-        } else if (this.ID == 403) {
-            return "Employee lacks hygiene";
-        } else if (this.ID == 404) {
-            return "Employee smoking on premises";
-        } else if (this.ID == 501) {
-            return "Operator missing FOODSAFE";
-        } else if (this.ID == 502) {
-            return "Staff missing FOODSAFE";
+        switch (this.ID) {
+            case 101:
+                return "Plans/construction not regulation";
+            case 102:
+                return "Unapproved operation of premises";
+            case 103:
+                return "Does not possess valid permit";
+            case 104:
+                return "Permit not placed conspicuously";
+            case 201:
+                return "Food contaminated or unsafe to eat";
+            case 202:
+                return "Food not processed safely";
+            case 203:
+                return "Food not cooled safely";
+            case 204:
+                return "Food not heated safely";
+            case 205:
+                return "Food improperly stored above 4°C";
+            case 206:
+                return "Food improperly stored below 60°C";
+            case 208:
+                return "Food improperly obtained";
+            case 209:
+                return "Food improperly protected";
+            case 210:
+                return "Food improperly thawed";
+            case 211:
+                return "Food improperly stored above -18°C";
+            case 212:
+                return "Food handling manual not provided";
+            case 301:
+                return "Equipment in unsanitary condition";
+            case 302:
+                return "Equipment not properly washed";
+            case 303:
+                return "Equipment not adequate";
+            case 304:
+                return "Premises not pest-free";
+            case 305:
+                return "Insufficient pest prevention";
+            case 306:
+                return "Premises in unsanitary condition";
+            case 307:
+                return "Equipment not of proper material";
+            case 308:
+                return "Equipment not in working order";
+            case 309:
+                return "Chemicals improperly stored";
+            case 310:
+                return "Disposable utensils are reused";
+            case 311:
+                return "Premises not maintained";
+            case 312:
+                return "Unrelated items kept on premises";
+            case 313:
+                return "Live animals on premises";
+            case 314:
+                return "Sanitation manual not provided";
+            case 315:
+                return "Thermometers are missing";
+            case 401:
+                return "Handwashing stations inadequate";
+            case 402:
+                return "Employee didn't wash hands";
+            case 403:
+                return "Employee lacks hygiene";
+            case 404:
+                return "Employee smoking on premises";
+            case 501:
+                return "Operator missing FOODSAFE";
+            case 502:
+                return "Staff missing FOODSAFE";
+            default:
+                return "invalid ID";
         }
-
-        return "invalid ID";
     }
 
     public String getFullDescription() {
