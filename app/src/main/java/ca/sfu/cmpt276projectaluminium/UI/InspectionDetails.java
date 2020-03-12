@@ -42,6 +42,7 @@ public class InspectionDetails extends AppCompatActivity {
         loadData();
     }
 
+
     private String getShortDescription(int ID) {
         switch (ID) {
             case 101:
