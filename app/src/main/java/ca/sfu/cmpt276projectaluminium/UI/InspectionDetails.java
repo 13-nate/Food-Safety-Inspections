@@ -162,8 +162,11 @@ public class InspectionDetails extends AppCompatActivity {
         // get string values
         String tempDate = inspection.intelligentDate();
         String tempType = inspection.getType();
-        String tempCritical = "Critical Issues: " + inspection.getNumCriticalViolations();
-        String tempNonCritical = "Non-Critical Issues: " + inspection.getNumNonCriticalViolations();
+        String tempCritical = getString(R.string.critical) +  " "
+                + inspection.getNumCriticalViolations();
+
+        String tempNonCritical = getString(R.string.non_critical) + " "
+                + inspection.getNumNonCriticalViolations();
 
         // load values into UI elements
         getSupportActionBar().setTitle(tempDate);
@@ -226,7 +229,7 @@ public class InspectionDetails extends AppCompatActivity {
 
             // set violation number
             TextView idTextview = listView.findViewById(R.id.txtViolaionId);
-            String idString = "ID: " + violation.getID();
+            String idString = getString(R.string.id) + " " + violation.getID();
             idTextview.setText(idString);
 
             //set description text
