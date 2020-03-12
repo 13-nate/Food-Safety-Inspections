@@ -82,8 +82,8 @@ public class InspectionManager implements Iterable<Inspection> {
     }
 
     /**
-     * To create all violations that an inspection has, we need to extract the bad_information from the
-     * list of data.  All bad_information that is important for violations begins at index 6, which is
+     * To create all violations that an inspection has, we need to extract the information from the
+     * list of data.  All information that is important for violations begins at index 6, which is
      * why the loop in this function starts searching from index 6.
      *
      * This is what the inspection data looks like starting at index 6:
@@ -91,7 +91,7 @@ public class InspectionManager implements Iterable<Inspection> {
      *
      * This method loops through the above data, creates a violation with it, then puts it in a list
      *
-     * @param inspectionData A list of inspection bad_information - stored as a list of strings
+     * @param inspectionData A list of inspection information - stored as a list of strings
      * @return A list of violations that are inside the inspection
      */
     private static ArrayList<Violation> populateViolationList(String[] inspectionData) {
