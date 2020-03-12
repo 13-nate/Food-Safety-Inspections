@@ -76,7 +76,7 @@ public class Inspection implements Comparable<Inspection> {
     }
 
     /**
-     * Returns information about the inspection date based of today's date
+     * Returns bad_information about the inspection date based of today's date
      * if the inspection was less than 30 days ago return how many days ago it was
      * if the inspection was less than a 365 days ago return the month and day
      * if the inspection was more than 365 days return the month and year
