@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class InspectionDetails extends AppCompatActivity {
 
         initializeVariables();
         populateListView();
-        loadText();
+        loadData();
     }
 
     private String getShortDescription(int ID) {
@@ -122,7 +121,7 @@ public class InspectionDetails extends AppCompatActivity {
 
     private void populateListView() {
         ArrayAdapter<Violation> adapter = new InspectionDetails.violationAdapter();
-        ListView list = findViewById(R.id.inspectionList);
+        ListView list = findViewById(R.id.violationsListView);
         list.setAdapter(adapter);
     }
 
@@ -136,7 +135,7 @@ public class InspectionDetails extends AppCompatActivity {
         violations = inspection.getViolations();
     }
 
-    private void loadText() {
+    private void loadData() {
         TextView type = findViewById(R.id.txtType);
         TextView critical = findViewById(R.id.txtCritical);
         TextView nonCritical = findViewById(R.id.txtNonCritical);
@@ -150,6 +149,21 @@ public class InspectionDetails extends AppCompatActivity {
         type.setText(tempType);
         critical.setText(tempCritical);
         nonCritical.setText(tempNonCritical);
+
+        ImageView hazardImage = findViewById(R.id.imgHazardLvl);
+        String hazardRating = inspection.getHazardRating();
+        if (hazardRating.equals("Low")) {
+            hazardImage.setImageResource(R.drawable.hazard_low);
+
+        } else if (hazardRating.equals("Moderate")) {
+            hazardImage.setImageResource(R.drawable.hazard_medium);
+
+        } else if (hazardRating.equals("High")) {
+            hazardImage.setImageResource(R.drawable.hazard_high);
+
+        } else {
+            hazardImage.setImageResource(R.drawable.not_available);
+        }
 
     }
 
@@ -183,7 +197,7 @@ public class InspectionDetails extends AppCompatActivity {
 
             //set violationImage
             int drawableId = getViolationImage(violation.getID());
-            ImageView violationImageView = findViewById(R.id.imgViolation);
+            ImageView violationImageView = listView.findViewById(R.id.imgViolation);
             violationImageView.setImageResource(drawableId);
 
             //set critical image
