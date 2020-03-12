@@ -270,9 +270,9 @@ public class InspectionDetails extends AppCompatActivity {
             case 212:
                 return (R.drawable.bad_information);
             case 301:
-                return (R.drawable.no_food);
+                return (R.drawable.bad_equipment2);
             case 302:
-                return (R.drawable.no_food);
+                return (R.drawable.bad_equipment2);
             case 303:
                 return (R.drawable.no_water);
             case 304:
@@ -284,7 +284,7 @@ public class InspectionDetails extends AppCompatActivity {
             case 307:
                 return (R.mipmap.dirty_dishes);
             case 308:
-                return (R.drawable.no_food);
+                return (R.drawable.bad_equipment2);
             case 309:
                 return (R.drawable.bad_chemicals);
             case 310:
@@ -292,13 +292,13 @@ public class InspectionDetails extends AppCompatActivity {
             case 311:
                 return (R.drawable.bad_building);
             case 312:
-                return (R.drawable.no_food);
+                return (R.drawable.bad_equipment2);
             case 313:
                 return (R.drawable.no_pets);
             case 314:
                 return (R.drawable.dirty_place);
             case 315:
-                return (R.mipmap.no_thermometer);
+                return (R.drawable.no_thermometer);
             case 401:
                 return (R.drawable.wash_hands);
             case 402:
