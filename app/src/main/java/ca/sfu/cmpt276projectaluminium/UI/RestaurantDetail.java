@@ -3,7 +3,6 @@ package ca.sfu.cmpt276projectaluminium.UI;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.TextViewCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -66,13 +65,12 @@ public class RestaurantDetail extends AppCompatActivity {
 
     private void populateListView(){
         ArrayAdapter<Inspection> adapter = new inspectionAdapter();
-        ListView list = findViewById(R.id.inspectionList);
+        ListView list = findViewById(R.id.violationList);
         list.setAdapter(adapter);
 
     }
 
     private void loadText() {
-        //TextView name = findViewById(R.id.nameText);
         TextView address = findViewById(R.id.addressText);
         TextView latitude = findViewById(R.id.latitudeText);
         TextView longitude = findViewById(R.id.longitudeText);
@@ -84,7 +82,6 @@ public class RestaurantDetail extends AppCompatActivity {
         String tempLongitude = "" + restaurant.getLongitude();
 
         getSupportActionBar().setTitle(tempName);
-        //name.setText(tempName);
         address.setText(tempAddress);
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
@@ -98,25 +95,10 @@ public class RestaurantDetail extends AppCompatActivity {
         return intent;
     }
 
-    private void registerClickCallBack() {
-        ListView list = findViewById(R.id.inspectionList);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Inspection clickedI = inspections.get(position);
-                String passing = clickedI.getTrackingNumber() + "@" + clickedI.getInspectionDate();
-                Intent intent = inspection_details.makeIntent(RestaurantDetail.this, passing);
-                startActivity(intent);
-            }
-        });
-    }
-
-
-
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
 
         inspectionAdapter(){
-            super(RestaurantDetail.this, R.layout.listviewlayout, inspections);
+            super(RestaurantDetail.this, R.layout.inspections_view, inspections);
 
         }
 
@@ -127,7 +109,7 @@ public class RestaurantDetail extends AppCompatActivity {
             View listView = convertView;
 
             if (listView == null){
-                listView = getLayoutInflater().inflate(R.layout.listviewlayout, parent, false);
+                listView = getLayoutInflater().inflate(R.layout.inspections_view, parent, false);
             }
 
             Inspection inspection = inspections.get(position);
@@ -167,7 +149,21 @@ public class RestaurantDetail extends AppCompatActivity {
 
             return listView;
         }
+    }
+    private void registerClickCallBack() {
+        ListView list = findViewById(R.id.violationList);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Inspection clickedInspection = inspections.get(position);
+                String trackingNumber = clickedInspection.getTrackingNumber();
+                int date = clickedInspection.getInspectionDate();
 
+                Intent intent = InspectionDetails.makeIntent(RestaurantDetail.this,
+                        trackingNumber, date);
+                startActivity(intent);
+            }
+        });
     }
 }
 

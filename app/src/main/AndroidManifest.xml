@@ -9,10 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.inspection_details"></activity>
+        <activity android:name=".UI.InspectionDetails"
+            android:parentActivityName=".UI.RestaurantDetail"/>
         <activity
             android:name=".UI.RestaurantDetail"
             android:configChanges="orientation|keyboardHidden"
+            android:parentActivityName=".UI.MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.MainActivity"
