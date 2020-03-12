@@ -18,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
@@ -37,7 +36,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class RestaurantDetail extends AppCompatActivity {
 
     private static final String TAG = "RestaurantId";
-    private List<Inspection> inspections = new ArrayList<>();
+    private ArrayList<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
 
     @Override
@@ -61,15 +60,14 @@ public class RestaurantDetail extends AppCompatActivity {
     private void initializeVariables() {
         String id = getIntent().getStringExtra(TAG);
 
-        restaurant = RestaurantManager.recreateRestaurant(id);
+        // Create the restaurant object for the restaurant that was clicked on
+        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+        restaurant = restaurantManager.recreateRestaurant(id);
 
-        InspectionManager inspectionManager = restaurant.createInspectionManager();
+        // Get a list of inspections for this restaurant
+        InspectionManager inspectionManager = InspectionManager.getInstance();
+        inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
         //if null pointer thrown, an invalid id was passed
-
-        for (Inspection inspection : inspectionManager){
-            inspections.add(inspection);
-        }
-
     }
 
     private void populateListView(){

@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
@@ -22,6 +21,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     /**
      * Displays a list of restaurants and some info on the most most recent inspection report for
@@ -33,10 +33,12 @@ public class MainActivity extends AppCompatActivity {
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses() {
         // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
+        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+        restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
 
         // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
+        InspectionManager inspectionManager = InspectionManager.getInstance();
+        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
     }
 
     @Override
@@ -100,14 +102,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // find restaurant to work with want different hazard images, name, and date and number of issues
-            Restaurant currantRestaurant = restaurantArray.get(position);
-            InspectionManager inspectionManager = currantRestaurant.createInspectionManager();
-            Inspection newestInspection = inspectionManager.getMostRecentInspection();
+            Restaurant currentRestaurant = restaurantArray.get(position);
+
+            // Get relevant inspections
+            InspectionManager inspectionManager = InspectionManager.getInstance();
+            ArrayList<Inspection> inspections;
+            inspections = inspectionManager.getInspections(currentRestaurant.getTrackingNumber());
+
+            // Get the newest inspection
+            Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
 
             // fill the view
             // display restaurant name
             TextView nameTxt =  itemView.findViewById(R.id.txtRestaurentName);
-            nameTxt.setText(currantRestaurant.getName());
+            nameTxt.setText(currentRestaurant.getName());
 
             // display hazard image
             ImageView hazardImage = itemView.findViewById(R.id.iconHazard);
@@ -124,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
             // display address
             TextView addressTxt = itemView.findViewById(R.id.txtAddress);
-            addressTxt.setText("Address: " + currantRestaurant.getAddress());
+            addressTxt.setText("Address: " + currentRestaurant.getAddress());
 
             // display number of issues
             TextView issuesNumberTxt = itemView.findViewById(R.id.txtIssuesNumber);
