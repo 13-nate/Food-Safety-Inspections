@@ -2,11 +2,13 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,12 +33,20 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 //credits
 //https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
+//https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
+//https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
 
 public class RestaurantDetail extends AppCompatActivity {
 
     private static final String TAG = "RestaurantId";
     private ArrayList<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
+
+    // Control what happens upon pressing back button
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,9 @@ public class RestaurantDetail extends AppCompatActivity {
         loadText();
         registerClickCallBack();
 
+        // Create a back button that we can control
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
     }
 

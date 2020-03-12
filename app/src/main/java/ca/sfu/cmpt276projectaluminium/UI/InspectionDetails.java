@@ -2,11 +2,13 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,6 +34,12 @@ public class InspectionDetails extends AppCompatActivity {
     Inspection inspection;
     InspectionManager inspectionManager;
 
+    // Control what happens upon pressing back button
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,10 @@ public class InspectionDetails extends AppCompatActivity {
         initializeVariables();
         populateListView();
         loadData();
+
+        // Create a back button that we can control
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private String getShortDescription(int ID) {
