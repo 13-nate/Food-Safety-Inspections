@@ -46,6 +46,7 @@ public class RestaurantDetail extends AppCompatActivity {
         initializeVariables();
         populateListView();
         loadText();
+        registerClickCallBack();
 
 
     }
@@ -96,6 +97,21 @@ public class RestaurantDetail extends AppCompatActivity {
         intent.putExtra(TAG, restaurantId);
         return intent;
     }
+
+    private void registerClickCallBack() {
+        ListView list = findViewById(R.id.inspectionList);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Inspection clickedI = inspections.get(position);
+                String passing = clickedI.getTrackingNumber() + "@" + clickedI.getInspectionDate();
+                Intent intent = inspection_details.makeIntent(RestaurantDetail.this, passing);
+                startActivity(intent);
+            }
+        });
+    }
+
+
 
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
 
@@ -151,16 +167,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
             return listView;
         }
-        private void registerClickCallBack(){
-            ListView list = findViewById(R.id.inspectionList);
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //Intent intent = inspectionActivity.newIntent();
-                    //startActivity(intent);
-                }
-            });
-        }
+        
     }
 }
 
