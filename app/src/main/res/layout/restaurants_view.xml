@@ -27,7 +27,7 @@
             android:id="@+id/txtRestaurentName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/restaurent_name"
+            android:text="@string/restaurant_name"
             android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>

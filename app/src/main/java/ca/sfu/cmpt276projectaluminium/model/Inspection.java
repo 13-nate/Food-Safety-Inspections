@@ -121,7 +121,6 @@ public class Inspection implements Comparable<Inspection> {
         return smartDate;
     }
 
-
     /* Sources:
     https://dzone.com/articles/java-comparable-interface-in-five-minutes
     https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
