@@ -23,11 +23,13 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Displays a list of restaurants and some info on the most most recent inspection report for
+ * each of the restaurants displayed
+ */
+
 public class MainActivity extends AppCompatActivity {
-    /**
-     * Displays a list of restaurants and some info on the most most recent inspection report for
-     * each of the restaurants displayed
-     */
+
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("Restaurants");
+        getSupportActionBar().setTitle(getString(R.string.restaurants));
         initializeDataClasses();
 
         populateListView();

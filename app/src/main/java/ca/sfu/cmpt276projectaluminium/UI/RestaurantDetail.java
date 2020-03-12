@@ -2,12 +2,13 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.TextViewCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,19 +26,27 @@ import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 /**
- * Implements ListView and gets data for it
- *
+ * Implements Restaurant details and gets data for it
+ * Also grants access to the inspection details activity
  *
  */
 
 //credits
 //https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
+//https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
+//https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
 
 public class RestaurantDetail extends AppCompatActivity {
 
     private static final String TAG = "RestaurantId";
     private ArrayList<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
+
+    // Control what happens upon pressing back button
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +55,11 @@ public class RestaurantDetail extends AppCompatActivity {
         initializeVariables();
         populateListView();
         loadText();
+        registerClickCallBack();
 
+        // Create a back button that we can control
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
     }
 
@@ -71,7 +84,6 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void loadText() {
-        //TextView name = findViewById(R.id.nameText);
         TextView address = findViewById(R.id.addressText);
         TextView latitude = findViewById(R.id.latitudeText);
         TextView longitude = findViewById(R.id.longitudeText);
@@ -83,7 +95,6 @@ public class RestaurantDetail extends AppCompatActivity {
         String tempLongitude = "" + restaurant.getLongitude();
 
         getSupportActionBar().setTitle(tempName);
-        //name.setText(tempName);
         address.setText(tempAddress);
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
@@ -100,7 +111,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
 
         inspectionAdapter(){
-            super(RestaurantDetail.this, R.layout.listviewlayout, inspections);
+            super(RestaurantDetail.this, R.layout.inspections_view, inspections);
 
         }
 
@@ -111,7 +122,7 @@ public class RestaurantDetail extends AppCompatActivity {
             View listView = convertView;
 
             if (listView == null){
-                listView = getLayoutInflater().inflate(R.layout.listviewlayout, parent, false);
+                listView = getLayoutInflater().inflate(R.layout.inspections_view, parent, false);
             }
 
             Inspection inspection = inspections.get(position);
@@ -151,16 +162,22 @@ public class RestaurantDetail extends AppCompatActivity {
 
             return listView;
         }
-        private void registerClickCallBack(){
-            ListView list = findViewById(R.id.inspectionList);
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //Intent intent = inspectionActivity.newIntent();
-                    //startActivity(intent);
-                }
-            });
-        }
+    }
+    private void registerClickCallBack() {
+        ListView list = findViewById(R.id.inspectionList);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Inspection clickedInspection = inspections.get(position);
+                String trackingNumber = clickedInspection.getTrackingNumber();
+                int date = clickedInspection.getInspectionDate();
+                String type = clickedInspection.getType();
+
+                Intent intent = InspectionDetails.makeIntent(RestaurantDetail.this,
+                        trackingNumber, date, type);
+                startActivity(intent);
+            }
+        });
     }
 }
 

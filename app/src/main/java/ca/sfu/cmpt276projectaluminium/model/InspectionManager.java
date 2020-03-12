@@ -183,12 +183,13 @@ public class InspectionManager {
      * @param inspectionDate the date of the inspection being searched for.
      * @return An inspection that exactly matches both parameters
      */
-    public Inspection recreateInspection(String trackingNumber, int inspectionDate) {
+    public Inspection recreateInspection(String trackingNumber, int inspectionDate, String type) {
         // Find an inspection that matches both the trackingNumber and date, then return it
         for (Inspection inspection : this.completeInspectionList) {
             boolean trackingNumberMatches = inspection.getTrackingNumber().equals(trackingNumber);
             boolean dateMatches = inspection.getInspectionDate() == inspectionDate;
-            if (trackingNumberMatches && dateMatches) {
+            boolean typeMatches = inspection.getType().equals(type);
+            if (trackingNumberMatches && dateMatches && typeMatches) {
                 return inspection;
             }
         }
