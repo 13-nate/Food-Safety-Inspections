@@ -1,7 +1,5 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
-import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
-
 /**
  * Contains the data about a restaurant and provides getters in an organized manner
  */
@@ -59,14 +57,6 @@ public class Restaurant implements Comparable<Restaurant> {
 
     public double getLongitude() {
         return longitude;
-    }
-
-    /**
-     * Create an inspectionManager that can be used to get inspections this restaurant has had
-     * @return An inspection manager filled with all inspections this restaurant has had
-     */
-    public InspectionManager createInspectionManager() {
-        return new InspectionManager(this.trackingNumber);
     }
 
     /**
