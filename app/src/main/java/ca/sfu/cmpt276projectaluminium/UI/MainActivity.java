@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import ca.sfu.cmpt276projectaluminium.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
@@ -51,8 +53,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.restaurants));
         initializeDataClasses();
 
+        //to delete just want to go to maps right away for testing
+        startActivity(new Intent(this, MapsActivity.class));
+
         populateListView();
         registerClickCallBack();
+        onMapsClick();
     }
 
     private void populateListView() {
@@ -82,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
 
                 Restaurant clickedRestaurant = restaurantArray.get(position);
                 Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void onMapsClick() {
+        Button btnMaps = findViewById(R.id.btnMap);
+        btnMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MapsActivity.makeIntent(MainActivity.this);
                 startActivity(intent);
             }
         });
@@ -157,4 +174,5 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
     }
+
 }
