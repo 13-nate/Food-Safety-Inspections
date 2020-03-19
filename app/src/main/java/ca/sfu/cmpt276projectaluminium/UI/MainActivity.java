@@ -39,7 +39,8 @@ import java.util.List;
  */
 
 public class MainActivity extends AppCompatActivity {
-
+    //for incorrect version
+    private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
@@ -107,26 +108,29 @@ public class MainActivity extends AppCompatActivity {
         btnMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeIntent(MainActivity.this);
-                startActivity(intent);
+                if (isServicesOK()) {
+                    Intent intent = MapsActivity.makeIntent(MainActivity.this);
+                    startActivity(intent);
+                }
             }
         });
     }
 
     public boolean isServicesOK() {
-        int available = GoogleApiAvailability.getInstance().
-                isGooglePlayServicesAvailable(MainActivity.this);
-        // everything is ok and user can make map requests
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
         if (available == ConnectionResult.SUCCESS) {
+            // user can make map requests
             return true;
-            // Is it a versioning issue
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            // dialog from google to fix
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, 9001);
+            // an error occurred but it can be fixed, versioning issue
+            Dialog dialog = GoogleApiAvailability.getInstance().
+                    getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
-            Toast.makeText(this, "You cant make maps request", Toast.LENGTH_SHORT).show();
+            // nothing we can do
+            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
         }
+        // There is a problem so return false
         return false;
     }
 
