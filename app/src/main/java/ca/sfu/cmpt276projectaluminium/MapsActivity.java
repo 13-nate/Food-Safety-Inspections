@@ -11,65 +11,54 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import ca.sfu.cmpt276projectaluminium.UI.MainActivity;
 
+/**
+ * Displays the google map.
+ *
+ * It first asks for permissions then checks the location permissions and then will display there
+ * location
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private static final String TAGMAP = "MapSActivity";
-    //for incorrect version
-    private static final int ERROR_DIALOG_REQUEST = 9001;
+    private static final String TAGMAP = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 35f;
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
-    //private FusedLocationProviderClient  mFusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
 
-    public boolean isServicesOK() {
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsActivity.this);
-        if (available == ConnectionResult.SUCCESS) {
-            // user can make map requests
-            return true;
-        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            // an error occurred but it can be fixed, versioning issue
-            Dialog dialog = GoogleApiAvailability.getInstance().
-                    getErrorDialog((MapsActivity.this, available, ERROR_DIALOG_REQUEST);
-                    dialog.show();
-        } else {
-            // nothing we can do
-            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
-    private void initMap() {
-        if ()
-    }
 
+
+        getLocationPermission();
+    }
 
     private void getLocationPermission() {
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -81,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
+                initMap();
                 // else is done twice, once for each permission
             } else {
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
@@ -93,7 +83,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // assume false to begin with
         mLocationPermissionGranted = false;
 
@@ -116,6 +105,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void getDeviceLocation() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            try {
+                if(mLocationPermissionGranted) {
+                    Task location = mFusedLocationProviderClient.getLastLocation();
+                    location.addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if(task.isSuccessful()) {
+                                Log.d(TAGMAP, "found Location");
+                                Location currentLocation = (Location) task.getResult();
+
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                        DEFAULT_ZOOM);
+                            } else {
+                                Log.d(TAGMAP, "Location is null");
+                                Toast.makeText(MapsActivity.this,
+                                        "Unable to get current location", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        }
+                    });
+                }
+            } catch (SecurityException e) {
+                Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
+            }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+    }
+
+    private void initMap() {
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -129,20 +157,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if(mLocationPermissionGranted) {
+            getDeviceLocation();
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     public static Intent makeIntent(Context context){
         Intent intent = new Intent(context, MapsActivity.class);
         return intent;
     }
-
-    private void getDieviceLocation() {
-        Log.i(TAGMAP ,"get Device current Location");
-    }
-
 
 }
