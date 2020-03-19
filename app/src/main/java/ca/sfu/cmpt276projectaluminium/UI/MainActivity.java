@@ -6,30 +6,29 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.internal.GoogleApiAvailabilityCache;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import ca.sfu.cmpt276projectaluminium.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,12 +62,38 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.restaurants));
         initializeDataClasses();
 
-        //to delete just want to go to maps right away for testing
-        startActivity(new Intent(this, MapsActivity.class));
-
         populateListView();
         registerClickCallBack();
-        onMapsClick();
+        onBottomToolBarClick();
+        setMenuColor();
+    }
+
+    //changes color so that the user can see which activity they are on
+    private void setMenuColor() {
+        //source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
+        // FOR NAVIGATION VIEW ITEM TEXT COLOR
+
+        BottomNavigationView bottomNavigation;
+        bottomNavigation = findViewById(R.id.bottom_navigation);
+
+        int[][] states = new int[][]{
+                new int[]{-android.R.attr.state_checked},  // unchecked
+                new int[]{android.R.attr.state_checked},   // checked
+                new int[]{}                                // default
+        };
+
+        // Fill in color corresponding to state defined in state
+        int[] colors = new int[]{
+                Color.parseColor("#000000"),
+                Color.parseColor("#ff0000"),
+                Color.parseColor("#000000"),
+        };
+
+        ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
+
+
+        // apply to icon color
+        bottomNavigation.setItemIconTintList(navigationViewColorStateList);
     }
 
     private void populateListView() {
@@ -103,15 +128,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void onMapsClick() {
-        Button btnMaps = findViewById(R.id.btnMap);
-        btnMaps.setOnClickListener(new View.OnClickListener() {
+    private void onBottomToolBarClick() {
+        /*Sources:
+        // https://androidwave.com/bottom-navigation-bar-android-example/
+        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+
+         */
+        BottomNavigationView bottomNavigation;
+        bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                if (isServicesOK()) {
-                    Intent intent = MapsActivity.makeIntent(MainActivity.this);
-                    startActivity(intent);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // switch based on id of item clicked, id defined in the bottom_navigation_menu
+
+                switch (item.getItemId()) {
+
+                    case R.id.navigationBulletList:
+
+                        // in this case we are in the main activity so don't want anything to happen
+                        // require bool value so return true when the item is clicked
+                        return true;
+                        case R.id.navigationMap:
+                            //in this case we are in the main activity and want to go to maps
+                            if (isServicesOK()) {
+
+                                Intent intent = MapsActivity.makeIntent(MainActivity.this);
+                                startActivity(intent);
+                                finish();
+                                // require bool value so return true when the item is clicked
+                                return true;
+                            }
+                            //if we get here return false dont have proper services
+                            return false;
                 }
+                return false;
             }
         });
     }
