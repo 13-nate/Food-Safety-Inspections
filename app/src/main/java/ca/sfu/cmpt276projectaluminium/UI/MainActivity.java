@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.internal.GoogleApiAvailabilityCache;
 
 import ca.sfu.cmpt276projectaluminium.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.R;
@@ -22,6 +29,7 @@ import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +39,7 @@ import java.util.List;
  */
 
 public class MainActivity extends AppCompatActivity {
+
 
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
@@ -102,6 +111,23 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public boolean isServicesOK() {
+        int available = GoogleApiAvailability.getInstance().
+                isGooglePlayServicesAvailable(MainActivity.this);
+        // everything is ok and user can make map requests
+        if (available == ConnectionResult.SUCCESS) {
+            return true;
+            // Is it a versioning issue
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            // dialog from google to fix
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, 9001);
+            dialog.show();
+        } else {
+            Toast.makeText(this, "You cant make maps request", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     // Inner class has reference to outer class
