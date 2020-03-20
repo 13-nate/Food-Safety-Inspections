@@ -34,7 +34,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigationMaps"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:background="@color/colorMenu"
         android:paddingTop="5dp"
         app:itemIconSize="35dp"
