@@ -12,38 +12,33 @@
         android:id="@+id/restaurantListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:dividerHeight="10.0sp"
         android:paddingBottom="8dp"
         android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/containerMap"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigationMaps"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/containerMap"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutLow"
         app:layout_constraintVertical_bias="0.0" />
 
-    <FrameLayout
-        android:id="@+id/containerMap"
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigationMaps"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigationMaps"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_gravity="bottom"
-            android:background="@color/colorMenu"
-            android:paddingTop="5dp"
-            app:itemIconSize="35dp"
-            app:menu="@menu/bottom_navigation_menu" />
-
-
-    </FrameLayout>
+        android:layout_height="45dp"
+        android:layout_gravity="bottom"
+        android:background="@color/colorMenu"
+        android:paddingTop="5dp"
+        app:itemIconSize="35dp"
+        app:itemIconTint="@drawable/selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
 
     <LinearLayout
         android:id="@+id/layoutLow"
