@@ -5,11 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,16 +68,16 @@ public class MainActivity extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
-        setMenuColor();
+       // setMenuColor();
     }
 
     // This way the user can see which activity they are in and can easly tell
     // which icon represents what
-    private void setMenuColor() {
+    /*private void setMenuColor() {
         // source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
 
         BottomNavigationView bottomNavigation;
-        bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
 
         int[][] states = new int[][]{
                 new int[]{-android.R.attr.state_checked},  // unchecked
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         // apply to icon color
         bottomNavigation.setItemIconTintList(navigationViewColorStateList);
-    }
+    }*/
 
     private void populateListView() {
         // myListAdapter lets me work with the objects
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
          */
         BottomNavigationView bottomNavigation;
-        bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                             //in this case we are in the main activity and want to go to maps
                             if (isServicesOK()) {
 
+                                item.setChecked(true);
                                 Intent intent = MapsActivity.makeIntent(MainActivity.this);
                                 startActivity(intent);
                                 finish();

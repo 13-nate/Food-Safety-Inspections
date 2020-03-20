@@ -54,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         getLocationPermission();
+        onBottomToolBarClick();
+        setMenuColor();
     }
 
     private void getLocationPermission() {
@@ -167,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
          */
         BottomNavigationView bottomNavigation;
-        bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -197,7 +199,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
 
         BottomNavigationView bottomNavigation;
-        bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
 
         int[][] states = new int[][]{
                 new int[]{-android.R.attr.state_checked},  // unchecked
@@ -207,9 +209,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Fill in color corresponding to state defined in state
         int[] colors = new int[]{
-                Color.parseColor("#000000"),
                 Color.parseColor("#ff0000"),
                 Color.parseColor("#000000"),
+                Color.parseColor("#ff0000"),
         };
 
         // set color list
