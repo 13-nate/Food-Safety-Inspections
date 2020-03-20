@@ -1,0 +1,5 @@
+For iteration 1, the following teammembers were assigned the following roles:
+- Jarod was the Scrum Master
+- Nathan was the Repo Manager
+- Tyler was the Product Owner
+- Yiming was the Team Member
