@@ -38,7 +38,6 @@
         android:background="@color/colorMenu"
         android:paddingTop="5dp"
         app:itemIconSize="35dp"
-        app:itemIconTint="@drawable/selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu"
         tools:layout_conversion_absoluteHeight="0dp"
