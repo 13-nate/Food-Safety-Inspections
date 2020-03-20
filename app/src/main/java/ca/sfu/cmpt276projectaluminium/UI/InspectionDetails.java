@@ -251,7 +251,6 @@ public class InspectionDetails extends AppCompatActivity {
             int drawableId = getViolationImage(violation.getID());
             ImageView violationImageView = listView.findViewById(R.id.imgViolation);
             violationImageView.setImageResource(drawableId);
-            //R.drawable.StringMADE
 
             //set critical image
             String severity = violation.getSeverity();
