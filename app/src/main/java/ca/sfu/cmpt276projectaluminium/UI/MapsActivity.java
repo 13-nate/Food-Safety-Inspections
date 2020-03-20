@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.maps.android.clustering.ClusterManager;
 
 import ca.sfu.cmpt276projectaluminium.R;
 
@@ -49,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private ClusterManager
 
 
     @Override
@@ -176,6 +178,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(mLocationPermissionGranted) {
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    private void addMapMarkers() {
+        if(mMap != null) {
+            if(mClusterManager)
         }
     }
 
