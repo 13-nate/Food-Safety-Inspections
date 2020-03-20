@@ -16,11 +16,9 @@
         android:elevation="10dp"
         android:paddingTop="5dp"
         app:itemIconSize="35dp"
-        app:itemIconTint="@drawable/selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ListView
         android:id="@+id/restaurantListView"

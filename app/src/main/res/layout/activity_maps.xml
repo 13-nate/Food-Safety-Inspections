@@ -40,7 +40,6 @@
         android:paddingTop="5dp"
         app:itemIconSize="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
         tools:layout_conversion_absoluteHeight="0dp"
         tools:layout_conversion_absoluteWidth="0dp"
         tools:layout_editor_absoluteX="16dp" />
