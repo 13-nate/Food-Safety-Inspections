@@ -19,15 +19,15 @@
         android:paddingBottom="8dp"
         android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/container"
+        app:layout_constraintBottom_toTopOf="@+id/containerMap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/container"
+        app:layout_constraintStart_toStartOf="@+id/containerMap"
         app:layout_constraintTop_toBottomOf="@+id/layoutLow"
         app:layout_constraintVertical_bias="0.0" />
 
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/containerMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">

@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -68,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         setMenuColor();
     }
 
-    //changes color so that the user can see which activity they are on
+    // This way the user can see which activity they are in and can easly tell
+    // which icon represents what
     private void setMenuColor() {
-        //source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
-        // FOR NAVIGATION VIEW ITEM TEXT COLOR
+        // source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
 
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -89,9 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 Color.parseColor("#000000"),
         };
 
+        // set color list
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
-
-
         // apply to icon color
         bottomNavigation.setItemIconTintList(navigationViewColorStateList);
     }
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
 
                     case R.id.navigationBulletList:
-
                         // in this case we are in the main activity so don't want anything to happen
                         // require bool value so return true when the item is clicked
                         return true;
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                                 // require bool value so return true when the item is clicked
                                 return true;
                             }
-                            //if we get here return false dont have proper services
+                            //if we get here return false don't have proper services
                             return false;
                 }
                 return false;
@@ -182,6 +181,11 @@ public class MainActivity extends AppCompatActivity {
         }
         // There is a problem so return false
         return false;
+    }
+
+    public static Intent makeIntent(Context context){
+        Intent intent = new Intent(context, MainActivity.class);
+        return intent;
     }
 
     // Inner class has reference to outer class
