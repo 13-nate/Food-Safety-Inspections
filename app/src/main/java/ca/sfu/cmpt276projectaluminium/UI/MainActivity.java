@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.restaurants_view, parent, false);
             }
 
+            itemView.setElevation(300f);
             // find restaurant to work with want different hazard images, name, and date and number of issues
             Restaurant currentRestaurant = restaurantArray.get(position);
 
@@ -230,6 +231,8 @@ public class MainActivity extends AppCompatActivity {
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
             dateTxt.setText(getString(R.string.Last_inspection) + " "
                     + newestInspection.intelligentDate());
+
+            itemView.setElevation(50f);
 
             return  itemView;
         }

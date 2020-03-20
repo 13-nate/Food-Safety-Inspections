@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#000000</color>
-    <color name="colorMenu">#001fcc</color>
+    <color name="colorPrimary">#242f3e</color>
+    <color name="colorMenu">#415571</color>
+    <color name="colorCards">#131820</color>
+    <color name="colorBackground">#121212</color>
+
     <color name="colorRed">#ff0000</color>
     <color name="colorBlack">#000000</color>
     <color name="colorPrimaryDark">#00574B</color>

@@ -157,13 +157,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        //for dark mode
-        /*try {
+        // For dark mode
+        // Source https://github.com/googlemaps/android-samples
+        try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.dark_mode_json));
+                            this, R.raw.style_json));
 
             if (!success) {
                 Log.e(TAGMAP, "Style parsing failed.");
@@ -171,8 +172,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e(TAGMAP, "Can't find style. Error: ", e);
         }
-
-         */
 
         if(mLocationPermissionGranted) {
             getDeviceLocation();
