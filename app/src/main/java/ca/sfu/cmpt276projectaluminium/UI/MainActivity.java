@@ -71,33 +71,6 @@ public class MainActivity extends AppCompatActivity {
        // setMenuColor();
     }
 
-    // This way the user can see which activity they are in and can easly tell
-    // which icon represents what
-    /*private void setMenuColor() {
-        // source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
-
-        BottomNavigationView bottomNavigation;
-        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
-
-        int[][] states = new int[][]{
-                new int[]{-android.R.attr.state_checked},  // unchecked
-                new int[]{android.R.attr.state_checked},   // checked
-                new int[]{}                                // default
-        };
-
-        // Fill in color corresponding to state defined in state
-        int[] colors = new int[]{
-                Color.parseColor("#000000"),
-                Color.parseColor("#ff0000"),
-                Color.parseColor("#000000"),
-        };
-
-        // set color list
-        ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
-        // apply to icon color
-        bottomNavigation.setItemIconTintList(navigationViewColorStateList);
-    }*/
-
     private void populateListView() {
         // myListAdapter lets me work with the objects
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
