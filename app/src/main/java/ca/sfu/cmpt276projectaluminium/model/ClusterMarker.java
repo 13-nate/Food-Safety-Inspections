@@ -1,5 +1,6 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
@@ -12,12 +13,15 @@ public class ClusterMarker implements ClusterItem {
     private String title;
     private String snippet;
     private int iconHazard;
+    private String trackingNum;
 
-    public ClusterMarker(LatLng position, String title, String snippet, int iconHazard) {
+    public ClusterMarker(LatLng position, String title, String snippet, int iconHazard, String trackingNum) {
         this.position = position;
         this.title = title;
         this.snippet = snippet;
         this.iconHazard = iconHazard;
+        this.trackingNum = trackingNum;
+
     }
 
     public ClusterMarker() {
@@ -58,4 +62,13 @@ public class ClusterMarker implements ClusterItem {
     public void setIconHazard(int iconHazard) {
         this.iconHazard = iconHazard;
     }
+
+    public String getTrackingNum() {
+        return trackingNum;
+    }
+
+    public void setTrackingNum(String trackingNum) {
+        this.trackingNum = trackingNum;
+    }
+
 }

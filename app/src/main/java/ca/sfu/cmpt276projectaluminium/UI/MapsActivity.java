@@ -35,7 +35,6 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 
-import ca.sfu.cmpt276projectaluminium.MyClusterManagerRenderer;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
@@ -44,8 +43,6 @@ import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
-import com.google.android.gms.maps.model.MarkerOptions;
-
 
 /**
  * Displays the google map.
@@ -53,7 +50,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * It first asks for permissions then checks the location permissions and then will display there
  * location
  */
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -188,6 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMarker = mMarker;
         // need to intilize data before getting the markers
         initializeDataClasses();
 
@@ -207,11 +206,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAGMAP, "Can't find style. Error: ", e);
         }
 
-        if(mLocationPermissionGranted) {
+        if (mLocationPermissionGranted) {
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
     }
 
     // Loop through all the restaurants and place markers
@@ -260,14 +260,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } else {
                         iconHazard = R.drawable.not_available;
                     }
-                    snippet = r.getAddress() + " " + hazardRating;
+                    snippet = r.getAddress() + "\n "
+                            + getString(R.string.hazard_level) + " " + hazardRating;
 
                     //create individual marker per restaurant
                     ClusterMarker newClusterMarker = new ClusterMarker(
                             new LatLng(r.getLatitude(), r.getLongitude()),
                             r.getName(), //title
                             snippet,
-                            iconHazard
+                            iconHazard,
+                            r.getTrackingNumber()
                     );
                     // adds cluster to map
                     mClusterManager.addItem(newClusterMarker);
@@ -278,13 +280,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             }
-            // adds every thing to the map at end of the loop
+            //set up info windows
             mClusterManager.getMarkerCollection().setInfoWindowAdapter(
                     new CustomInfoWindowAdapter(MapsActivity.this)
             );
+            // adds every thing to the map at end of the loop
             mClusterManager.cluster();
         }
-
     }
 
     private void onBottomToolBarClick() {
@@ -351,4 +353,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
+    public void onInfoWindowClick(ClusterMarker marker) {
+        Toast.makeText(this, "Info window clicked",
+                Toast.LENGTH_SHORT).show();
+
+        for(ClusterMarker clickedMarker: mclusterMarkers) {
+           if(marker.getPosition() == clickedMarker.getPosition()) {
+               Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
+                       clickedMarker.getTrackingNum());
+               startActivity(intent);
+           }
+        }
+    }
+    @Override
+    public void onClusterItemInfoWindowClick(ClusterMarker item) {
+        for (ClusterMarker clickedMarker : mclusterMarkers) {
+            if (item.getPosition() == clickedMarker.getPosition()) {
+                Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
+                        clickedMarker.getTrackingNum());
+                startActivity(intent);
+            }
+        }
+    }
 }

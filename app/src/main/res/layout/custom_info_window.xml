@@ -26,10 +26,12 @@
             android:id="@+id/snippet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:ellipsize="end"
-            android:maxLines="10"
+            android:maxLines="5"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
+
     </LinearLayout>
 
 </LinearLayout>
