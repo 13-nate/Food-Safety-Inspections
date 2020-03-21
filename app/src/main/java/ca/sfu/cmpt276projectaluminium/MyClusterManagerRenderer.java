@@ -44,7 +44,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
     }
-1
+
     @Override
     protected boolean shouldRenderAsCluster(Cluster<ClusterMarker> cluster) {
         return false;

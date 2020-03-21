@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +32,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.ArrayList;
+
+import ca.sfu.cmpt276projectaluminium.MyClusterManagerRenderer;
 import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
+import ca.sfu.cmpt276projectaluminium.model.Inspection;
+import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
+import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+
+import com.google.android.gms.maps.model.MarkerOptions;
+
 
 /**
  * Displays the google map.
@@ -50,7 +62,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private ClusterManager
+    private ClusterManager mClusterManager;
+    private MyClusterManagerRenderer mClusterManagerRenderer;
+    private ArrayList<ClusterMarker> mclusterMarkers = new ArrayList<>();
+    private ArrayList<Restaurant> restaurants = new ArrayList<>();
+
 
 
     @Override
@@ -158,6 +174,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.clear();
+        addMapMarkers();
 
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
@@ -179,11 +197,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
         }
+
+        addMapMarkers();
     }
 
+    // Loop through all the restaurants and place markers
     private void addMapMarkers() {
+        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+
+        // Make sure map not null
         if(mMap != null) {
-            if(mClusterManager)
+            // Create a new manger if we don't have one.
+            if(mClusterManager == null) {
+                mClusterManager = new ClusterManager<ClusterMarker>(this, mMap);
+            }
+            // Create a new render if we don't have one
+            if(mClusterManagerRenderer == null) {
+                mClusterManagerRenderer = new MyClusterManagerRenderer(
+                        this,
+                        mMap,
+                        mClusterManager
+                );
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
+
+            // for each restaurant get there details
+            for(Restaurant r: restaurantManager){
+                try {
+                    String snippet = r.getType();
+
+                    // Get relevant inspections
+                    InspectionManager inspectionManager = InspectionManager.getInstance();
+                    ArrayList<Inspection> inspections;
+                    inspections = inspectionManager.getInspections(r.getTrackingNumber());
+
+                    // Get the newest inspection
+                    Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
+                    String hazardRating = newestInspection.getHazardRating();
+                    int iconHazard;
+                    if (hazardRating.equals("Low")) {
+                        iconHazard = R.drawable.hazard_low;
+
+                    } else if (hazardRating.equals("Moderate")) {
+                        iconHazard = R.drawable.hazard_medium;
+
+                    } else if (hazardRating.equals("High")) {
+                        iconHazard = R.drawable.hazard_high;
+
+                    } else {
+                        iconHazard = R.drawable.not_available;
+                    }
+
+                    //create individual marker per restaurant
+                    ClusterMarker newClusterMarker = new ClusterMarker(
+                            new LatLng(r.getLatitude(), r.getLongitude()),
+                            r.getName(), //title
+                            snippet,
+                            r.getAddress(),
+                            hazardRating,
+                            iconHazard
+                    );
+                    // adds cluster to map
+                    mClusterManager.addItem(newClusterMarker);
+                    // reference list for markers
+                    mclusterMarkers.add(newClusterMarker);
+                }catch (NullPointerException e) {
+                    Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
+                }
+
+            }
+            // adds every thing to the map at end of the loop
+            mClusterManager.cluster();
         }
     }
 

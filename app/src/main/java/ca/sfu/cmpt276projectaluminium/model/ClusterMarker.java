@@ -16,11 +16,10 @@ public class ClusterMarker implements ClusterItem {
     private String hazardLvl;
     private int iconHazard;
 
-    public ClusterMarker(LatLng position, String title, String snippet, String restaurantName, String address, String hazardLvl, int iconHazard) {
+    public ClusterMarker(LatLng position, String title, String snippet, String address, String hazardLvl, int iconHazard) {
         this.position = position;
         this.title = title;
         this.snippet = snippet;
-        this.restaurantName = restaurantName;
         this.address = address;
         this.hazardLvl = hazardLvl;
         this.iconHazard = iconHazard;
