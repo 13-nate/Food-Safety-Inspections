@@ -13,7 +13,9 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
+import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
+import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 
 public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
     // generates icons
@@ -43,6 +45,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         imageView.setImageResource((item.getIconHazard()));
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
+        markerOptions.snippet(item.getSnippet());
     }
 
     @Override

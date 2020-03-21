@@ -11,17 +11,12 @@ public class ClusterMarker implements ClusterItem {
     private LatLng position;
     private String title;
     private String snippet;
-    private String restaurantName;
-    private String address;
-    private String hazardLvl;
     private int iconHazard;
 
-    public ClusterMarker(LatLng position, String title, String snippet, String address, String hazardLvl, int iconHazard) {
+    public ClusterMarker(LatLng position, String title, String snippet, int iconHazard) {
         this.position = position;
         this.title = title;
         this.snippet = snippet;
-        this.address = address;
-        this.hazardLvl = hazardLvl;
         this.iconHazard = iconHazard;
     }
 
@@ -54,30 +49,6 @@ public class ClusterMarker implements ClusterItem {
 
     public void setSnippet(String snippet) {
         this.snippet = snippet;
-    }
-
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getHazardLvl() {
-        return hazardLvl;
-    }
-
-    public void setHazardLvl(String hazardLvl) {
-        this.hazardLvl = hazardLvl;
     }
 
     public int getIconHazard() {

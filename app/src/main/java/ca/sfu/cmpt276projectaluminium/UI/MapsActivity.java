@@ -27,6 +27,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import ca.sfu.cmpt276projectaluminium.MyClusterManagerRenderer;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
+import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
@@ -66,7 +68,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mclusterMarkers = new ArrayList<>();
     private ArrayList<Restaurant> restaurants = new ArrayList<>();
+    private Marker mMarker;
 
+
+    //Give the csv files to the data classes so that the csv files can be read
+    void initializeDataClasses() {
+        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
+        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+        restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
+
+        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+        InspectionManager inspectionManager = InspectionManager.getInstance();
+        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
+    }
 
 
     @Override
@@ -174,8 +188,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.clear();
-        addMapMarkers();
+        // need to intilize data before getting the markers
+        initializeDataClasses();
 
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
@@ -197,7 +211,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
         }
-
         addMapMarkers();
     }
 
@@ -223,8 +236,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // for each restaurant get there details
             for(Restaurant r: restaurantManager){
+                String snippet;
                 try {
-                    String snippet = r.getType();
 
                     // Get relevant inspections
                     InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -247,14 +260,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } else {
                         iconHazard = R.drawable.not_available;
                     }
+                    snippet = r.getAddress() + " " + hazardRating;
 
                     //create individual marker per restaurant
                     ClusterMarker newClusterMarker = new ClusterMarker(
                             new LatLng(r.getLatitude(), r.getLongitude()),
                             r.getName(), //title
                             snippet,
-                            r.getAddress(),
-                            hazardRating,
                             iconHazard
                     );
                     // adds cluster to map
@@ -267,8 +279,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
             // adds every thing to the map at end of the loop
+            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
+                    new CustomInfoWindowAdapter(MapsActivity.this)
+            );
             mClusterManager.cluster();
         }
+
     }
 
     private void onBottomToolBarClick() {
