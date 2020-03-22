@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +27,15 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 
-public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> /*implements
-        ClusterManager.OnClusterClickListener<ClusterMarker>*/ {
+public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
     // generates icons
     private final IconGenerator iconGenerator;
 
@@ -64,32 +67,13 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
         markerOptions.snippet(item.getSnippet());
     }
-
-
     // source: https://github.com/googlemaps/android-maps-utils/blob/master/demo/src/main/java/com/google/maps/android/utils/demo/CustomMarkerClusteringDemoActivity.java
+
     @Override
     protected boolean shouldRenderAsCluster(Cluster<ClusterMarker> cluster) {
         //bigger than one cluster
-        return cluster.getSize() > 9;
+        return cluster.getSize() > 2;
     }
 
-    /*@Override
-    public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
-
-// Create the builder to collect all essential cluster items for the bounds.
-        LatLngBounds.Builder builder = LatLngBounds.builder();
-        for (ClusterItem item : cluster.getItems()) {
-            builder.include(item.getPosition());
-        }
-        // Get the LatLngBounds
-        final LatLngBounds bounds = builder.build();
-
-        // Animate camera to the bounds
-        try {
-            CameraUpdateFactory.newLatLngBounds(bounds, 100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }*/
 }
+

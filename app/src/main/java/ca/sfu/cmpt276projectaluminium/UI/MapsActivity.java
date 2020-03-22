@@ -26,11 +26,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  * location
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        ClusterManager.OnClusterClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
@@ -64,9 +67,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private ClusterManager mClusterManager;
     private MyClusterManagerRenderer mClusterManagerRenderer;
-    private ArrayList<ClusterMarker> mclusterMarkers = new ArrayList<>();
+    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private ArrayList<Restaurant> restaurants = new ArrayList<>();
     private Marker mMarker;
+
 
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -211,7 +215,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
+        setUpClusterManager(mMap);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+    }
+
+    //Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
+    private void setUpClusterManager(GoogleMap mMap) {
+        mMap.setOnCameraIdleListener(mClusterManager);
     }
 
     // Loop through all the restaurants and place markers
@@ -274,7 +284,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // adds cluster to map
                     mClusterManager.addItem(newClusterMarker);
                     // reference list for markers
-                    mclusterMarkers.add(newClusterMarker);
+                    mClusterMarkers.add(newClusterMarker);
                 }catch (NullPointerException e) {
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
@@ -352,27 +362,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(context, MapsActivity.class);
         return intent;
     }
-
-    public void onInfoWindowClick(ClusterMarker marker) {
-        Toast.makeText(this, "Info window clicked",
-                Toast.LENGTH_SHORT).show();
-
-        for(ClusterMarker clickedMarker: mclusterMarkers) {
-           if(marker.getPosition() == clickedMarker.getPosition()) {
-               Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
-                       clickedMarker.getTrackingNum());
-               startActivity(intent);
-           }
-        }
-    }
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
-        for (ClusterMarker clickedMarker : mclusterMarkers) {
+        for (ClusterMarker clickedMarker : mClusterMarkers) {
             if (item.getPosition() == clickedMarker.getPosition()) {
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
                         clickedMarker.getTrackingNum());
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
+        if (cluster == null) return false;
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (ClusterMarker cMarker : mClusterMarkers)
+            builder.include(cMarker.getPosition());
+        LatLngBounds bounds = builder.build();
+        try {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }
