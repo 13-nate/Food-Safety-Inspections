@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,6 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
@@ -92,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         onBottomToolBarClick();
         setMenuColor();
+        initializeDataClasses();
     }
 
     private void getLocationPermission() {
@@ -131,12 +137,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             return;
                         }
                     }
+
+                    if (isServicesOK() == false) {
+                        return;
+                    }
                     mLocationPermissionGranted = true;
                     // initialize the map
                     initMap();
                 }
             }
         }
+    }
+
+    public boolean isServicesOK() {
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsActivity.this);
+        if (available == ConnectionResult.SUCCESS) {
+            // user can make map requests
+            return true;
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            // an error occurred but it can be fixed, versioning issue
+            Dialog dialog = GoogleApiAvailability.getInstance().
+                    getErrorDialog(MapsActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        } else {
+            // nothing we can do
+            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
+        }
+        // There is a problem so return false
+        return false;
     }
 
     private void getDeviceLocation() {
@@ -192,8 +220,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMarker = mMarker;
         // need to intilize data before getting the markers
-        initializeDataClasses();
-
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
@@ -215,18 +241,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
-        setUpClusterManager(mMap);
+        mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
     }
 
     //Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
-    private void setUpClusterManager(GoogleMap mMap) {
-        mMap.setOnCameraIdleListener(mClusterManager);
-    }
 
     // Loop through all the restaurants and place markers
     private void addMapMarkers() {
-        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+        RestaurantManager restaurantManager;
 
         // Make sure map not null
         if(mMap != null) {
@@ -245,10 +268,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             // for each restaurant get there details
+            restaurantManager = RestaurantManager.getInstance();
             for(Restaurant r: restaurantManager){
                 String snippet;
                 try {
-
                     // Get relevant inspections
                     InspectionManager inspectionManager = InspectionManager.getInstance();
                     ArrayList<Inspection> inspections;

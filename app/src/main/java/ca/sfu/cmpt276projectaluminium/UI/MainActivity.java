@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
 
+        manager = manager.getInstance();
         for(Restaurant r: manager){
             restaurantArray.add(r);
         }
@@ -114,39 +115,16 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                         case R.id.navigationMap:
                             //in this case we are in the main activity and want to go to maps
-                            if (isServicesOK()) {
 
-                                item.setChecked(true);
                                 Intent intent = MapsActivity.makeIntent(MainActivity.this);
                                 startActivity(intent);
                                 finish();
-                                // require bool value so return true when the item is clicked
-                                return true;
-                            }
                             //if we get here return false don't have proper services
                             return false;
                 }
                 return false;
             }
         });
-    }
-
-    public boolean isServicesOK() {
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
-        if (available == ConnectionResult.SUCCESS) {
-            // user can make map requests
-            return true;
-        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            // an error occurred but it can be fixed, versioning issue
-            Dialog dialog = GoogleApiAvailability.getInstance().
-                    getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
-            dialog.show();
-        } else {
-            // nothing we can do
-            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
-        }
-        // There is a problem so return false
-        return false;
     }
 
     public static Intent makeIntent(Context context){
