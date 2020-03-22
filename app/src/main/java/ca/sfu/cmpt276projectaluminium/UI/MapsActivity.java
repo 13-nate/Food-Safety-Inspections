@@ -306,17 +306,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (updatedLocation != null) {
                         Log.d(TAGMAP, "location update " + updatedLocation);
                         //get current view bounds
-                        LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
-                        // get current LatLng of user
-                        LatLng userPosition = new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude());
-                        if(!bounds.contains(userPosition)){
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(userPosition)
-                                    .zoom(currentZoom)
-                                    .build();
-                            // for sooth transition
-                            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                            mMap.animateCamera(cameraUpdate);                        }
+                        // }
                     }
                 }
             }, null);
