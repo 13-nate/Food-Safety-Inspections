@@ -74,8 +74,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             try {
-                inputStreamRestaurant.close();
-                inputStreamInspection.close();
+                if (inputStreamRestaurant != null) {
+                    inputStreamRestaurant.close();
+                }
+                if (inputStreamInspection != null) {
+                    inputStreamInspection.close();
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
