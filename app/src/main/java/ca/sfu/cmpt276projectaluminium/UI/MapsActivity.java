@@ -18,9 +18,11 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,6 +30,10 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,6 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
+    private LocationCallback locationCallback;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
@@ -81,9 +88,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ClusterManager mClusterManager;
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
-    private ArrayList<Restaurant> restaurants = new ArrayList<>();
-    private Marker mMarker;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(checkMapServices()) {
+            // checks that all three permissions granted
+            if (mLocationPermissionGranted) {
+                getDeviceLocation();
+                requestLocationUpdates();
+            }
+            else {
+                getLocationPermission();
+            }
+        }
+    }
+
+    //Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
+    private void requestLocationUpdates() {
+
+        LocationRequest request = new LocationRequest();
+        request.setInterval(10000);
+        request.setFastestInterval(5000);
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        //mLocationPermissionGranted is only true if all permissions granted
+        if(mLocationPermissionGranted) {
+            // Request location updates and when an update is
+            // received, update camera view
+            client.requestLocationUpdates(request, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    Location location = locationResult.getLastLocation();
+                    if (location != null) {
+                        Log.d(TAGMAP, "location update " + location);
+                        float currentZoom = mMap.getCameraPosition().zoom;
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
+
+                    }
+                }
+            }, null);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (mLocationPermissionGranted) {
                 initMap();
                 getDeviceLocation();
+                requestLocationUpdates();
             }
             else {
                 getLocationPermission();
@@ -223,8 +270,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
             try {
                 if(mLocationPermissionGranted) {
+
+
                     Task location = mFusedLocationProviderClient.getLastLocation();
                     location.addOnCompleteListener(new OnCompleteListener<Location>() {
                         @Override

@@ -1,39 +1,20 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.DrawableRes;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
-import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 
 public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
     // generates icons
@@ -62,7 +43,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     protected void onBeforeClusterItemRendered(ClusterMarker item, MarkerOptions markerOptions) {
 
         imageView.setImageResource((item.getIconHazard()));
-        iconGenerator.setStyle(IconGenerator.STYLE_PURPLE);
+        iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
         markerOptions.snippet(item.getSnippet());
@@ -72,7 +53,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     @Override
     protected boolean shouldRenderAsCluster(Cluster<ClusterMarker> cluster) {
         //bigger than one cluster
-        return cluster.getSize() > 2;
+        return cluster.getSize() > 1;
     }
 
 }
