@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -96,15 +97,15 @@ public class InspectionManager {
     }
 
     /**
-     * If the violation lump is ordered before the hazard rating, then the parsed inspection line
-     * will have an integer at index 5, if the violation lump is ordered after, then the parsed
-     * inspection line will have a string at index 5.
+     * If the hazard rating is ordered before the violation lump, then the parsed inspection line
+     * will have a string at index 5, if the hazard rating is ordered after, then the parsed
+     * inspection line will have an integer at index 5.
      * @param parsedInspectionLine The array that holds the data all split up
-     * @return True if the violation lump comes before hazard rating order-wise in the string.
+     * @return True if the hazard rating comes before violation lump order-wise in the string.
      *         False otherwise
      */
-    private boolean violationLumpIsBeforeHazardRating(String[] parsedInspectionLine) {
-        return isInteger(parsedInspectionLine[5]);
+    private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
+        return !isInteger(parsedInspectionLine[5]);
     }
 
     // We know that if the string can be made into an integer, then it is not a hazard rating
@@ -123,6 +124,7 @@ public class InspectionManager {
      */
     private Inspection createInspectionFromCSVLine(String[] parsedInspectionLine,
                                                    boolean hazardIsFirst) {
+        Log.e(TAG, "createInspectionFromCSVLine: "+ Arrays.toString(parsedInspectionLine), null);
         // No matter how hazard rating and violations are ordered, we 100% know the location of
         // these first few variables
         String trackingNumber = parsedInspectionLine[0];
@@ -162,12 +164,15 @@ public class InspectionManager {
         // Finally, we assign hazard to a variable, its index depends on whether or not it came
         // before the violations
         String hazardRating;
+
+        Log.e(TAG, "createInspectionFromCSVLine: "+ hazardIsFirst, null);
         if (hazardIsFirst) {
             hazardRating = parsedInspectionLine[5];
         } else {
             int lastIndex = parsedInspectionLine.length - 1;
             hazardRating = parsedInspectionLine[lastIndex];
         }
+        Log.e(TAG, "createInspectionFromCSVLine: "+ hazardRating, null);
 
         // Now that all the variables are assigned, we can return our completed inspection object
         return new Inspection(trackingNumber, inspectionDate, type,
@@ -198,9 +203,9 @@ public class InspectionManager {
                 // Figure out which style of input we are reading, then read it based off that
                 // This is necessary because iteration 1 and the city of surrey data have different
                 // orders for their data
-                boolean areViolationsFirst = violationLumpIsBeforeHazardRating(parsedInspectionLine);
+                boolean hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
                 Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,
-                        areViolationsFirst);
+                        hazardIsFirst);
                 this.completeInspectionList.add(inspection);
             }
         }
