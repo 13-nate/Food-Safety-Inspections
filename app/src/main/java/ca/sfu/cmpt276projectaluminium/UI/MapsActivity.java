@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -306,12 +307,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.d(TAGMAP, "location update " + updatedLocation);
                         //get current view bounds
                         LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
-
-                        if(!bounds.contains(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()))){
-                            moveCamera(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()), currentZoom);
-                        }
-                        moveCamera(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()), currentZoom);
-
+                        // get current LatLng of user
+                        LatLng userPosition = new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude());
+                        if(!bounds.contains(userPosition)){
+                            CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(userPosition)
+                                    .zoom(currentZoom)
+                                    .build();
+                            // for sooth transition
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                            mMap.animateCamera(cameraUpdate);                        }
                     }
                 }
             }, null);
