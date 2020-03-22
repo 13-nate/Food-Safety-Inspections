@@ -67,4 +67,7 @@
     <string name="short_description">Short Description</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="no_current_location">= Unable to get current location </string>
+    <string name="no_gps_do_u_want"> =This application requires GPS to work properly, do you want to enable it?</string>
+    <string name="no_map_requests"> = You can\'t make Map Request</string>
 </resources>

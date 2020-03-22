@@ -39,6 +39,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -104,32 +105,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    //Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
-    private void requestLocationUpdates() {
-
-        LocationRequest request = new LocationRequest();
-        request.setInterval(10000);
-        request.setFastestInterval(5000);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-        //mLocationPermissionGranted is only true if all permissions granted
-        if(mLocationPermissionGranted) {
-            // Request location updates and when an update is
-            // received, update camera view
-            client.requestLocationUpdates(request, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        Log.d(TAGMAP, "location update " + location);
-                        float currentZoom = mMap.getCameraPosition().zoom;
-                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
-
-                    }
-                }
-            }, null);
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,7 +125,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
 
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses() {
@@ -189,7 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.show();
         } else {
             // nothing we can do
-            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_map_requests), Toast.LENGTH_SHORT).show();
         }
         // There is a problem so return false
         return false;
@@ -207,7 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
+        builder.setMessage(getString(R.string.no_gps_do_u_want))
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
@@ -288,7 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             } else {
                                 Log.d(TAGMAP, "Location is null");
                                 Toast.makeText(MapsActivity.this,
-                                        "Unable to get current location", Toast.LENGTH_SHORT)
+                                        getString(R.string.no_current_location), Toast.LENGTH_SHORT)
                                         .show();
                             }
                         }
@@ -309,6 +283,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
+    //Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
+    // https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
+    // requests location updates and recenters camera if the user has moved out of view
+    private void requestLocationUpdates() {
+        LocationRequest request = new LocationRequest();
+        request.setInterval(10000);
+        request.setFastestInterval(5000);
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        //mLocationPermissionGranted is only true if all permissions granted
+        if(mLocationPermissionGranted) {
+            // Request location updates and when an update is
+            // received, update camera view
+            client.requestLocationUpdates(request, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    float currentZoom = mMap.getCameraPosition().zoom;
+                    Location updatedLocation = locationResult.getLastLocation();
+                    if (updatedLocation != null) {
+                        Log.d(TAGMAP, "location update " + updatedLocation);
+                        //get current view bounds
+                        LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
+
+                        if(!bounds.contains(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()))){
+                            moveCamera(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()), currentZoom);
+                        }
+                        moveCamera(new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude()), currentZoom);
+
+                    }
+                }
+            }, null);
+        }
+    }
+
 
     /**
      * Manipulates the map once available.
