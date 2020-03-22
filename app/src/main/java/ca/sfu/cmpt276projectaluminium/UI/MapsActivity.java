@@ -17,12 +17,11 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -44,7 +43,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -79,9 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float DEFAULT_ZOOM = 15f;
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    private  static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
-    private  static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
-
+    private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
 
 
     private GoogleMap mMap;
@@ -94,13 +91,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        if(checkMapServices()) {
+        if (checkMapServices()) {
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
                 getDeviceLocation();
                 requestLocationUpdates();
-            }
-            else {
+            } else {
                 getLocationPermission();
             }
         }
@@ -114,14 +110,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setMenuColor();
 
         initializeDataClasses();
-        if(checkMapServices()) {
+        if (checkMapServices()) {
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
                 initMap();
                 getDeviceLocation();
                 requestLocationUpdates();
-            }
-            else {
+            } else {
                 getLocationPermission();
             }
         }
@@ -133,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         RestaurantManager restaurantManager = RestaurantManager.getInstance();
         // Fill the InspectionManager with inspections using the csv file stored in raw resources
         InspectionManager inspectionManager = InspectionManager.getInstance();
-        if(restaurantManager.getSize() == 0) {
+        if (restaurantManager.getSize() == 0) {
             restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
             inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
@@ -141,8 +136,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // this calls to heck for goolge play and then checks for gps
     private boolean checkMapServices() {
-        if(isServicesOK()) {
-            if(isMapsEnabled()) {
+        if (isServicesOK()) {
+            if (isMapsEnabled()) {
                 return true;
             }
         }
@@ -198,7 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if(mLocationPermissionGranted) {
+                if (mLocationPermissionGranted) {
 
                 } else {
                     getLocationPermission();
@@ -212,7 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         we need to only check for ONE course or fine, fine is better because i want to get users
         exact location top place them
          */
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
@@ -220,8 +215,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDeviceLocation();
         } else {
             // Ask them to use location permission
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
 
@@ -233,9 +228,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // check the other permissions
-                    for(int i = 0; i< grantResults.length; i++) {
+                    for (int i = 0; i < grantResults.length; i++) {
                         mLocationPermissionGranted = true;
                     }
                 }
@@ -246,32 +241,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-            try {
-                if(mLocationPermissionGranted) {
+        try {
+            if (mLocationPermissionGranted) {
 
 
-                    Task location = mFusedLocationProviderClient.getLastLocation();
-                    location.addOnCompleteListener(new OnCompleteListener<Location>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Location> task) {
-                            if(task.isSuccessful()) {
-                                Log.d(TAGMAP, "found Location");
-                                Location currentLocation = task.getResult();
+                Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAGMAP, "found Location");
+                            Location currentLocation = task.getResult();
 
-                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                        DEFAULT_ZOOM);
-                            } else {
-                                Log.d(TAGMAP, "Location is null");
-                                Toast.makeText(MapsActivity.this,
-                                        getString(R.string.no_current_location), Toast.LENGTH_SHORT)
-                                        .show();
-                            }
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM);
+                        } else {
+                            Log.d(TAGMAP, "Location is null");
+                            Toast.makeText(MapsActivity.this,
+                                    getString(R.string.no_current_location), Toast.LENGTH_SHORT)
+                                    .show();
                         }
-                    });
-                }
-            } catch (SecurityException e) {
-                Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
+                    }
+                });
             }
+        } catch (SecurityException e) {
+            Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
+        }
     }
 
     private void moveCamera(LatLng latLng, float zoom) {
@@ -285,34 +280,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    //Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
-    // https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
-    // requests location updates and recenters camera if the user has moved out of view
+    /*Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
+    https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
+    https://sites.google.com/site/androidhowto/how-to-1/get-notified-when-location-changes
+    */
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
-        request.setInterval(10000);
-        request.setFastestInterval(5000);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-        //mLocationPermissionGranted is only true if all permissions granted
-        if(mLocationPermissionGranted) {
-            // Request location updates and when an update is
-            // received, update camera view
-            client.requestLocationUpdates(request, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    float currentZoom = mMap.getCameraPosition().zoom;
-                    Location updatedLocation = locationResult.getLastLocation();
-                    if (updatedLocation != null) {
-                        Log.d(TAGMAP, "location update " + updatedLocation);
-                        //get current view bounds
-                        // }
-                    }
-                }
-            }, null);
+        MyLocationListener myLocListener = new MyLocationListener();
+        // The minimum time (in milliseconds) the system will wait until checking if the location changed
+        int minTime = 500;
+        // The minimum distance (in meters) traveled until you will be notified
+        float minDistance = .5f;
+        // Get the location manager from the system
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            getLocationPermission();
+            return;
         }
+        // Request location updates
+        // use gps for accuracy
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, myLocListener);
     }
 
+    private class MyLocationListener implements LocationListener
+    {
+
+        @Override
+        // changes camera if user moved half a meter
+        public void onLocationChanged(Location location) {
+            float currentZoom = mMap.getCameraPosition().zoom;
+            LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
+            // get current LatLng of user
+            LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            if (!bounds.contains(userPosition)) {
+                // for smooth transition
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(userPosition)
+                        .zoom(currentZoom)
+                        .build();
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                mMap.animateCamera(cameraUpdate);
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            requestLocationUpdates();
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            buildAlertMessageNoGps();
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -516,5 +541,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
         return true;
+    }
+
+    public GoogleMap getMap() {
+        return mMap;
     }
 }
