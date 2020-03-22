@@ -51,7 +51,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     public void initialize(InputStream is) {
         //empties the list in case of additional runs
-        //restaurantList = new ArrayList<>();
+        restaurantList = new ArrayList<>();
         // Get data out of the restaurants file and store it in a readable way.
         ArrayList<String> restaurantData = getFileData(is);
 

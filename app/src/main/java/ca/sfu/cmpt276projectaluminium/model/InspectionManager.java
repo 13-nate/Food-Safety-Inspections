@@ -48,7 +48,7 @@ public class InspectionManager {
      */
     public void initialize(InputStream is) {
         //empties the list in case of additional runs
-        //completeInspectionList = new ArrayList<>();
+        completeInspectionList = new ArrayList<>();
 
         // Get data out of the inspections file and store it in a readable way.
         ArrayList<String> inspectionRawData = getFileData(is);

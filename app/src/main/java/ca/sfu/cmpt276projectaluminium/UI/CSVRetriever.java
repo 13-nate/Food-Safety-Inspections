@@ -2,25 +2,20 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Button;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-
-import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.UI.MainActivity;
 
 //Sources:
 //https://stackoverflow.com/questions/43328693/java-networkonmainthreadexception-read-csv-file-from-url
@@ -28,7 +23,12 @@ import ca.sfu.cmpt276projectaluminium.UI.MainActivity;
 //https://stackoverflow.com/questions/48381818/this-field-leaks-context-object
 //https://www.youtube.com/watch?v=EcfUkjlL9RI
 
-public class CSVRetriever extends AsyncTask <Context, Void, Void> {
+/**
+ * Gets the csv files for the restaurants and inspections in the background
+ * enables the complete button when finished
+ */
+
+public class CSVRetriever extends AsyncTask <Button, Void, Button> {
 
     private String formatRestaurant;
     private String CSVUrlRestaurant;
@@ -48,7 +48,7 @@ public class CSVRetriever extends AsyncTask <Context, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Context... contexts) {
+    protected Button doInBackground(Button... buttons) {
         try {
             readRestaurant();
             readInspection();
@@ -58,12 +58,14 @@ public class CSVRetriever extends AsyncTask <Context, Void, Void> {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return buttons[0];
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(Button button) {
+
+        button.setText("Complete");
+        button.setEnabled(true);
 
     }
 
