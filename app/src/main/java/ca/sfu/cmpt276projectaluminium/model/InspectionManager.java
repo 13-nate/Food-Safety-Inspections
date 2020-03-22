@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -124,7 +123,6 @@ public class InspectionManager {
      */
     private Inspection createInspectionFromCSVLine(String[] parsedInspectionLine,
                                                    boolean hazardIsFirst) {
-        Log.e(TAG, "createInspectionFromCSVLine: "+ Arrays.toString(parsedInspectionLine), null);
         // No matter how hazard rating and violations are ordered, we 100% know the location of
         // these first few variables
         String trackingNumber = parsedInspectionLine[0];
@@ -164,15 +162,12 @@ public class InspectionManager {
         // Finally, we assign hazard to a variable, its index depends on whether or not it came
         // before the violations
         String hazardRating;
-
-        Log.e(TAG, "createInspectionFromCSVLine: "+ hazardIsFirst, null);
         if (hazardIsFirst) {
             hazardRating = parsedInspectionLine[5];
         } else {
             int lastIndex = parsedInspectionLine.length - 1;
             hazardRating = parsedInspectionLine[lastIndex];
         }
-        Log.e(TAG, "createInspectionFromCSVLine: "+ hazardRating, null);
 
         // Now that all the variables are assigned, we can return our completed inspection object
         return new Inspection(trackingNumber, inspectionDate, type,
