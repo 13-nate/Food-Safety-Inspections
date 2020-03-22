@@ -70,7 +70,7 @@ public class CSVRetriever extends AsyncTask <Button, Void, Button> {
     }
 
     private void readRestaurant() throws IOException, JSONException{
-        URL url = new URL("http://data.surrey.ca/api/3/action/package_show?id=restaurants");
+        URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=restaurants");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         InputStream inputStream = connection.getInputStream();
 
@@ -99,7 +99,7 @@ public class CSVRetriever extends AsyncTask <Button, Void, Button> {
     //takes in the json that gives you the choice between varieties of files
     //gets the csv containing useful data from it
     private void readInspection() throws IOException, JSONException{
-        URL url = new URL("http://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
+        URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         InputStream inputStream = connection.getInputStream();
 

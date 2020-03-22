@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
             inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
             inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
             initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
+            Button button = findViewById(R.id.data);
+            button.setVisibility(View.GONE);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             try {
