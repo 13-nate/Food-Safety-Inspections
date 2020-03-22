@@ -26,6 +26,7 @@ import ca.sfu.cmpt276projectaluminium.UI.MainActivity;
 //https://stackoverflow.com/questions/43328693/java-networkonmainthreadexception-read-csv-file-from-url
 //https://www.youtube.com/watch?v=Vcn4OuV4Ixg
 //https://stackoverflow.com/questions/48381818/this-field-leaks-context-object
+//https://www.youtube.com/watch?v=EcfUkjlL9RI
 
 public class CSVRetriever extends AsyncTask <Context, Void, Void> {
 
