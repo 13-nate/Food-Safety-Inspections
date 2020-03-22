@@ -1,21 +1,26 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -60,11 +65,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+
     private static final int ERROR_DIALOG_REQUEST = 9001;
+    private  static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
+    private  static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
+
 
 
     private GoogleMap mMap;
@@ -76,86 +84,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Restaurant> restaurants = new ArrayList<>();
     private Marker mMarker;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+        onBottomToolBarClick();
+        setMenuColor();
+
+        initializeDataClasses();
+        if(checkMapServices()) {
+            // checks that all three permissions granted
+            if (mLocationPermissionGranted) {
+                initMap();
+                getDeviceLocation();
+            }
+            else {
+                getLocationPermission();
+            }
+        }
+    }
 
 
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses() {
         // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
         RestaurantManager restaurantManager = RestaurantManager.getInstance();
-        restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
-
         // Fill the InspectionManager with inspections using the csv file stored in raw resources
         InspectionManager inspectionManager = InspectionManager.getInstance();
-        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        getLocationPermission();
-        onBottomToolBarClick();
-        setMenuColor();
-        initializeDataClasses();
-    }
-
-    private void getLocationPermission() {
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        // need to explicitly check permissions to use a device location
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-                initMap();
-                // else is done twice, once for each permission
-            } else {
-            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        } else {
-            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
+        if(restaurantManager.getSize() == 0) {
+            restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
+            inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // assume false to begin with
-        mLocationPermissionGranted = false;
-
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                // if some kind of permission was granted
-                if(grantResults.length > 0) {
-                    // check the other permissions
-                    for(int i = 0; i< grantResults.length; i++) {
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            mLocationPermissionGranted = false;
-                            return;
-                        }
-                    }
-
-                    if (isServicesOK() == false) {
-                        return;
-                    }
-                    mLocationPermissionGranted = true;
-                    // initialize the map
-                    initMap();
-                }
+    // this calls to heck for goolge play and then checks for gps
+    private boolean checkMapServices() {
+        if(isServicesOK()) {
+            if(isMapsEnabled()) {
+                return true;
             }
         }
+        return false;
     }
 
     public boolean isServicesOK() {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsActivity.this);
+
         if (available == ConnectionResult.SUCCESS) {
             // user can make map requests
+            Log.d(TAGMAP, "Play services working");
             return true;
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             // an error occurred but it can be fixed, versioning issue
+            Log.d(TAGMAP, "Play services NOT working, but can be fixed");
             Dialog dialog = GoogleApiAvailability.getInstance().
                     getErrorDialog(MapsActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
@@ -167,17 +148,90 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return false;
     }
 
+    public boolean isMapsEnabled() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps();
+            return false;
+        }
+        return true;
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ENABLE_GPS: {
+                if(mLocationPermissionGranted) {
+
+                } else {
+                    getLocationPermission();
+                }
+            }
+        }
+    }
+
+    private void getLocationPermission() {
+        /* Need to explicitly check permissions to use a device location
+        we need to only check for ONE course or fine, fine is better because i want to get users
+        exact location top place them
+         */
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+            initMap();
+            getDeviceLocation();
+        } else {
+            // Ask them to use location permission
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // assume false to begin with
+        mLocationPermissionGranted = false;
+
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // check the other permissions
+                    for(int i = 0; i< grantResults.length; i++) {
+                        mLocationPermissionGranted = true;
+                    }
+                }
+            }
+        }
+    }
+
     private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
             try {
                 if(mLocationPermissionGranted) {
                     Task location = mFusedLocationProviderClient.getLastLocation();
-                    location.addOnCompleteListener(new OnCompleteListener() {
+                    location.addOnCompleteListener(new OnCompleteListener<Location>() {
                         @Override
-                        public void onComplete(@NonNull Task task) {
+                        public void onComplete(@NonNull Task<Location> task) {
                             if(task.isSuccessful()) {
                                 Log.d(TAGMAP, "found Location");
-                                Location currentLocation = (Location) task.getResult();
+                                Location currentLocation = task.getResult();
 
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM);
@@ -218,8 +272,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMarker = mMarker;
-        // need to intilize data before getting the markers
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
