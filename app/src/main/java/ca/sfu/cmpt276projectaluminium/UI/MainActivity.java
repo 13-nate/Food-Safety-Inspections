@@ -61,10 +61,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(getString(R.string.restaurants));
 
-        //getData();
+        getData();
 
         InputStream inputStreamRestaurant = null;
         InputStream inputStreamInspection = null;
+
+        /**
+         * Instruction on use of csv retrieving:
+         *
+         * Trying to get the csv file on storage before running get data results in problems
+         * but getData takes time to actually get the data
+         * but waiting until getdata is finished is something I haven't yet figured out
+         *
+         * So on first run, the original test csv stuff will appear
+         * and eventually, if you leave that long enough it will download the csv properly
+         * after that, anytime you run should be using the downloaded csv
+         *
+         * I'm still not sure how exactly to make it work properly
+         * but since the basic downloading is done, that should be part a)
+         */
 
         try {
             inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
@@ -72,10 +87,11 @@ public class MainActivity extends AppCompatActivity {
             initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            initializeDataClasses(getResources().openRawResource(R.raw.restaurants_itr1),
+                    getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
 
-//        initializeDataClasses(getResources().openRawResource(R.raw.restaurants_itr1),
-//                getResources().openRawResource(R.raw.inspectionreports_itr1));
+
 
         populateListView();
         registerClickCallBack();
@@ -85,17 +101,17 @@ public class MainActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.data);
         new CSVRetriever(MainActivity.this).execute();
-        button.setOnClickListener(v -> {
-            try {
-                InputStream inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
-                InputStream inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
-                initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            recreate();
-
-        });
+//        button.setOnClickListener(v -> {
+//            try {
+//                InputStream inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
+//                InputStream inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
+//                initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            recreate();
+//
+//        });
 
     }
 
