@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -60,7 +62,7 @@ public class RestaurantDetail extends AppCompatActivity {
         // Create a back button that we can control
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        GpsClickCallBack();
     }
 
     private void initializeVariables() {
@@ -98,8 +100,6 @@ public class RestaurantDetail extends AppCompatActivity {
         address.setText(tempAddress);
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
-
-
     }
 
     public static Intent makeIntent(Context context, String restaurantId){
@@ -159,7 +159,6 @@ public class RestaurantDetail extends AppCompatActivity {
             critical.setText(criticalViolations);
             noncritical.setText(nonCriticalViolations);
 
-
             return listView;
         }
     }
@@ -176,6 +175,16 @@ public class RestaurantDetail extends AppCompatActivity {
                 Intent intent = InspectionDetails.makeIntent(RestaurantDetail.this,
                         trackingNumber, date, type);
                 startActivity(intent);
+            }
+        });
+    }
+
+    private void GpsClickCallBack() {
+        FrameLayout gpsCords = findViewById(R.id.GpsFrame);
+        gpsCords.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(RestaurantDetail.this,"gps click", Toast.LENGTH_SHORT).show();
             }
         });
     }
