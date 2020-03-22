@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,13 +18,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.model.CSVRetriever;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
-    private CSVRetriever csvRetriever = new CSVRetriever();
+    //private CSVRetriever csvRetriever = new CSVRetriever(this);
 
     //Give the csv files to the data classes so that the csv files can be read
-    public static void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
+    void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
         // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
         RestaurantManager restaurantManager = RestaurantManager.getInstance();
 
@@ -56,9 +61,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(getString(R.string.restaurants));
 
-        getData();
+        //getData();
 
-        initializeDataClasses(getResources().openRawResource(R.raw.restaurants_itr1), getResources().openRawResource(R.raw.inspectionreports_itr1));
+        InputStream inputStreamRestaurant = null;
+        InputStream inputStreamInspection = null;
+
+        try {
+            inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
+            inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
+            initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+//        initializeDataClasses(getResources().openRawResource(R.raw.restaurants_itr1),
+//                getResources().openRawResource(R.raw.inspectionreports_itr1));
 
         populateListView();
         registerClickCallBack();
@@ -67,13 +84,17 @@ public class MainActivity extends AppCompatActivity {
     private void getData() {
 
         Button button = findViewById(R.id.data);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                csvRetriever.execute();
-
+        new CSVRetriever(MainActivity.this).execute();
+        button.setOnClickListener(v -> {
+            try {
+                InputStream inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
+                InputStream inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
+                initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
+            recreate();
+
         });
 
     }
@@ -180,4 +201,5 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
     }
+
 }

@@ -1,4 +1,4 @@
-package ca.sfu.cmpt276projectaluminium.model;
+package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,10 +9,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,31 +25,35 @@ import ca.sfu.cmpt276projectaluminium.UI.MainActivity;
 //Sources:
 //https://stackoverflow.com/questions/43328693/java-networkonmainthreadexception-read-csv-file-from-url
 //https://www.youtube.com/watch?v=Vcn4OuV4Ixg
+//https://stackoverflow.com/questions/48381818/this-field-leaks-context-object
 
-public class CSVRetriever extends AsyncTask <Void, Void, Void> {
+public class CSVRetriever extends AsyncTask <Context, Void, Void> {
 
     private String formatRestaurant;
     private String CSVUrlRestaurant;
     private String lastModifiedRestaurant;
-    private InputStream inputStreamRestaurant;
+    static final String fileRestaurant = "restaurant.csv";
 
     private String formatInspection;
     private String CSVUrlInspection;
     private String lastModifiedInspection;
-    private InputStream inputStreamInspection;
+    static final String fileInspection = "inspection.csv";
+
+    private WeakReference<Context> weakContext;
 
 
-
-    public CSVRetriever() {
+    CSVRetriever(Context context) {
+        weakContext = new WeakReference<>(context);
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Void doInBackground(Context... contexts) {
         try {
             readRestaurant();
             readInspection();
             getRestaurantCSV();
             getInspectionCSV();
+
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -58,18 +64,18 @@ public class CSVRetriever extends AsyncTask <Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        MainActivity.initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
     }
 
     private void readRestaurant() throws IOException, JSONException{
         URL url = new URL("http://data.surrey.ca/api/3/action/package_show?id=restaurants");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        inputStreamRestaurant = connection.getInputStream();
+        InputStream inputStream = connection.getInputStream();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStreamRestaurant));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 
         String totalInput = "";
         String inputLine;
+
         while ((inputLine = in.readLine()) != null) {
             totalInput += inputLine;
         }
@@ -87,15 +93,18 @@ public class CSVRetriever extends AsyncTask <Void, Void, Void> {
         connection.disconnect();
     }
 
+    //takes in the json that gives you the choice between varieties of files
+    //gets the csv containing useful data from it
     private void readInspection() throws IOException, JSONException{
-        URL url = new URL("http://data.surrey.ca/api/3/action/package_show?id=restaurants");
+        URL url = new URL("http://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        inputStreamInspection = connection.getInputStream();
+        InputStream inputStream = connection.getInputStream();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStreamInspection));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 
         String totalInput = "";
         String inputLine;
+
         while ((inputLine = in.readLine()) != null) {
             totalInput += inputLine;
         }
@@ -116,14 +125,47 @@ public class CSVRetriever extends AsyncTask <Void, Void, Void> {
     private void getRestaurantCSV() throws IOException {
         URL url = new URL(CSVUrlRestaurant);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        inputStreamRestaurant = connection.getInputStream();
+        InputStream inputStreamRestaurant = connection.getInputStream();
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(inputStreamRestaurant));
+        String totalInput = "";
+        String inputLine;
+        //first line is a header for the format, so is discarded
+        //in.readLine();
+        while ((inputLine = in.readLine()) != null) {
+            totalInput = totalInput + inputLine + "\n";
+
+        }
+        in.close();
+
+        FileOutputStream fos = weakContext.get().openFileOutput(fileRestaurant, Context.MODE_PRIVATE);
+        fos.write(totalInput.getBytes());
+        fos.close();
+
         connection.disconnect();
     }
 
     private void getInspectionCSV() throws IOException {
         URL url = new URL(CSVUrlInspection);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        inputStreamInspection = connection.getInputStream();
+        InputStream inputStreamInspection = connection.getInputStream();
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(inputStreamInspection));
+        String totalInput = "";
+        String inputLine;
+        //first line is a header for the format, so is discarded
+        //in.readLine();
+        while ((inputLine = in.readLine()) != null) {
+            totalInput = totalInput + inputLine + "\n";
+        }
+        in.close();
+
+        FileOutputStream fos = weakContext.get().openFileOutput(fileInspection, Context.MODE_PRIVATE);
+        fos.write(totalInput.getBytes());
+        fos.close();
+
         connection.disconnect();
     }
 
@@ -139,10 +181,6 @@ public class CSVRetriever extends AsyncTask <Void, Void, Void> {
         return lastModifiedRestaurant;
     }
 
-    public InputStream getInputStreamRestaurant() {
-        return inputStreamRestaurant;
-    }
-
     public String getFormatInspection() {
         return formatInspection;
     }
@@ -155,7 +193,4 @@ public class CSVRetriever extends AsyncTask <Void, Void, Void> {
         return lastModifiedInspection;
     }
 
-    public InputStream getInputStreamInspection() {
-        return inputStreamInspection;
-    }
 }

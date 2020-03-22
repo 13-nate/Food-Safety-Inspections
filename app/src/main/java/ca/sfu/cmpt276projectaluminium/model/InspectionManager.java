@@ -47,6 +47,9 @@ public class InspectionManager {
      * Should be called once, on program initialization
      */
     public void initialize(InputStream is) {
+        //empties the list in case of additional runs
+        //completeInspectionList = new ArrayList<>();
+
         // Get data out of the inspections file and store it in a readable way.
         ArrayList<String> inspectionRawData = getFileData(is);
 
@@ -141,39 +144,44 @@ public class InspectionManager {
      */
     private void initializeInspectionList(ArrayList<String> inspectionRawData) {
         // For each line of csv data, create a inspection with it and put it in the inspection list
-        for (String dataLine : inspectionRawData) {
-            // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
-            String[] inspectionValues = dataLine.split("\\s*,\\s*|\\|");
+        try {
+            for (String dataLine : inspectionRawData) {
+                // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
+                String[] inspectionValues = dataLine.split("\\s*,\\s*|\\|");
 
-            // Remove any quotations from entries
-            for (int i = 0; i < inspectionValues.length; i++) {
-                String str = inspectionValues[i];
-                str = str.replaceAll("\"", "");
-                inspectionValues[i] = str;
+                // Remove any quotations from entries
+                for (int i = 0; i < inspectionValues.length; i++) {
+                    String str = inspectionValues[i];
+                    str = str.replaceAll("\"", "");
+                    inspectionValues[i] = str;
+                }
+
+                // If the current csv row is data (and not the title), then add it to the list
+                if (!(inspectionValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
+                    // Extract the comma-spliced-values into variables
+                    String trackingNumber = inspectionValues[0];
+                    int inspectionDate = Integer.parseInt(inspectionValues[1]);
+                    String type = inspectionValues[2];
+                    int numCriticalViolations = Integer.parseInt(inspectionValues[3]);
+                    int numNonCriticalViolations = Integer.parseInt(inspectionValues[4]);
+                    String hazardRating = inspectionValues[5];
+
+                    // Extract violations out of the inspection csv and store them in an organized way
+                    ArrayList<Violation> violationList = populateViolationList(inspectionValues);
+
+                    // Create an inspection
+                    Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
+                            numCriticalViolations, numNonCriticalViolations, hazardRating,
+                            violationList);
+
+                    // Store the inspection inside the list of inspections
+                    this.completeInspectionList.add(inspection);
+                }
             }
-
-            // If the current csv row is data (and not the title), then add it to the list
-            if (!(inspectionValues[0].equals("TrackingNumber"))) {
-                // Extract the comma-spliced-values into variables
-                String trackingNumber = inspectionValues[0];
-                int inspectionDate = Integer.parseInt(inspectionValues[1]);
-                String type = inspectionValues[2];
-                int numCriticalViolations = Integer.parseInt(inspectionValues[3]);
-                int numNonCriticalViolations = Integer.parseInt(inspectionValues[4]);
-                String hazardRating = inspectionValues[5];
-
-                // Extract violations out of the inspection csv and store them in an organized way
-                ArrayList<Violation> violationList = populateViolationList(inspectionValues);
-
-                // Create an inspection
-                Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
-                        numCriticalViolations, numNonCriticalViolations, hazardRating,
-                        violationList);
-
-                // Store the inspection inside the list of inspections
-                this.completeInspectionList.add(inspection);
-            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     /**

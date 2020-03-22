@@ -50,6 +50,8 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Should be called once, on program initialization
      */
     public void initialize(InputStream is) {
+        //empties the list in case of additional runs
+        //restaurantList = new ArrayList<>();
         // Get data out of the restaurants file and store it in a readable way.
         ArrayList<String> restaurantData = getFileData(is);
 
@@ -96,37 +98,46 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     private void initializeRestaurantList(ArrayList<String> restaurantData) {
         // For each line of csv data, create a restaurant with it and put it in the restaurant list
-        for (String dataLine : restaurantData) {
-            // Separate the comma-spliced-values
-            String[] restaurantValues = dataLine.split("\\s*,\\s*");
+        try {
+            for (String dataLine : restaurantData) {
+                // Separate the comma-spliced-values
+                String[] restaurantValues = dataLine.split("\\s*,\\s*");
 
-            // Remove any quotations from entries
-            for (int i = 0; i < restaurantValues.length; i++) {
-                String str = restaurantValues[i];
-                str = str.replaceAll("\"", "");
-                restaurantValues[i] = str;
+                // Remove any quotations from entries
+                for (int i = 0; i < restaurantValues.length; i++) {
+                    String str = restaurantValues[i];
+                    str = str.replaceAll("\"", "");
+                    restaurantValues[i] = str;
+                }
+
+                // If the current csv row is data (and not the title), then add it to the list
+                if (!(restaurantValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
+                    // Extract the comma-spliced-values into variables
+                    String trackingNumber = restaurantValues[0];
+                    String name = restaurantValues[1];
+                    String address = restaurantValues[2];
+                    String city = restaurantValues[3];
+                    String type = restaurantValues[4];
+                    double latitude = Double.parseDouble(restaurantValues[5]);
+                    double longitude = Double.parseDouble(restaurantValues[6]);
+
+                    // Create a restaurant
+                    Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                            latitude, longitude);
+
+                    // Store the restaurant inside the list of restaurants
+                    this.restaurantList.add(restaurant);
+                    if (restaurantList.size() % 100 == 0){
+                        Log.i("checking", "initializeRestaurantList: ");
+                    }
+                }
             }
-
-            // If the current csv row is data (and not the title), then add it to the list
-            if (!(restaurantValues[0].equals("TRACKINGNUMBER"))) {
-                // Extract the comma-spliced-values into variables
-                String trackingNumber = restaurantValues[0];
-                String name = restaurantValues[1];
-                String address = restaurantValues[2];
-                String city = restaurantValues[3];
-                String type = restaurantValues[4];
-                double latitude = Double.parseDouble(restaurantValues[5]);
-                double longitude = Double.parseDouble(restaurantValues[6]);
-
-                // Create a restaurant
-                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                        latitude, longitude);
-
-                // Store the restaurant inside the list of restaurants
-                this.restaurantList.add(restaurant);
-            }
+            Log.i("checking", "initializeRestaurantList: ");
+            Collections.sort(this.restaurantList);
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        Collections.sort(this.restaurantList);
+
     }
 
     /**
