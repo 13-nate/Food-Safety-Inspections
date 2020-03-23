@@ -618,9 +618,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
-        restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
+        restaurantCordinatesRequest = intent.getBooleanExtra(FLAG, false);
         if (restaurantCordinatesRequest) {
-            String trackingNum = intent.getStringExtra("makeGPSIntent num");
+            String trackingNum = intent.getStringExtra(TrackingNum);
             LatLng latLng;
             for (ClusterMarker marker : mClusterMarkers) {
                 if (trackingNum.equals(marker.getTrackingNum())) {
