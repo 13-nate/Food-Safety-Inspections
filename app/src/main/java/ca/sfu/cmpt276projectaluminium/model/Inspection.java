@@ -164,5 +164,6 @@ public class Inspection implements Comparable<Inspection> {
         if (this.inspectionDate == other.inspectionDate) {
             return 0;
         }
-        return -1;    }
+        return -1;
+    }
 }

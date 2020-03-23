@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,45 +12,45 @@
         android:id="@+id/restaurantListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="1dp"
         android:dividerHeight="10.0sp"
         android:paddingBottom="8dp"
         android:scrollbarSize="7dp"
         android:scrollbarThumbVertical="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigationMaps"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutLow"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/txtHazardLevel"
-        android:layout_width="67dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="20dp"
-        android:text="@string/hazard_rating"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigationMaps"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom"
+        android:background="@color/colorMenu"
+        android:paddingTop="5dp"
+        app:itemIconSize="35dp"
+        app:itemIconTint="@drawable/selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/layoutLow" />
+        app:menu="@menu/bottom_navigation_menu" />
 
     <LinearLayout
         android:id="@+id/layoutLow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/border_green"
         android:orientation="horizontal"
         android:padding="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutHigh"
-        app:layout_constraintStart_toEndOf="@+id/txtHazardLevel">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imgLow"
@@ -70,12 +71,13 @@
         android:id="@+id/layoutHigh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
         android:background="@drawable/border_red"
         android:orientation="horizontal"
         android:padding="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutLow">
+        app:layout_constraintBottom_toBottomOf="@+id/layoutMedium"
+        app:layout_constraintStart_toEndOf="@+id/layoutMedium"
+        app:layout_constraintTop_toTopOf="@+id/layoutMedium">
 
         <ImageView
             android:id="@+id/imgHigh"
@@ -97,10 +99,10 @@
         android:id="@+id/layoutMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:padding="5dp"
+        android:layout_marginStart="8dp"
         android:background="@drawable/border_yellow"
         android:orientation="horizontal"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutLow"
         app:layout_constraintStart_toEndOf="@+id/layoutLow"
         app:layout_constraintTop_toTopOf="@+id/layoutLow">
@@ -124,9 +126,9 @@
         android:id="@+id/layoutNone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/border_blue"
+        android:layout_marginStart="8dp"
 
+        android:background="@drawable/border_blue"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
@@ -159,12 +161,11 @@
 
     <Button
         android:id="@+id/data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_width="60dp"
+        android:layout_height="48dp"
         android:enabled="false"
         android:text="Loading Data"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,9 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,6 +44,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private static final String TAG = "RestaurantId";
     private ArrayList<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
+    String id;
 
     // Control what happens upon pressing back button
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -60,11 +64,11 @@ public class RestaurantDetail extends AppCompatActivity {
         // Create a back button that we can control
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        GpsClickCallBack();
     }
 
     private void initializeVariables() {
-        String id = getIntent().getStringExtra(TAG);
+        id = getIntent().getStringExtra(TAG);
 
         // Create the restaurant object for the restaurant that was clicked on
         RestaurantManager restaurantManager = RestaurantManager.getInstance();
@@ -98,8 +102,6 @@ public class RestaurantDetail extends AppCompatActivity {
         address.setText(tempAddress);
         latitude.setText(tempLatitude);
         longitude.setText(tempLongitude);
-
-
     }
 
     public static Intent makeIntent(Context context, String restaurantId){
@@ -159,7 +161,6 @@ public class RestaurantDetail extends AppCompatActivity {
             critical.setText(criticalViolations);
             noncritical.setText(nonCriticalViolations);
 
-
             return listView;
         }
     }
@@ -175,6 +176,17 @@ public class RestaurantDetail extends AppCompatActivity {
 
                 Intent intent = InspectionDetails.makeIntent(RestaurantDetail.this,
                         trackingNumber, date, type);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void GpsClickCallBack() {
+        ConstraintLayout gpsCords = findViewById(R.id.GpsFrame);
+        gpsCords.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
                 startActivity(intent);
             }
         });

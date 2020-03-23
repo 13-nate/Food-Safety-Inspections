@@ -108,7 +108,10 @@ public class InspectionManager {
      *         False otherwise
      */
     private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
-        return !isInteger(parsedInspectionLine[5]);
+        if (parsedInspectionLine.length > 5){
+            return !isInteger(parsedInspectionLine[5]);
+        }
+        return false;
     }
 
     // We know that if the string can be made into an integer, then it is not a hazard rating
@@ -203,8 +206,10 @@ public class InspectionManager {
                 // This is necessary because iteration 1 and the city of surrey data have different
                 // orders for their data
                 boolean hazardIsFirst = false;
-                if (parsedInspectionLine.length > 5){
+                if (parsedInspectionLine.length > 4){
                     hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
+                } else {
+                    Log.i("stgd", "initializeInspectionList: ");
                 }
 
                 Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,

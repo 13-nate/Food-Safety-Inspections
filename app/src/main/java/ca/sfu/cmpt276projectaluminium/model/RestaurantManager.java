@@ -2,6 +2,8 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

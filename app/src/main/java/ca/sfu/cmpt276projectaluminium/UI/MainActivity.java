@@ -1,13 +1,9 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,20 +13,23 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Displays a list of restaurants and some info on the most most recent inspection report for
@@ -38,10 +37,11 @@ import java.util.List;
  */
 
 public class MainActivity extends AppCompatActivity {
+    //for incorrect version
+    private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
-    //private CSVRetriever csvRetriever = new CSVRetriever(this);
 
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
@@ -63,19 +63,32 @@ public class MainActivity extends AppCompatActivity {
 
         getData();
 
+        populateListView();
+        registerClickCallBack();
+        onBottomToolBarClick();
+       // setMenuColor();
+    }
+
+
+    private void getData() {
+
+        Button button = findViewById(R.id.data);
+        button.setEnabled(false);
+
+        new CSVRetriever(this).execute(button);
+        button.setOnClickListener(v -> {
+            recreate();
+        });
+
         InputStream inputStreamRestaurant = null;
         InputStream inputStreamInspection = null;
-
-
         try {
             inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
             inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
             initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
-            Button button = findViewById(R.id.data);
             button.setVisibility(View.GONE);
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             try {
                 if (inputStreamRestaurant != null) {
                     inputStreamRestaurant.close();
@@ -90,23 +103,6 @@ public class MainActivity extends AppCompatActivity {
                     getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
 
-
-
-        populateListView();
-        registerClickCallBack();
-    }
-
-
-    private void getData() {
-
-        Button button = findViewById(R.id.data);
-        button.setEnabled(false);
-
-        new CSVRetriever(this).execute(button);
-        button.setOnClickListener(v -> {
-            recreate();
-        });
-
     }
 
     private void populateListView() {
@@ -114,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
 
+        manager = manager.getInstance();
         for(Restaurant r: manager){
             restaurantArray.add(r);
         }
@@ -139,6 +136,44 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void onBottomToolBarClick() {
+        /*Sources:
+        // https://androidwave.com/bottom-navigation-bar-android-example/
+        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+
+         */
+        BottomNavigationView bottomNavigation;
+        bottomNavigation = findViewById(R.id.bottom_navigationMaps);
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // switch based on id of item clicked, id defined in the bottom_navigation_menu
+
+                switch (item.getItemId()) {
+
+                    case R.id.navigationBulletList:
+                        // in this case we are in the main activity so don't want anything to happen
+                        // require bool value so return true when the item is clicked
+                        return true;
+                        case R.id.navigationMap:
+                            //in this case we are in the main activity and want to go to maps
+
+                                Intent intent = MapsActivity.makeIntent(MainActivity.this);
+                                startActivity(intent);
+                                finish();
+                            //if we get here return false don't have proper services
+                            return false;
+                }
+                return false;
+            }
+        });
+    }
+
+    public static Intent makeIntent(Context context){
+        Intent intent = new Intent(context, MainActivity.class);
+        return intent;
     }
 
     // Inner class has reference to outer class
@@ -211,5 +246,4 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
     }
-
 }

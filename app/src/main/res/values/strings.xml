@@ -55,7 +55,7 @@
     <string name="violation313">Live animals on premises</string>
     <string name="violation314">Sanitation manual not provided</string>
     <string name="violation315">Thermometers are missing</string>
-    <string name="violation401">Handwashing stations inadequate</string>
+    <string name="violation401">Hand washing stations inadequate</string>
     <string name="violation402">Employee didn\'t wash hands</string>
     <string name="violation403">Employee lacks hygiene</string>
     <string name="violation404">Employee smoking on premises</string>
@@ -65,4 +65,9 @@
     <string name="violations">Violations:</string>
     <string name="hazard_level">Hazard Level:</string>
     <string name="short_description">Short Description</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="no_current_location">= Unable to get current location </string>
+    <string name="no_gps_do_u_want"> =This application requires GPS to work properly, do you want to enable it?</string>
+    <string name="no_map_requests"> = You can\'t make Map Request</string>
 </resources>
