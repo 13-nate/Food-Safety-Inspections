@@ -294,9 +294,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void requestLocationUpdates() {
         MyLocationListener myLocListener = new MyLocationListener();
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
-        int minTime = 500;
-        // The minimum distance (in meters) traveled until you will be notified
-        float minDistance = 1;
+        int minTime = 1;
+        // The minimum distance (in meters) traveled until notified
+        float minDistance = .5f;
         // Get the location manager from the system
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
@@ -535,6 +535,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
                         clickedMarker.getTrackingNum());
                 startActivity(intent);
+
             }
         }
     }
