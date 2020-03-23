@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;

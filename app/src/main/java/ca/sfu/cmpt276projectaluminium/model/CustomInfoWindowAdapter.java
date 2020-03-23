@@ -48,4 +48,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         rendoWindowText(marker, mWindow);
         return mWindow;
     }
+
+
 }

@@ -89,6 +89,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean mapInitialized = false;
     // want to change camera to User on startUp
     private boolean mapSartUp = true;
+    private Collection<Marker> markers = new ArrayList<>();
+
 
     @Override
     protected void onResume() {
@@ -395,6 +397,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap,
                         mClusterManager
                 );
+
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
@@ -437,6 +440,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     );
                     // adds cluster to map
                     mClusterManager.addItem(newClusterMarker);
+
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
                 } catch (NullPointerException e) {
@@ -448,8 +452,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mClusterManager.getMarkerCollection().setInfoWindowAdapter(
                     new CustomInfoWindowAdapter(MapsActivity.this)
             );
+
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
+
         }
     }
 
@@ -574,6 +580,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
+
+    // Sources: https://stackoverflow.com/questions/36902890/how-i-can-call-showinfowindow-in-a-marker-within-cluster-manager
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
         LatLng restaurantPosition = new LatLng(0.0, 0.0);
@@ -583,7 +591,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             for (ClusterMarker clusterMarker : mClusterMarkers) {
                 if (trackingNum.equals(clusterMarker.getTrackingNum())) {
                     restaurantPosition = clusterMarker.getPosition();
-                    Marker m = mClusterManagerRenderer.getMarker(clusterMarker);
+                    Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
+                    if(marker != null){
+                        marker.showInfoWindow();
+                    }
                     break;
                 }
             }
@@ -593,4 +604,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace(); }
         }
     }
+
 }
