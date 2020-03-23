@@ -43,7 +43,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     protected void onBeforeClusterItemRendered(ClusterMarker item, MarkerOptions markerOptions) {
 
         imageView.setImageResource((item.getIconHazard()));
-        iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
+        iconGenerator.setBackground(null);
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
         markerOptions.snippet(item.getSnippet());

@@ -18,6 +18,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -92,6 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  String TRACKING_NUM = null;
     private static String TrackingNum = null;
     private static String FLAG = null;
+    private Boolean mapInilized = false;
 
     @Override
     protected void onResume() {
@@ -101,6 +103,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (mLocationPermissionGranted) {
                 getDeviceLocation();
                 requestLocationUpdates();
+                /*loads the custom map but double draws  when initMap is called again  so need to check
+                if it has been initialized before done inside the initMap method*/
+                initMap();
+
             } else {
                 getLocationPermission();
             }
@@ -318,25 +324,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-
-
+        if(!mapInilized) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            mapInilized = true;
+        }
     }
-
-
 
     /*Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
     https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
     https://sites.google.com/site/androidhowto/how-to-1/get-notified-when-location-changes
+    https://blog.codecentric.de/en/2014/05/android-gps-positioning-location-strategies/
     */
     private void requestLocationUpdates() {
         MyLocationListener myLocListener = new MyLocationListener();
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
-        int minTime = 500;
-        // The minimum distance (in meters) traveled until you will be notified
+        int minTime = 1;
+        // The minimum distance (in meters) traveled until notified
         float minDistance = .5f;
         // Get the location manager from the system
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -346,29 +351,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getLocationPermission();
             return;
         }
-        // Request location updates
+        Criteria criteria = new Criteria();
+        criteria.setPowerRequirement(Criteria.POWER_HIGH); // Chose your desired power consumption level.
+        criteria.setAccuracy(Criteria.ACCURACY_FINE); // Choose your accuracy requirement.
+        criteria.setSpeedRequired(true); // Chose if speed for first location fix is required.
+        criteria.setAltitudeRequired(false); // Choose if you use altitude.
+        criteria.setBearingRequired(true); // Choose if you use bearing.
+        criteria.setCostAllowed(true);
+
+        // Provide your criteria and flag enabledOnly that tells
+        // LocationManager only to return active providers.
+        String bestProvider = locationManager.getBestProvider(criteria, false);        // Request location updates
         // use gps for accuracy
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, myLocListener);
+        locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, myLocListener);
     }
 
     private class MyLocationListener implements LocationListener {
-
         @Override
         // changes camera if user moved half a meter
         public void onLocationChanged(Location location) {
             float currentZoom = mMap.getCameraPosition().zoom;
-            LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
             // get current LatLng of user
             LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            if (!bounds.contains(userPosition)) {
-                // for smooth transition
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(userPosition)
-                        .zoom(currentZoom)
-                        .build();
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                mMap.animateCamera(cameraUpdate);
-            }
+            // for smooth transition
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(userPosition)
+                    .zoom(currentZoom)
+                    .build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mMap.animateCamera(cameraUpdate);
         }
 
         @Override
@@ -398,6 +409,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        initializeDataClasses();
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
@@ -417,7 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (mLocationPermissionGranted) {
             getDeviceLocation();
-            //mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
         mMap.setOnCameraIdleListener(mClusterManager);
@@ -563,10 +575,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    /*public static Intent makeIntent(Context context) {
+    public static Intent makeIntent(Context context) {
         Intent intent = new Intent(context, MapsActivity.class);
         return intent;
-    }*/
+    }
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
