@@ -10,6 +10,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 
+// Sources:
+// https://stackoverflow.com/questions/5439529/determine-if-a-string-is-an-integer-in-java
+
 /**
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
@@ -82,8 +85,6 @@ public class InspectionManager {
         return inspectionRawData;
     }
 
-    // sauce https://stackoverflow.com/questions/5439529/determine-if-a-string-is-an-integer-in-java
-    // TODO: this is like calling the cops every time we want to check if there's a string, plz fix
     private boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
