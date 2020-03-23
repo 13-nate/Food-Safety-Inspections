@@ -103,15 +103,24 @@ public class InspectionManager {
      * If the hazard rating is ordered before the violation lump, then the parsed inspection line
      * will have a string at index 5, if the hazard rating is ordered after, then the parsed
      * inspection line will have an integer at index 5.
+     * If the hazard rating is before the violation dump, then index 5 will have:
+     *  - a string
+     * If the hazard rating is after the violation dump, then index 5 will have either:
+     *  - an integer OR
+     *  - an empty string
      * @param parsedInspectionLine The array that holds the data all split up
      * @return True if the hazard rating comes before violation lump order-wise in the string.
      *         False otherwise
      */
     private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
-        if (parsedInspectionLine.length > 5){
-            return !isInteger(parsedInspectionLine[5]);
+        if (parsedInspectionLine.length < 6){
+            return false;
         }
-        return false;
+        if (parsedInspectionLine[5].equals("")) {
+            return false;
+        }
+
+        return !isInteger(parsedInspectionLine[5]);
     }
 
     // We know that if the string can be made into an integer, then it is not a hazard rating
@@ -205,13 +214,7 @@ public class InspectionManager {
                 // Figure out which style of input we are reading, then read it based off that
                 // This is necessary because iteration 1 and the city of surrey data have different
                 // orders for their data
-                boolean hazardIsFirst = false;
-                if (parsedInspectionLine.length > 4){
-                    hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
-                } else {
-                    Log.i("stgd", "initializeInspectionList: ");
-                }
-
+                boolean hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
                 Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,
                         hazardIsFirst);
                 this.completeInspectionList.add(inspection);
