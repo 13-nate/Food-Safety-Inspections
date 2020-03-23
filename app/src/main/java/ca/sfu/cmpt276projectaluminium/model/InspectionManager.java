@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 // Sources:
@@ -100,11 +101,20 @@ public class InspectionManager {
      * If the hazard rating is ordered before the violation lump, then the parsed inspection line
      * will have a string at index 5, if the hazard rating is ordered after, then the parsed
      * inspection line will have an integer at index 5.
+     * If the hazard rating is before the violation dump, then index 5 will have:
+     *  - a string
+     * If the hazard rating is after the violation dump, then index 5 will have either:
+     *  - an integer OR
+     *  - an empty string
      * @param parsedInspectionLine The array that holds the data all split up
      * @return True if the hazard rating comes before violation lump order-wise in the string.
      *         False otherwise
      */
     private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
+        if (parsedInspectionLine[5].equals("")) {
+            return false;
+        }
+        
         return !isInteger(parsedInspectionLine[5]);
     }
 
@@ -163,6 +173,9 @@ public class InspectionManager {
         // Finally, we assign hazard to a variable, its index depends on whether or not it came
         // before the violations
         String hazardRating;
+        Log.e(TAG, "createInspectionFromCSVLine: " + Arrays.toString(parsedInspectionLine), null);
+        Log.e(TAG, "createInspectionFromCSVLine: " + parsedInspectionLine.length, null);
+        Log.e(TAG, "createInspectionFromCSVLine: " + hazardIsFirst, null);
         if (hazardIsFirst) {
             hazardRating = parsedInspectionLine[5];
         } else {
