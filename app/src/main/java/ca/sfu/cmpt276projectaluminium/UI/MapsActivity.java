@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -47,6 +48,7 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
@@ -85,6 +87,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private Boolean restaurantCordinatesRequest = false;
+    private double Latitude = 0;
+    private double Longtitude = 0;
+    private  String TRACKING_NUM = null;
+    private static String TrackingNum = null;
+    private static String FLAG = null;
 
     @Override
     protected void onResume() {
@@ -100,6 +107,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+
+    private void InitializeMapGPS(){
+
+        Restaurant restaurant;
+        RestaurantManager restaurants = RestaurantManager.getInstance();
+        restaurant = restaurants.recreateRestaurant(TrackingNum);
+        Latitude = restaurant.getLatitude();
+        Longtitude = restaurant.getLongitude();
+        LatLng latLng = new LatLng(Latitude,Longtitude);
+        moveCamera(latLng,DEFAULT_ZOOM);
+
+
+    }
+
+
+
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+                0);//PackageManager.GET_ACTIVITIES
+        return list.size() > 0;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,16 +139,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setMenuColor();
 
         initializeDataClasses();
+
+        boolean bool = isIntentAvailable(MapsActivity.this,getIntent());//check intent
+
+        if (bool)
+            restaurantCordinatesRequest = getIntent().getBooleanExtra(FLAG,false);
         if (checkMapServices()) {
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
-                initMap();
-                getDeviceLocation();
-                requestLocationUpdates();
+                if (restaurantCordinatesRequest)
+                    goToRestaurantGpsLocation();
+                else{
+
+                    initMap();
+                    getDeviceLocation();
+                    requestLocationUpdates();}
+
             } else {
-                getLocationPermission();
+                if (restaurantCordinatesRequest)
+                    InitializeMapGPS();
+                else
+                    getLocationPermission();
+                }
             }
-        }
+
     }
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -132,7 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // this calls to heck for goolge play and then checks for gps
+    // this calls to heck for google play and then checks for gps
     private boolean checkMapServices() {
         if (isServicesOK()) {
             if (isMapsEnabled()) {
@@ -276,7 +321,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+
     }
+
+
 
     /*Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
     https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
@@ -513,10 +563,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    public static Intent makeIntent(Context context) {
+    /*public static Intent makeIntent(Context context) {
         Intent intent = new Intent(context, MapsActivity.class);
         return intent;
-    }
+    }*/
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
@@ -549,8 +599,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
-        intent.putExtra("makeGPSIntent num", trackingNum);
-        intent.putExtra("makeGPSIntent bool", gpsIntent);
+        intent.putExtra(TrackingNum, trackingNum);
+        intent.putExtra(FLAG, gpsIntent);
         return intent;
     }
 

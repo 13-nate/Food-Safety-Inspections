@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.navigationMap:
                             //in this case we are in the main activity and want to go to maps
 
-                                Intent intent = MapsActivity.makeIntent(MainActivity.this);
+                                Intent intent = MapsActivity.makeGPSIntent(MainActivity.this,null,false);
                                 startActivity(intent);
                                 finish();
                             //if we get here return false don't have proper services
