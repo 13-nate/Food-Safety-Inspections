@@ -333,7 +333,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(userPosition)
                     .zoom(currentZoom)
-                    .bearing(location.getBearing())
                     .build();
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             mMap.animateCamera(cameraUpdate);
