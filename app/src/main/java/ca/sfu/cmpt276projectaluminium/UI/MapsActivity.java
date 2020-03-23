@@ -86,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private Boolean restaurantCordinatesRequest = false;
 
-    @Override
+    /*@Override
     protected void onResume() {
         super.onResume();
         if (checkMapServices()) {
@@ -99,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -287,7 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
         int minTime = 500;
         // The minimum distance (in meters) traveled until you will be notified
-        float minDistance = .5f;
+        float minDistance = 1;
         // Get the location manager from the system
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
@@ -367,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (mLocationPermissionGranted) {
             getDeviceLocation();
-            //mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
         mMap.setOnCameraIdleListener(mClusterManager);
