@@ -65,4 +65,9 @@
     <string name="violations">Violations:</string>
     <string name="hazard_level">Hazard Level:</string>
     <string name="short_description">Short Description</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
