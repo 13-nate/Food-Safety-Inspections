@@ -312,8 +312,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         criteria.setAccuracy(Criteria.ACCURACY_FINE); // Choose your accuracy requirement.
         criteria.setSpeedRequired(true); // Chose if speed for first location fix is required.
         criteria.setAltitudeRequired(false); // Choose if you use altitude.
-        criteria.setBearingRequired(false); // Choose if you use bearing.
-        criteria.setCostAllowed(true); // Choose if this provider can waste money :-)
+        criteria.setBearingRequired(true); // Choose if you use bearing.
+        criteria.setCostAllowed(true);
 
         // Provide your criteria and flag enabledOnly that tells
         // LocationManager only to return active providers.
@@ -333,6 +333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(userPosition)
                     .zoom(currentZoom)
+                    .bearing(location.getBearing())
                     .build();
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             mMap.animateCamera(cameraUpdate);
