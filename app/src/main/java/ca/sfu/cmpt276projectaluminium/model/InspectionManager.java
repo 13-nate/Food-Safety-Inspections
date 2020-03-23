@@ -14,11 +14,6 @@ import java.util.Collections;
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
 public class InspectionManager {
-    private static final int NUM_OF_VIOLATION_ATTRIBUTES = 4;
-    private static final int ID = 2;
-    private static final int SEVERITY = 3;
-    private static final int DESCRIPTION = 0;
-    private static final int REPEAT = 1;
     private static final String TAG = "InspectionManager";
 
     private ArrayList<Inspection> completeInspectionList = new ArrayList<>();
@@ -90,52 +85,97 @@ public class InspectionManager {
         return inspectionRawData;
     }
 
+    // sauce https://stackoverflow.com/questions/5439529/determine-if-a-string-is-an-integer-in-java
+    // TODO: this is like calling the cops every time we want to check if there's a string, plz fix
+    private boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch(NumberFormatException | NullPointerException e) {
+            return false;
+        }
+
+        // We're here if is possible to convert the string to an int
+        return true;
+    }
+
     /**
-     * To create all violations that an inspection has, we need to extract the information from the
-     * list of data.  All information that is important for violations begins at index 6, which is
-     * why the loop in this function starts searching from index 6.
-     *
-     * This is what the inspection data looks like starting at index 6:
-     *      "ID", "Severity", "Description", "Repeat", "ID, "Severity", etc...
-     *
-     * This method loops through the above data, creates a violation with it, then puts it in a list
-     *
-     * @param inspectionData A list of inspection information - stored as a list of strings
-     * @return A list of violations that are inside the inspection
+     * If the hazard rating is ordered before the violation lump, then the parsed inspection line
+     * will have a string at index 5, if the hazard rating is ordered after, then the parsed
+     * inspection line will have an integer at index 5.
+     * @param parsedInspectionLine The array that holds the data all split up
+     * @return True if the hazard rating comes before violation lump order-wise in the string.
+     *         False otherwise
      */
-    private ArrayList<Violation> populateViolationList(String[] inspectionData) {
-        ArrayList<Violation> violationList = new ArrayList<>();
-        int id = -1;
-        String repeat, description = "", severity = "";
+    private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
+        return !isInteger(parsedInspectionLine[5]);
+    }
 
-        int violationDataStartIndex = 6;
+    // We know that if the string can be made into an integer, then it is not a hazard rating
+    private boolean variableIsNotAHazardRating(String s) {
+        return isInteger(s);
+    }
 
-        // Create violations and store them by looping through the data inside the list
-        for (int listIndex = violationDataStartIndex;
-             listIndex < inspectionData.length; listIndex++) {
-            // Calculate which violation attribute is in the string
-            int violationData = listIndex % NUM_OF_VIOLATION_ATTRIBUTES;
+    /**
+     * Creates an inspection object using a csv line of input formatted as an array of strings.
+     * Based on what kind of data is being received, it parses the string differently, however,
+     * the end result is still an Inspection object no matter what kind of known inspection input is
+     * received.
+     * @param parsedInspectionLine A csv line of input formatted as an array of strings.
+     * @param hazardIsFirst How the hazard var. is ordered in the array (before/after violations)
+     * @return An inspection that can be created from
+     */
+    private Inspection createInspectionFromCSVLine(String[] parsedInspectionLine,
+                                                   boolean hazardIsFirst) {
+        // No matter how hazard rating and violations are ordered, we 100% know the location of
+        // these first few variables
+        String trackingNumber = parsedInspectionLine[0];
+        int inspectionDate = Integer.parseInt(parsedInspectionLine[1]);
+        String type = parsedInspectionLine[2];
+        int numCriticalViolations = Integer.parseInt(parsedInspectionLine[3]);
+        int numNonCriticalViolations = Integer.parseInt(parsedInspectionLine[4]);
 
-            // Depending on which attribute is in the string, assign the attribute to a variable
-            if (violationData == ID) {
-                id = Integer.parseInt(inspectionData[listIndex]);
-            } else if (violationData == SEVERITY) {
-                severity = inspectionData[listIndex];
-            } else if (violationData == DESCRIPTION) {
-                description = inspectionData[listIndex];
-            } else {
-                repeat = inspectionData[listIndex];
+        // We need to parse through violations (which are 4 long), so we first find the index that
+        // the violation lump starts at.  That depends on whether or not the hazard comes first
+        int violationStartIndex;
+        if (hazardIsFirst) {
+            violationStartIndex = 6;
+        } else {
+            violationStartIndex = 5;
+        }
 
-                // Reaching this point means that the violation object is now ready to be created
-                // Thus, we create the violation
-                Violation violation = new Violation(id, severity, description, repeat);
+        // Here we parse through violations, 4 at a time, and stop once we find an item that is not
+        // part of a violation
+        ArrayList<Violation> violations = new ArrayList<>();
+        for (int i = violationStartIndex; i < parsedInspectionLine.length; i += 4) {
+            // If we are looking at the hazard variable, we don't have to do anything.
+            // If we are not looking at the hazard variable, then we can infer that this variable is
+            // the start of a set of four violation variables
+            if (variableIsNotAHazardRating(parsedInspectionLine[i])) {
+                // Grab the variables that are a part of the violation
+                int id = Integer.parseInt(parsedInspectionLine[i]);
+                String severity = parsedInspectionLine[i + 1];
+                String description = parsedInspectionLine[i + 2];
+                String repeat = parsedInspectionLine[i + 3];
 
-                // We then store the violation in a list for future use
-                violationList.add(violation);
+                // Put them in our list of violations
+                violations.add(new Violation(id, severity, description, repeat));
             }
         }
 
-        return violationList;
+        // Finally, we assign hazard to a variable, its index depends on whether or not it came
+        // before the violations
+        String hazardRating;
+        if (hazardIsFirst) {
+            hazardRating = parsedInspectionLine[5];
+        } else {
+            int lastIndex = parsedInspectionLine.length - 1;
+            hazardRating = parsedInspectionLine[lastIndex];
+        }
+
+        // Now that all the variables are assigned, we can return our completed inspection object
+        return new Inspection(trackingNumber, inspectionDate, type,
+                numCriticalViolations, numNonCriticalViolations, hazardRating,
+                violations);
     }
 
     /**
@@ -144,45 +184,33 @@ public class InspectionManager {
      */
     private void initializeInspectionList(ArrayList<String> inspectionRawData) {
         // For each line of csv data, create a inspection with it and put it in the inspection list
-        try {
-            for (String dataLine : inspectionRawData) {
-                // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
-                String[] inspectionValues = dataLine.split("\\s*,\\s*|\\|");
+        for (String dataLine : inspectionRawData) {
+            // Separate the comma-spliced-values (and also separate at the pipes to help formatting)
+            String[] parsedInspectionLine = dataLine.split("\\s*,\\s*|\\|");
 
-                // Remove any quotations from entries
-                for (int i = 0; i < inspectionValues.length; i++) {
-                    String str = inspectionValues[i];
-                    str = str.replaceAll("\"", "");
-                    inspectionValues[i] = str;
-                }
-
-                // If the current csv row is data (and not the title), then add it to the list
-                if (!(inspectionValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
-                    // Extract the comma-spliced-values into variables
-                    String trackingNumber = inspectionValues[0];
-                    int inspectionDate = Integer.parseInt(inspectionValues[1]);
-                    String type = inspectionValues[2];
-                    int numCriticalViolations = Integer.parseInt(inspectionValues[3]);
-                    int numNonCriticalViolations = Integer.parseInt(inspectionValues[4]);
-                    String hazardRating = inspectionValues[5];
-
-                    // Extract violations out of the inspection csv and store them in an organized way
-                    ArrayList<Violation> violationList = populateViolationList(inspectionValues);
-
-                    // Create an inspection
-                    Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
-                            numCriticalViolations, numNonCriticalViolations, hazardRating,
-                            violationList);
-
-                    // Store the inspection inside the list of inspections
-                    this.completeInspectionList.add(inspection);
-                }
+            // Remove any quotations from entries
+            for (int i = 0; i < parsedInspectionLine.length; i++) {
+                String str = parsedInspectionLine[i];
+                str = str.replaceAll("\"", "");
+                parsedInspectionLine[i] = str;
             }
-        } catch (Exception e){
 
+            // We want use csv lines that have data on them, so we don't do anything in the event
+            // that a csv line filled with column titles is read in.
+            if (parsedInspectionLine.length != 0 && !parsedInspectionLine[0].toUpperCase().equals("TRACKINGNUMBER")) {
+                // Figure out which style of input we are reading, then read it based off that
+                // This is necessary because iteration 1 and the city of surrey data have different
+                // orders for their data
+                boolean hazardIsFirst = false;
+                if (parsedInspectionLine.length > 5){
+                    hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
+                }
+
+                Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,
+                        hazardIsFirst);
+                this.completeInspectionList.add(inspection);
+            }
         }
-
-
     }
 
     /**

@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
@@ -98,41 +99,42 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     private void initializeRestaurantList(ArrayList<String> restaurantData) {
         // For each line of csv data, create a restaurant with it and put it in the restaurant list
-        try {
-            for (String dataLine : restaurantData) {
-                // Separate the comma-spliced-values
-                String[] restaurantValues = dataLine.split("\\s*,\\s*");
+        for (String dataLine : restaurantData) {
+            // Separate the comma-spliced-values
+            String[] restaurantValues = dataLine.split("\\s*,\\s*");
 
-                // Remove any quotations from entries
-                for (int i = 0; i < restaurantValues.length; i++) {
-                    String str = restaurantValues[i];
-                    str = str.replaceAll("\"", "");
-                    restaurantValues[i] = str;
-                }
-
-                // If the current csv row is data (and not the title), then add it to the list
-                if (!(restaurantValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
-                    // Extract the comma-spliced-values into variables
-                    String trackingNumber = restaurantValues[0];
-                    String name = restaurantValues[1];
-                    String address = restaurantValues[2];
-                    String city = restaurantValues[3];
-                    String type = restaurantValues[4];
-                    double latitude = Double.parseDouble(restaurantValues[5]);
-                    double longitude = Double.parseDouble(restaurantValues[6]);
-
-                    // Create a restaurant
-                    Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                            latitude, longitude);
-
-                    // Store the restaurant inside the list of restaurants
-                    this.restaurantList.add(restaurant);
-                }
+            // Remove any quotations from entries
+            for (int i = 0; i < restaurantValues.length; i++) {
+                String str = restaurantValues[i];
+                str = str.replaceAll("\"", "");
+                restaurantValues[i] = str;
             }
 
-        } catch (Exception e){
-            e.printStackTrace();
+            // If the current csv row is data (and not the title), then add it to the list
+            if (!(restaurantValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
+                // Extract the comma-spliced-values into variables
+                String trackingNumber = restaurantValues[0];
+                String name = restaurantValues[1];
+                String address = restaurantValues[2];
+                String city = restaurantValues[3];
+                String type = restaurantValues[4];
+                double latitude = 0;
+                double longitude = 0;
+                try {
+                    latitude = Double.parseDouble(restaurantValues[5]);
+                    longitude = Double.parseDouble(restaurantValues[6]);
+                } catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
+                // Create a restaurant
+                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                        latitude, longitude);
+
+                // Store the restaurant inside the list of restaurants
+                this.restaurantList.add(restaurant);
+            }
         }
+
         Collections.sort(this.restaurantList);
     }
 
