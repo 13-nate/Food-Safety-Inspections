@@ -85,8 +85,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private Boolean restaurantCordinatesRequest = false;
+    private Boolean mapInilized = false;
 
-    /*@Override
+    @Override
     protected void onResume() {
         super.onResume();
         if (checkMapServices()) {
@@ -94,12 +95,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (mLocationPermissionGranted) {
                 getDeviceLocation();
                 requestLocationUpdates();
+                /*loads the custom map but double draws  when initMap is called again  so need to check
+                if it has been initialized before done inside the initMap method*/
+                initMap();
+
             } else {
                 getLocationPermission();
             }
         }
     }
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +112,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         onBottomToolBarClick();
         setMenuColor();
 
-        initializeDataClasses();
         if (checkMapServices()) {
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
@@ -118,6 +122,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
+        getDeviceLocation();
+        requestLocationUpdates();
     }
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -273,9 +279,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if(!mapInilized) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            mapInilized = true;
+        }
     }
 
     /*Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
@@ -348,6 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        initializeDataClasses();
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
