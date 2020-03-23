@@ -114,7 +114,7 @@ public class InspectionManager {
         if (parsedInspectionLine[5].equals("")) {
             return false;
         }
-        
+
         return !isInteger(parsedInspectionLine[5]);
     }
 
@@ -173,9 +173,6 @@ public class InspectionManager {
         // Finally, we assign hazard to a variable, its index depends on whether or not it came
         // before the violations
         String hazardRating;
-        Log.e(TAG, "createInspectionFromCSVLine: " + Arrays.toString(parsedInspectionLine), null);
-        Log.e(TAG, "createInspectionFromCSVLine: " + parsedInspectionLine.length, null);
-        Log.e(TAG, "createInspectionFromCSVLine: " + hazardIsFirst, null);
         if (hazardIsFirst) {
             hazardRating = parsedInspectionLine[5];
         } else {
