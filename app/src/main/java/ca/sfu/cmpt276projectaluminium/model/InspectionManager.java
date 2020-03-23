@@ -179,8 +179,9 @@ public class InspectionManager {
                 }
             }
         } catch (Exception e){
-            e.printStackTrace();
+
         }
+
 
     }
 

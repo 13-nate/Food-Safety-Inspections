@@ -127,17 +127,13 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
                     // Store the restaurant inside the list of restaurants
                     this.restaurantList.add(restaurant);
-                    if (restaurantList.size() % 50 == 0 || restaurantList.size() > 1050){
-                        Log.i("checking", "initializeRestaurantList: ");
-                    }
                 }
             }
-            Log.i("checking", "initializeRestaurantList: ");
-            Collections.sort(this.restaurantList);
+
         } catch (Exception e){
             e.printStackTrace();
         }
-
+        Collections.sort(this.restaurantList);
     }
 
     /**
