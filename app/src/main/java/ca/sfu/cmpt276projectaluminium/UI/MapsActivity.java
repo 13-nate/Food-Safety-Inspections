@@ -65,7 +65,8 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
+        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
+        ClusterManager.OnClusterItemClickListener<ClusterMarker>{
 
     private static final String TAGMAP = "MapsActivity";
     private LocationCallback locationCallback;
@@ -529,6 +530,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    public boolean onClusterItemClick(ClusterMarker item) {
+        if (item == null) {
+            return false;
+        }
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (ClusterMarker cMarker : mClusterMarkers)
+            builder.include(cMarker.getPosition());
+        LatLngBounds bounds = builder.build();
+        try {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
     public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
         if (cluster == null) {
             return false;
@@ -546,6 +565,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
+
+
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra("makeGPSIntent num", trackingNum);
@@ -559,9 +580,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
             String trackingNum = intent.getStringExtra("makeGPSIntent num");
-            for (ClusterMarker marker : mClusterMarkers) {
-                if (trackingNum.equals(marker.getTrackingNum())) {
-                    restaurantPosition = marker.getPosition();
+            for (ClusterMarker clusterMarker : mClusterMarkers) {
+                if (trackingNum.equals(clusterMarker.getTrackingNum())) {
+                    restaurantPosition = clusterMarker.getPosition();
+                    Marker m = mClusterManagerRenderer.getMarker(clusterMarker);
                     break;
                 }
             }
