@@ -13,9 +13,12 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,11 +29,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+
 import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.model.Inspection;
+import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 
 /**
  * Displays the google map.
@@ -47,14 +57,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float DEFAULT_ZOOM = 15f;
 
     private GoogleMap mMap;
+    private Marker mMarker;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
+    private ImageView mInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        mInfo = (ImageView) findViewById(R.id.ic_info);
         getLocationPermission();
         onBottomToolBarClick();
         setMenuColor();
@@ -133,6 +145,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
     }
 
+    private void moveCamera(LatLng latLng, float zoom,  Restaurant placeInfo) {
+
+        /*Source
+        https://www.youtube.com/watch?v=1WBYb2hK98M&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=10
+        */
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        if (placeInfo!= null){
+            try{
+
+                String trackingNum = placeInfo.getTrackingNumber();
+
+                InspectionManager inspectionManager = InspectionManager.getInstance();
+                ArrayList<Inspection> inspections;
+                inspections = inspectionManager.getInspections(trackingNum);
+
+                // Get the newest inspection
+                Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
+
+                String popUpInfo = "Address: " + placeInfo.getAddress() + "\n" +
+                        "Issues " + newestInspection.getNumTotalViolations()+ "\n";
+
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(placeInfo.getName())
+                        .snippet(popUpInfo);
+
+                mMarker = mMap.addMarker(options);
+
+                mMap.addMarker(options);
+
+            }catch(NullPointerException e){
+                Log.e(TAGMAP, "moveCamera: NullPointerException: " + e.getMessage());
+            }
+
+        }
+
+        else{
+            mMap.addMarker(new MarkerOptions().position(latLng));
+        }
+    }
+
     private void moveCamera(LatLng latLng, float zoom) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
@@ -142,6 +196,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAGMAP, "onClick: clicked place info" );
+                try {
+                    if(mMarker.isInfoWindowShown()){
+                        mMarker.hideInfoWindow();
+                    }
+                    else
+                    {
+                        Log.d(TAGMAP,"onClick: place info");
+                        mMarker.showInfoWindow();
+                    }
+                } catch (NullPointerException e) {
+                    Log.e(TAGMAP, "onClick: NullPointerException" + e.getMessage());
+                }
+            }
+        });
     }
 
     /**
