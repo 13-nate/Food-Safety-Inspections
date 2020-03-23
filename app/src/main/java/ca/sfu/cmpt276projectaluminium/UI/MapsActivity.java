@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -290,6 +291,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*Source: https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html?index=..%2F..index#3
     https://stackoverflow.com/questions/34372990/android-how-to-check-if-mylocation-is-visible-on-the-map-at-the-current-zoom-le
     https://sites.google.com/site/androidhowto/how-to-1/get-notified-when-location-changes
+    https://blog.codecentric.de/en/2014/05/android-gps-positioning-location-strategies/
     */
     private void requestLocationUpdates() {
         MyLocationListener myLocListener = new MyLocationListener();
@@ -305,29 +307,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getLocationPermission();
             return;
         }
-        // Request location updates
+        Criteria criteria = new Criteria();
+        criteria.setPowerRequirement(Criteria.POWER_HIGH); // Chose your desired power consumption level.
+        criteria.setAccuracy(Criteria.ACCURACY_FINE); // Choose your accuracy requirement.
+        criteria.setSpeedRequired(true); // Chose if speed for first location fix is required.
+        criteria.setAltitudeRequired(false); // Choose if you use altitude.
+        criteria.setBearingRequired(false); // Choose if you use bearing.
+        criteria.setCostAllowed(true); // Choose if this provider can waste money :-)
+
+        // Provide your criteria and flag enabledOnly that tells
+        // LocationManager only to return active providers.
+        String bestProvider = locationManager.getBestProvider(criteria, false);        // Request location updates
         // use gps for accuracy
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, myLocListener);
+        locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, myLocListener);
     }
 
     private class MyLocationListener implements LocationListener {
-
         @Override
         // changes camera if user moved half a meter
         public void onLocationChanged(Location location) {
             float currentZoom = mMap.getCameraPosition().zoom;
-            LatLngBounds bounds = MapsActivity.this.mMap.getProjection().getVisibleRegion().latLngBounds;
             // get current LatLng of user
             LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            if (!bounds.contains(userPosition)) {
-                // for smooth transition
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(userPosition)
-                        .zoom(currentZoom)
-                        .build();
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                mMap.animateCamera(cameraUpdate);
-            }
+            // for smooth transition
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(userPosition)
+                    .zoom(currentZoom)
+                    .build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mMap.animateCamera(cameraUpdate);
         }
 
         @Override
