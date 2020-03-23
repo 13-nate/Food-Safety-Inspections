@@ -318,7 +318,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public static Intent makeIntent(Context context, double Latitude, double Longtitude) {
-        Intent intent = new Intent(context, InspectionDetails.class);
+        Intent intent = new Intent(context, RestaurantDetails.class);
         intent.putExtra(String.valueOf(coodinate_latitude), Latitude);
         intent.putExtra(String.valueOf(coodinate_longtitude),Longtitude);
         return intent;
