@@ -51,6 +51,7 @@ public class ClusterMarker implements ClusterItem {
         return snippet;
     }
 
+
     public void setSnippet(String snippet) {
         this.snippet = snippet;
     }
