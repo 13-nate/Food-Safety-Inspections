@@ -17,7 +17,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -31,8 +30,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -87,6 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ClusterManager mClusterManager;
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+    private Boolean restaurantCordinatesRequest = false;
 
     @Override
     protected void onResume() {
@@ -303,8 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, myLocListener);
     }
 
-    private class MyLocationListener implements LocationListener
-    {
+    private class MyLocationListener implements LocationListener {
 
         @Override
         // changes camera if user moved half a meter
@@ -367,13 +364,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAGMAP, "Can't find style. Error: ", e);
         }
 
+
         if (mLocationPermissionGranted) {
             getDeviceLocation();
-            mMap.setMyLocationEnabled(true);
+            //mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+        // only executes  if coming from  a restaurant
+        goToRestaurantGpsLocation();
+
     }
 
     //Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
@@ -383,13 +384,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         RestaurantManager restaurantManager;
 
         // Make sure map not null
-        if(mMap != null) {
+        if (mMap != null) {
             // Create a new manger if we don't have one.
-            if(mClusterManager == null) {
+            if (mClusterManager == null) {
                 mClusterManager = new ClusterManager<ClusterMarker>(this, mMap);
             }
             // Create a new render if we don't have one
-            if(mClusterManagerRenderer == null) {
+            if (mClusterManagerRenderer == null) {
                 mClusterManagerRenderer = new MyClusterManagerRenderer(
                         this,
                         mMap,
@@ -400,7 +401,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // for each restaurant get there details
             restaurantManager = RestaurantManager.getInstance();
-            for(Restaurant r: restaurantManager){
+            for (Restaurant r : restaurantManager) {
                 String snippet;
                 try {
                     // Get relevant inspections
@@ -439,7 +440,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mClusterManager.addItem(newClusterMarker);
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
-                }catch (NullPointerException e) {
+                } catch (NullPointerException e) {
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
 
@@ -512,10 +513,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    public static Intent makeIntent(Context context){
+    public static Intent makeIntent(Context context) {
         Intent intent = new Intent(context, MapsActivity.class);
         return intent;
     }
+
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
         for (ClusterMarker clickedMarker : mClusterMarkers) {
@@ -529,7 +531,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
-        if (cluster == null) return false;
+        if (cluster == null) {
+            return false;
+        }
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (ClusterMarker cMarker : mClusterMarkers)
             builder.include(cMarker.getPosition());
@@ -543,7 +547,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-    public GoogleMap getMap() {
-        return mMap;
+    public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
+        Intent intent = new Intent(context, MapsActivity.class);
+        intent.putExtra("makeGPSIntent num", trackingNum);
+        intent.putExtra("makeGPSIntent bool", gpsIntent);
+        return intent;
+    }
+
+    public void goToRestaurantGpsLocation() {
+        Intent intent = getIntent();
+        restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
+        if (restaurantCordinatesRequest) {
+            String trackingNum = intent.getStringExtra("makeGPSIntent num");
+            LatLng latLng;
+            for (ClusterMarker marker : mClusterMarkers) {
+                if (trackingNum.equals(marker.getTrackingNum())) {
+                    latLng = marker.getPosition();
+                    try {
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(latLng)
+                                .zoom(DEFAULT_ZOOM)
+                                .build();
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                        mMap.animateCamera(cameraUpdate);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }
