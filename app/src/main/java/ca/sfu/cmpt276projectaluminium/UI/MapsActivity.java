@@ -55,6 +55,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final double coodinate_latitude = 0;
+    private static final double coodinate_longtitude = 0;
 
     private GoogleMap mMap;
     private Marker mMarker;
@@ -312,6 +314,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static Intent makeIntent(Context context){
         Intent intent = new Intent(context, MapsActivity.class);
+        return intent;
+    }
+
+    public static Intent makeIntent(Context context, double Latitude, double Longtitude) {
+        Intent intent = new Intent(context, InspectionDetails.class);
+        intent.putExtra(String.valueOf(coodinate_latitude), Latitude);
+        intent.putExtra(String.valueOf(coodinate_longtitude),Longtitude);
         return intent;
     }
 

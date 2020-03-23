@@ -55,6 +55,10 @@ public class RestaurantDetail extends AppCompatActivity {
         initializeVariables();
         populateListView();
         loadText();
+        TextView latitudeText = (TextView) findViewById(R.id.latitudeText);
+        TextView longtitudeText = (TextView) findViewById(R.id.longitudeText);
+        latitudeText.setOnClickListener(this::onClick);
+        longtitudeText.setOnClickListener(this::onClick);
         registerClickCallBack();
 
         // Create a back button that we can control
@@ -106,6 +110,15 @@ public class RestaurantDetail extends AppCompatActivity {
         Intent intent = new Intent(context, RestaurantDetail.class);
         intent.putExtra(TAG, restaurantId);
         return intent;
+    }
+
+    public void onClick(View view) {
+
+        double Latitude = restaurant.getLatitude();
+        double Longtitude = restaurant.getLongitude();
+        Intent intent = MapsActivity.makeIntent(RestaurantDetail.this,Latitude,Longtitude);
+        startActivity(intent);
+
     }
 
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
@@ -179,5 +192,7 @@ public class RestaurantDetail extends AppCompatActivity {
             }
         });
     }
+
+
 }
 

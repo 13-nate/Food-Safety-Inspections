@@ -98,6 +98,8 @@
         android:text="@string/textview"
         android:textColor="@android:color/white"
         android:textSize="18sp"
+        android:onClick="onClick"
+        android:clickable="true"
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -113,6 +115,8 @@
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintStart_toEndOf="@+id/textView9"
         app:layout_constraintTop_toBottomOf="@+id/latitudeText"
+        android:onClick="onClick"
+        android:clickable="true"
         app:layout_constraintVertical_bias="0.076" />
 
 
