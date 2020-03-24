@@ -101,8 +101,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 requestLocationUpdates();
                 /*loads the custom map but double draws  when initMap is called again  so need to check
                 if it has been initialized before done inside the initMap method*/
-                initMap();
-
             } else {
                 getLocationPermission();
             }
@@ -125,8 +123,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
-        requestLocationUpdates();
-        goToRestaurantGpsLocation();
     }
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -530,6 +526,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
                         clickedMarker.getTrackingNum());
                 startActivity(intent);
+                finish();
 
             }
         }

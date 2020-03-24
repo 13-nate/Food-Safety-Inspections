@@ -62,6 +62,9 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         return super.getMarker(cluster);
     }
 
-
+    @Override
+    public Marker getMarker(ClusterMarker clusterItem) {
+        return super.getMarker(clusterItem);
+    }
 }
 

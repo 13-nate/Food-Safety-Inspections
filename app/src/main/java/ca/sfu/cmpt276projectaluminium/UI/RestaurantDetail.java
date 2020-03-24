@@ -188,6 +188,7 @@ public class RestaurantDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
                 startActivity(intent);
+                finish();
             }
         });
     }
