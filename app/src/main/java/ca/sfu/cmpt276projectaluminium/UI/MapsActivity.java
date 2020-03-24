@@ -401,6 +401,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
+            //set up info windows
+            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
+                    new CustomInfoWindowAdapter(MapsActivity.this)
+            );
             // for each restaurant get there details
             restaurantManager = RestaurantManager.getInstance();
             for (Restaurant r : restaurantManager) {
@@ -448,10 +452,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             }
-            //set up info windows
-            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
-                    new CustomInfoWindowAdapter(MapsActivity.this)
-            );
 
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
