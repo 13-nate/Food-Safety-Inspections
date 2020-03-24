@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 // Sources:
@@ -45,9 +46,6 @@ public class InspectionManager {
      * Should be called once, on program initialization
      */
     public void initialize(InputStream is) {
-        //empties the list in case of additional runs
-        completeInspectionList = new ArrayList<>();
-
         // Get data out of the inspections file and store it in a readable way.
         ArrayList<String> inspectionRawData = getFileData(is);
 
@@ -113,9 +111,6 @@ public class InspectionManager {
      *         False otherwise
      */
     private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
-        if (parsedInspectionLine.length < 6){
-            return false;
-        }
         if (parsedInspectionLine[5].equals("")) {
             return false;
         }
@@ -210,7 +205,7 @@ public class InspectionManager {
 
             // We want use csv lines that have data on them, so we don't do anything in the event
             // that a csv line filled with column titles is read in.
-            if (parsedInspectionLine.length != 0 && !parsedInspectionLine[0].toUpperCase().equals("TRACKINGNUMBER")) {
+            if (parsedInspectionLine.length > 5 && !parsedInspectionLine[0].toLowerCase().equals("trackingnumber")) {
                 // Figure out which style of input we are reading, then read it based off that
                 // This is necessary because iteration 1 and the city of surrey data have different
                 // orders for their data
