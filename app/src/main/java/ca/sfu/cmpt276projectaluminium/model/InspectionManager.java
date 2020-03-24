@@ -204,14 +204,17 @@ public class InspectionManager {
 
             // We want use csv lines that have data on them, so we don't do anything in the event
             // that a csv line filled with column titles is read in.
-            if (!parsedInspectionLine[0].equals("TrackingNumber")) {
-                // Figure out which style of input we are reading, then read it based off that
-                // This is necessary because iteration 1 and the city of surrey data have different
-                // orders for their data
-                boolean hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
-                Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,
-                        hazardIsFirst);
-                this.completeInspectionList.add(inspection);
+            if (parsedInspectionLine.length > 0 &&
+                    !parsedInspectionLine[0].equals("TrackingNumber")) {
+                if (!parsedInspectionLine[0].equals("")) {  // We ensure we're not working with empty input
+                    // Figure out which style of input we are reading, then read it based off that
+                    // This is necessary because iteration 1 and the city of surrey data have different
+                    // orders for their data
+                    boolean hazardIsFirst = isHazardBeforeViolationLump(parsedInspectionLine);
+                    Inspection inspection = createInspectionFromCSVLine(parsedInspectionLine,
+                            hazardIsFirst);
+                    this.completeInspectionList.add(inspection);
+                }
             }
         }
     }

@@ -108,22 +108,24 @@ public class RestaurantManager implements Iterable<Restaurant>{
             }
 
             // If the current csv row is data (and not the title), then add it to the list
-            if (!(restaurantValues[0].equals("TRACKINGNUMBER"))) {
-                // Extract the comma-spliced-values into variables
-                String trackingNumber = restaurantValues[0];
-                String name = restaurantValues[1];
-                String address = restaurantValues[2];
-                String city = restaurantValues[3];
-                String type = restaurantValues[4];
-                double latitude = Double.parseDouble(restaurantValues[5]);
-                double longitude = Double.parseDouble(restaurantValues[6]);
+            if (restaurantValues.length > 0 && !(restaurantValues[0].equals("TRACKINGNUMBER"))) {
+                if (!restaurantValues[0].equals("")) {
+                    // Extract the comma-spliced-values into variables
+                    String trackingNumber = restaurantValues[0];
+                    String name = restaurantValues[1];
+                    String address = restaurantValues[2];
+                    String city = restaurantValues[3];
+                    String type = restaurantValues[4];
+                    double latitude = Double.parseDouble(restaurantValues[5]);
+                    double longitude = Double.parseDouble(restaurantValues[6]);
 
-                // Create a restaurant
-                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                        latitude, longitude);
+                    // Create a restaurant
+                    Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                            latitude, longitude);
 
-                // Store the restaurant inside the list of restaurants
-                this.restaurantList.add(restaurant);
+                    // Store the restaurant inside the list of restaurants
+                    this.restaurantList.add(restaurant);
+                }
             }
         }
         Collections.sort(this.restaurantList);
