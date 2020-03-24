@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,14 +15,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -40,8 +45,12 @@ public class MainActivity extends AppCompatActivity {
     //for incorrect version
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
+    private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
+
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
+
+    static ArrayAdapter<Restaurant> adapter;
 
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
@@ -70,23 +79,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private void getData() {
+        Date currentDate = Calendar.getInstance().getTime();
 
-        Button button = findViewById(R.id.data);
-        button.setEnabled(false);
+        File file = new File(ProgressMessage.fileFinalRestaurant);
 
-        new CSVRetriever(this).execute(button);
-        button.setOnClickListener(v -> {
-            recreate();
-        });
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        if (file.exists()){
+            Date fileDate = new Date(file.lastModified());
+
+            long differenceInMilliSec = currentDate.getTime() - fileDate.getTime();
+            long diffHours = TimeUnit.MILLISECONDS.toHours(differenceInMilliSec);
+
+            if (diffHours > 1){
+                FragmentManager manager = getSupportFragmentManager();
+                DownloadMessage dialog = new DownloadMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            }
+        } else {
+            FragmentManager manager = getSupportFragmentManager();
+            DownloadMessage dialog = new DownloadMessage();
+            dialog.show(manager, MESSAGE_DIALOGUE);
+        }
+
 
         InputStream inputStreamRestaurant = null;
         InputStream inputStreamInspection = null;
         try {
-            inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
-            inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
+            inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
+            inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
             initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
-            button.setVisibility(View.GONE);
 
         } catch (FileNotFoundException e) {
             try {
@@ -107,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateListView() {
         // myListAdapter lets me work with the objects
-        ArrayAdapter<Restaurant> adapter = new MyListAdapter();
+        adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
 
         manager = manager.getInstance();
@@ -183,6 +206,12 @@ public class MainActivity extends AppCompatActivity {
             super(MainActivity.this, R.layout.restaurants_view, restaurantArray);
         }
 
+        @Override
+        public void clear() {
+            super.clear();
+            recreate();
+        }
+
         @NonNull
         @Override
         //display image bases on position
@@ -246,4 +275,5 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
     }
+
 }

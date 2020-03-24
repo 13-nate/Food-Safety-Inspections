@@ -159,13 +159,4 @@
         app:layout_constraintBottom_toTopOf="@+id/layoutLow"
         tools:layout_editor_absoluteX="16dp" />
 
-    <Button
-        android:id="@+id/data"
-        android:layout_width="60dp"
-        android:layout_height="48dp"
-        android:enabled="false"
-        android:text="Loading Data"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
