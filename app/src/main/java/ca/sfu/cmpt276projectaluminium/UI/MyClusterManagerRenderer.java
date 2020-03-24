@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -56,5 +57,14 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         return cluster.getSize() > 1;
     }
 
+    @Override
+    public Marker getMarker(Cluster<ClusterMarker> cluster) {
+        return super.getMarker(cluster);
+    }
+
+    @Override
+    public Marker getMarker(ClusterMarker clusterItem) {
+        return super.getMarker(clusterItem);
+    }
 }
 

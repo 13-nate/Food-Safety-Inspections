@@ -31,7 +31,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,13 +40,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
@@ -66,7 +65,8 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
+        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
+        ClusterManager.OnClusterItemClickListener<ClusterMarker>{
 
     private static final String TAGMAP = "MapsActivity";
     private LocationCallback locationCallback;
@@ -86,7 +86,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private Boolean restaurantCordinatesRequest = false;
-    private Boolean mapInilized = false;
+    private Boolean mapInitialized = false;
+    // want to change camera to User on startUp
+    private boolean mapSartUp = true;
+    private Collection<Marker> markers = new ArrayList<>();
+
 
     @Override
     protected void onResume() {
@@ -94,12 +98,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (checkMapServices()) {
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
-                getDeviceLocation();
                 requestLocationUpdates();
                 /*loads the custom map but double draws  when initMap is called again  so need to check
                 if it has been initialized before done inside the initMap method*/
-                initMap();
-
             } else {
                 getLocationPermission();
             }
@@ -117,14 +118,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // checks that all three permissions granted
             if (mLocationPermissionGranted) {
                 initMap();
-                getDeviceLocation();
                 requestLocationUpdates();
             } else {
                 getLocationPermission();
             }
         }
-        getDeviceLocation();
-        requestLocationUpdates();
     }
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -217,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             initMap();
-            getDeviceLocation();
+            requestLocationUpdates();
         } else {
             // Ask them to use location permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -243,48 +241,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void getDeviceLocation() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        try {
-            if (mLocationPermissionGranted) {
-
-
-                Task location = mFusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAGMAP, "found Location");
-                            Location currentLocation = task.getResult();
-
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM);
-                        } else {
-                            Log.d(TAGMAP, "Location is null");
-                            Toast.makeText(MapsActivity.this,
-                                    getString(R.string.no_current_location), Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e) {
-            Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
-        }
-    }
-
     private void moveCamera(LatLng latLng, float zoom) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        if(!mapInilized) {
+        if(!mapInitialized) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-            mapInilized = true;
+            mapInitialized = true;
         }
     }
 
@@ -324,18 +291,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private class MyLocationListener implements LocationListener {
         @Override
-        // changes camera if user moved half a meter
         public void onLocationChanged(Location location) {
-            float currentZoom = mMap.getCameraPosition().zoom;
-            // get current LatLng of user
-            LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            // for smooth transition
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(userPosition)
-                    .zoom(currentZoom)
-                    .build();
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-            mMap.animateCamera(cameraUpdate);
+            float currentZoom;
+            //zoom and go to userLocation if we don't want to go a restaurant and app just started
+            Intent intent = getIntent();
+            boolean goToRestaurant = intent.getBooleanExtra("makeGPSIntent bool", false);
+            if(mapSartUp && !goToRestaurant) {
+                currentZoom = DEFAULT_ZOOM;
+                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
+            } else {
+                currentZoom = mMap.getCameraPosition().zoom;
+                // go to a restaurantLocation or user location
+                if (goToRestaurant) {
+                    goToRestaurantGpsLocation();
+                } else {
+                    // get current LatLng of user
+                    LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                    // for smooth transition
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(userPosition)
+                            .zoom(currentZoom)
+                            .build();
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                    mMap.animateCamera(cameraUpdate);
+                }
+            }
         }
 
         @Override
@@ -382,9 +362,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAGMAP, "Can't find style. Error: ", e);
         }
 
-
         if (mLocationPermissionGranted) {
-            getDeviceLocation();
+            requestLocationUpdates();
             mMap.setMyLocationEnabled(true);
         }
         addMapMarkers();
@@ -414,9 +393,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap,
                         mClusterManager
                 );
+
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
+            //set up info windows
+            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
+                    new CustomInfoWindowAdapter(MapsActivity.this)
+            );
             // for each restaurant get there details
             restaurantManager = RestaurantManager.getInstance();
             for (Restaurant r : restaurantManager) {
@@ -456,6 +440,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     );
                     // adds cluster to map
                     mClusterManager.addItem(newClusterMarker);
+
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
                 } catch (NullPointerException e) {
@@ -463,12 +448,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             }
-            //set up info windows
-            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
-                    new CustomInfoWindowAdapter(MapsActivity.this)
-            );
+
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
+
         }
     }
 
@@ -543,9 +526,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
                         clickedMarker.getTrackingNum());
                 startActivity(intent);
+                finish();
 
             }
         }
+    }
+
+    @Override
+    public boolean onClusterItemClick(ClusterMarker item) {
+        if (item == null) {
+            return false;
+        }
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (ClusterMarker cMarker : mClusterMarkers)
+            builder.include(cMarker.getPosition());
+        LatLngBounds bounds = builder.build();
+        try {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -566,6 +568,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
+
+
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra("makeGPSIntent num", trackingNum);
@@ -573,28 +577,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
+
+    // Sources: https://stackoverflow.com/questions/36902890/how-i-can-call-showinfowindow-in-a-marker-within-cluster-manager
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
+        LatLng restaurantPosition = new LatLng(0.0, 0.0);
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
             String trackingNum = intent.getStringExtra("makeGPSIntent num");
-            LatLng latLng;
-            for (ClusterMarker marker : mClusterMarkers) {
-                if (trackingNum.equals(marker.getTrackingNum())) {
-                    latLng = marker.getPosition();
-                    try {
-                        CameraPosition cameraPosition = new CameraPosition.Builder()
-                                .target(latLng)
-                                .zoom(DEFAULT_ZOOM)
-                                .build();
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                        mMap.animateCamera(cameraUpdate);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            for (ClusterMarker clusterMarker : mClusterMarkers) {
+                if (trackingNum.equals(clusterMarker.getTrackingNum())) {
+                    restaurantPosition = clusterMarker.getPosition();
+                    Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
+                    if(marker != null){
+                        marker.showInfoWindow();
                     }
+                    break;
                 }
             }
+            try {
+                moveCamera(restaurantPosition, DEFAULT_ZOOM);
+            } catch (Exception e) {
+                e.printStackTrace(); }
         }
     }
+
 }
