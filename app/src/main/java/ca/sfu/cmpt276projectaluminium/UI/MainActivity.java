@@ -53,23 +53,12 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
-    //Give the csv files to the data classes so that the csv files can be read
-    void initializeDataClasses() {
-        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager restaurantManager = RestaurantManager.getInstance();
-        restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
-
-        // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager inspectionManager = InspectionManager.getInstance();
-        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(getString(R.string.restaurants));
-        initializeDataClasses();
 
         populateListView();
         registerClickCallBack();
@@ -82,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.restaurantListView);
 
+        manager = manager.getInstance();
         for(Restaurant r: manager){
             restaurantArray.add(r);
         }
@@ -130,39 +120,16 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                         case R.id.navigationMap:
                             //in this case we are in the main activity and want to go to maps
-                            if (isServicesOK()) {
 
-                                item.setChecked(true);
                                 Intent intent = MapsActivity.makeIntent(MainActivity.this);
                                 startActivity(intent);
                                 finish();
-                                // require bool value so return true when the item is clicked
-                                return true;
-                            }
                             //if we get here return false don't have proper services
                             return false;
                 }
                 return false;
             }
         });
-    }
-
-    public boolean isServicesOK() {
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
-        if (available == ConnectionResult.SUCCESS) {
-            // user can make map requests
-            return true;
-        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            // an error occurred but it can be fixed, versioning issue
-            Dialog dialog = GoogleApiAvailability.getInstance().
-                    getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
-            dialog.show();
-        } else {
-            // nothing we can do
-            Toast.makeText(this, "You can't make Map Request", Toast.LENGTH_SHORT).show();
-        }
-        // There is a problem so return false
-        return false;
     }
 
     public static Intent makeIntent(Context context){
