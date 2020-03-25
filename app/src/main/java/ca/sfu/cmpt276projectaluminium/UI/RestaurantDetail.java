@@ -42,9 +42,11 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class RestaurantDetail extends AppCompatActivity {
 
     private static final String TAG = "RestaurantId";
+    private static final String lastActivity = "";
     private ArrayList<Inspection> inspections = new ArrayList<>();
     Restaurant restaurant;
     String id;
+    boolean isFromMap = false;
 
     // Control what happens upon pressing back button
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -78,6 +80,9 @@ public class RestaurantDetail extends AppCompatActivity {
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
         //if null pointer thrown, an invalid id was passed
+
+        isFromMap = getIntent().getBooleanExtra(lastActivity,false);
+        //if last activity user visited is map activity
     }
 
     private void populateListView(){
@@ -104,9 +109,10 @@ public class RestaurantDetail extends AppCompatActivity {
         longitude.setText(tempLongitude);
     }
 
-    public static Intent makeIntent(Context context, String restaurantId){
+    public static Intent makeIntent(Context context, String restaurantId, boolean isFromMap){
         Intent intent = new Intent(context, RestaurantDetail.class);
         intent.putExtra(TAG, restaurantId);
+        intent.putExtra(lastActivity,isFromMap);
         return intent;
     }
 

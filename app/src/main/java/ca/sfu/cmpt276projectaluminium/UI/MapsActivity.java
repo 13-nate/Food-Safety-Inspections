@@ -524,7 +524,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (ClusterMarker clickedMarker : mClusterMarkers) {
             if (item.getPosition() == clickedMarker.getPosition()) {
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
-                        clickedMarker.getTrackingNum());
+                        clickedMarker.getTrackingNum(),true);
                 startActivity(intent);
                 finish();
 
