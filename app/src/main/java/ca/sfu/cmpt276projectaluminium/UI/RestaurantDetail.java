@@ -202,7 +202,11 @@ public class RestaurantDetail extends AppCompatActivity {
 
     public void onBackPressed(){
         Log.i(TAG,"onBackPressed");
-        Intent intent= MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
+        Intent intent = null;
+        if(isFromMap)
+            intent= MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
+        else
+            intent = MainActivity.makeIntent(RestaurantDetail.this);
         startActivity(intent);
     }
 
