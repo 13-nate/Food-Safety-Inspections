@@ -150,7 +150,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
             }
             dismiss();
-            MainActivity.adapter.clear();
+            getActivity().recreate();
         }
 
         private void readRestaurant() throws IOException, JSONException{
