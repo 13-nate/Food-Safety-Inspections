@@ -5,12 +5,11 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
@@ -27,9 +26,7 @@ import java.util.Iterator;
  * Manages data about restaurants by storing them all in an easily accessible list
  */
 public class RestaurantManager implements Iterable<Restaurant>{
-    private static final String TAG = "RestaurantManager";
-
-    private ArrayList<Restaurant> restaurantList = new ArrayList<>();
+    private List<Restaurant> restaurants;
 
     //checks whether this is the first time running or not
     private boolean firstRun = true;
@@ -38,9 +35,11 @@ public class RestaurantManager implements Iterable<Restaurant>{
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
      */
     private static RestaurantManager instance;
+    // Private to prevent anyone else from instantiating
     private RestaurantManager() {
-        // Private to prevent anyone else from instantiating
+        this.restaurants = new ArrayList<>();
     }
+    // This version is called when you need to simply access the currently stored data
     public static RestaurantManager getInstance() {
         if (instance == null) {
             instance = new RestaurantManager();
@@ -48,95 +47,17 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
         return instance;
     }
-
-    /**
-     * Fills the ArrayList variable with objects based on provided csv data
-     * Should be called once, on program initialization
-     */
-    public void initialize(InputStream is) {
-        //Clears out the arrayList to stop old elements from remaining around
-        restaurantList = new ArrayList<>();
-
-        // Get data out of the restaurants file and store it in a readable way.
-        ArrayList<String> restaurantData = getFileData(is);
-
-        // Fill arrayList with restaurant objects by properly initializing restaurants.
-        initializeRestaurantList(restaurantData);
-    }
-
-    /**
-     * Extracts restaurant info line by line and stores it in a list
-     * @return A list of strings (each string holds a line of restaurant data)
-     */
-    private ArrayList<String> getFileData(InputStream is) {
-        ArrayList<String> restaurantData = new ArrayList<>();
-
-        // Initialize the reader for the csv file
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is,
-                Charset.forName("UTF-8")));
-
-        // Read each line into the ArrayList
-        try {
-            // Read the file
-            String row;
-            while ((row = reader.readLine()) != null) {
-                restaurantData.add(row);
-            }
-        } catch (IOException ex) {
-            Log.i(TAG, "Error reading line", ex);
-        } finally {
-            try {
-                // Close the file
-                reader.close();
-            } catch (IOException ex) {
-                Log.i(TAG, "Error closing file", ex);
-            }
+    // This version is called when you also need update/initialize csv data
+    public static RestaurantManager getInstance(InputStream is) {
+        if (instance == null) {
+            instance = new RestaurantManager();
         }
 
-        // Return data
-        return restaurantData;
-    }
+        CSVFileParser fileParser = new CSVFileParser(is);
+        instance.restaurants = fileParser.getRestaurants();
+        Collections.sort(instance.restaurants);
 
-    /**
-     * Initialize restaurantList with data by parsing restaurantData to extract the relevant data
-     * @param restaurantData A list of strings (each string holds a line of restaurant data)
-     */
-    private void initializeRestaurantList(ArrayList<String> restaurantData) {
-        // For each line of csv data, create a restaurant with it and put it in the restaurant list
-        for (String dataLine : restaurantData) {
-            // Separate the comma-spliced-values
-            String[] restaurantValues = dataLine.split("\\s*,\\s*");
-
-            // Remove any quotations from entries
-            for (int i = 0; i < restaurantValues.length; i++) {
-                String str = restaurantValues[i];
-                str = str.replaceAll("\"", "");
-                restaurantValues[i] = str;
-            }
-
-            // If the current csv row is data (and not the title), then add it to the list
-            if (restaurantValues.length == 7 && !(restaurantValues[0].equals("TRACKINGNUMBER"))) {
-                if (!restaurantValues[0].equals("")) {
-                    // Extract the comma-spliced-values into variables
-                    String trackingNumber = restaurantValues[0];
-                    String name = restaurantValues[1];
-                    String address = restaurantValues[2];
-                    String city = restaurantValues[3];
-                    String type = restaurantValues[4];
-                    double latitude = Double.parseDouble(restaurantValues[5]);
-                    double longitude = Double.parseDouble(restaurantValues[6]);
-
-                    // Create a restaurant
-                    Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                            latitude, longitude);
-
-                    // Store the restaurant inside the list of restaurants
-                    this.restaurantList.add(restaurant);
-                }
-            }
-        }
-
-        Collections.sort(this.restaurantList);
+        return instance;
     }
 
     /**
@@ -147,7 +68,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     public Restaurant recreateRestaurant(String trackingNumber) {
         // Find a restaurant that matches the trackingNumber and return it.
-        for (Restaurant restaurant : this.restaurantList) {
+        for (Restaurant restaurant : this.restaurants) {
             boolean trackingNumberMatches = restaurant.getTrackingNumber().equals(trackingNumber);
             if (trackingNumberMatches) {
                 return restaurant;
@@ -167,7 +88,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
     }
 
     public int getSize() {
-        return this.restaurantList.size();
+        return this.restaurants.size();
     }
 
     /**
@@ -175,6 +96,6 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     @Override
     public Iterator<Restaurant> iterator () {
-        return this.restaurantList.iterator();
+        return this.restaurants.iterator();
     }
 }
