@@ -18,12 +18,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -90,6 +91,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
     //https://stackoverflow.com/questions/48381818/this-field-leaks-context-object
     //https://www.youtube.com/watch?v=EcfUkjlL9RI
     //https://www.youtube.com/watch?v=-7CO097C7NM
+    //https://stackoverflow.com/questions/15758856/android-how-to-download-file-from-webserver
 
     /**
      * Gets the csv files for the restaurants and inspections in the background
@@ -203,57 +205,42 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
         private void getRestaurantCSV() throws IOException {
             URL url = new URL(CSVUrlRestaurant);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            InputStream inputStreamRestaurant = connection.getInputStream();
+            int count;
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(inputStreamRestaurant));
-            String totalInput = "";
-            String inputLine;
-            //first line is a header for the format, so is discarded
-            //in.readLine();
-            while ((inputLine = in.readLine()) != null) {
-                totalInput = totalInput + inputLine + "\n";
+            InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
+            OutputStream output = weakContext.get()
+                    .openFileOutput(fileRestaurant, Context.MODE_PRIVATE);
+
+            byte[] data = new byte[1024];
+
+            while ((count = input.read(data)) != -1) {
+                output.write(data, 0, count);
             }
-            in.close();
 
-            FileOutputStream fos = weakContext.get().openFileOutput(fileRestaurant, Context.MODE_PRIVATE);
-            fos.write(totalInput.getBytes());
-            fos.close();
-
-            connection.disconnect();
+            output.flush();
+            output.close();
+            input.close();
         }
 
         private void getInspectionCSV() throws IOException {
             URL url = new URL(CSVUrlInspection);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            InputStream inputStreamInspection = connection.getInputStream();
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(inputStreamInspection));
-            String totalInput = "";
-            String inputLine;
 
-            int count = 0;
-            int progress = 0;
+            int count;
+            InputStream input = new BufferedInputStream(url.openStream(), 8192);
+            OutputStream output = weakContext.get()
+                    .openFileOutput(fileInspection, Context.MODE_PRIVATE);
+            byte[] data = new byte[1024];
 
-            while ((inputLine = in.readLine()) != null) {
-                totalInput = totalInput + inputLine + "\n";
+            while ((count = input.read(data)) != -1) {
 
-                if (count % 1000 == 0 && progress + 20 != 99){
-                    publishProgress(20 + progress);
-                    progress++;
-                }
-                count++;
+                output.write(data, 0, count);
             }
 
-            in.close();
+            output.flush();
+            output.close();
+            input.close();
 
-            FileOutputStream fos = weakContext.get().openFileOutput(fileInspection, Context.MODE_PRIVATE);
-            fos.write(totalInput.getBytes());
-            fos.close();
-
-            connection.disconnect();
         }
 
 

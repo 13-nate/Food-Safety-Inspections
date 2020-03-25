@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -46,9 +45,6 @@ import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // Sources:
 // https://stackoverflow.com/questions/5089300/how-can-i-change-the-image-of-an-imageview
@@ -130,8 +126,13 @@ public class MainActivity extends AppCompatActivity {
     private void checkFileDate(){
         Date currentDate = Calendar.getInstance().getTime();
 
-        File fileRestaurant = new File(ProgressMessage.fileFinalRestaurant);
-        File fileInspection = new File(ProgressMessage.fileFinalRestaurant);
+        String tempPath = getFilesDir().getAbsolutePath();
+
+        File fileRestaurant = new File
+                (tempPath + "/" + ProgressMessage.fileFinalRestaurant);
+
+        File fileInspection = new File
+                (tempPath + "/" + ProgressMessage.fileFinalInspection);
         if (fileRestaurant.exists() && fileInspection.exists()){
 
             Date fileDateRestaurant = new Date(fileRestaurant.lastModified());
