@@ -12,23 +12,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * This class converts a csv file input stream into lists of objects which you can acquire by
+ * calling the following methods:
+ * - getRestaurants();
+ * - getInspections();
+ */
 public class CSVFileParser {
     private static final String TAG = "CSVFileParser";
     private InputStream is;  // Stores raw csv data
     private List<List<String>> parsedCSVLines;
-    // TODO: Deal with an empty csv file
     /**
      * Loads an input stream into this objects memory that can be manipulated to produce lists of
      * restaurants/inspections if needed
      * @param is This is presumably an input stream with CSV file data
      */
-    public CSVFileParser(InputStream is) {  // TODO: Make package-private
+    CSVFileParser(InputStream is) {
         this.is = is;
         parsedCSVLines = new ArrayList<>();
 
         parseCSVInput();
         cleanUpParsedInput();
-        getInspectionList();
     }
 
     /**
@@ -36,7 +40,7 @@ public class CSVFileParser {
      * - All invalid lines in input are ignored
      * @return a list of restaurant objects
      */
-    List<Restaurant> getRestaurantList() {
+    List<Restaurant> getRestaurants() {
         List<Restaurant> restaurants = new ArrayList<>();
 
         // Turn each line of parsed CSV data into a restaurant object
@@ -66,7 +70,7 @@ public class CSVFileParser {
                 restaurants.add(restaurant);
             } catch (Exception e) {
                 // Instead of crashing, we simply don't add anything to the list & then print a log
-                Log.e(TAG, "getRestaurantList: Unable to convert the following csv line to " +
+                Log.e(TAG, "getRestaurants: Unable to convert the following csv line to " +
                         "a restaurant: \n" + parsedLine.toString(), e);
             }
         }
@@ -116,7 +120,7 @@ public class CSVFileParser {
      * - All invalid lines in input are ignored
      * @return a list of inspection objects
      */
-    List<Inspection> getInspectionList() {
+    List<Inspection> getInspections() {
         List<Inspection> inspections = new ArrayList<>();
 
         // Turn each line of parsed CSV data into an inspection object
@@ -190,7 +194,7 @@ public class CSVFileParser {
                 inspections.add(inspection);
             } catch (Exception e) {
                 // Instead of crashing, we simply don't add anything to the list & then print a log
-                Log.e(TAG, "getInspectionList: Unable to convert the following csv line to " +
+                Log.e(TAG, "getInspections: Unable to convert the following csv line to " +
                         "an inspection: \n" + parsedLine.toString(), e);
             }
         }
@@ -269,7 +273,7 @@ public class CSVFileParser {
     private void cleanUpParsedInput() {
         // If the first line is empty or a title line without data, we remove the line
         List<String> firstLine = parsedCSVLines.get(0);
-        boolean isEmpty = firstLine.size() == 0;
+        boolean isEmpty = firstLine.size() == 0 || firstLine.get(0).equals("");
         if (isEmpty || firstLine.get(0).toLowerCase().equals("\"trackingnumber\"")) {
             // Remove the line
             parsedCSVLines.remove(0);
@@ -291,15 +295,5 @@ public class CSVFileParser {
             }
         }
 
-    }
-
-    /**
-     * Checks if the parsed CSV input is valid.
-     * @param parsedCSVLine The CSV input that corresponds to an inspection object
-     * @return True if input can be made into an object with no problems, false otherwise
-     */
-    private boolean isValidInspection(List<String> parsedCSVLine) {
-
-        return false;
     }
 }
