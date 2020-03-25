@@ -70,13 +70,10 @@ public class MainActivity extends AppCompatActivity {
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
         // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager restaurantManager = RestaurantManager.getInstance();
-
-        restaurantManager.initialize(inputStreamRestaurant);
+        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
 
         // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager inspectionManager = InspectionManager.getInstance();
-        inspectionManager.initialize(inputStreamInspection);
+        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
     }
 
     @Override
