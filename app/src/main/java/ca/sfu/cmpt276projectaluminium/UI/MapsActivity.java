@@ -66,7 +66,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
-        ClusterManager.OnClusterItemClickListener<ClusterMarker>{
+        ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
     private LocationCallback locationCallback;
@@ -247,7 +247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        if(!mapInitialized) {
+        if (!mapInitialized) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
@@ -296,7 +296,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
             Intent intent = getIntent();
             boolean goToRestaurant = intent.getBooleanExtra("makeGPSIntent bool", false);
-            if(mapSartUp && !goToRestaurant) {
+            if (mapSartUp && !goToRestaurant) {
                 currentZoom = DEFAULT_ZOOM;
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
             } else {
@@ -519,7 +519,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (ClusterMarker clickedMarker : mClusterMarkers) {
             if (item.getPosition() == clickedMarker.getPosition()) {
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
-                        clickedMarker.getTrackingNum(),true);
+                        clickedMarker.getTrackingNum(), true);
                 startActivity(intent);
                 finish();
 
@@ -564,7 +564,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra("makeGPSIntent num", trackingNum);
@@ -572,10 +571,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
-    public void onBackPressed(){
+    public void onBackPressed() {
 
         //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
-        Log.i(TAGMAP,"onBackPressed");
+        Log.i(TAGMAP, "onBackPressed");
         Intent a = new Intent(Intent.ACTION_MAIN);
         a.addCategory(Intent.CATEGORY_HOME);
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -586,7 +585,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
         Marker mark1 = null;
-        boolean flag = false;
         LatLng restaurantPosition = new LatLng(0.0, 0.0);
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
@@ -596,13 +594,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     restaurantPosition = clusterMarker.getPosition();
                     Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
                     mark1 = marker;
-                    if(marker != null){
-
+                    if (marker != null) {
+                        boolean flag = false;
                         marker.hideInfoWindow();
-                        if (!flag) {
+                        flag = marker.isInfoWindowShown();
+                        if (!flag)
                             marker.showInfoWindow();
-                            flag = true;
-                        }
 
                     }
                     break;
@@ -610,14 +607,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             try {
                 moveCamera(restaurantPosition, DEFAULT_ZOOM);
-                if(mark1 != null){
-                    if (flag)
+                if (mark1 != null) {
+                    boolean flag = false;
+                    mark1.hideInfoWindow();
+                    flag = mark1.isInfoWindowShown();
+                    if (!flag)
                         mark1.showInfoWindow();
 
                 }
             } catch (Exception e) {
-                e.printStackTrace(); }
+                e.printStackTrace();
+            }
         }
-    }
 
+    }
 }
