@@ -2,6 +2,7 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,10 +20,19 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,12 +54,13 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class MainActivity extends AppCompatActivity {
     //for incorrect version
     private static final int ERROR_DIALOG_REQUEST = 9001;
-
     private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
+    public static final String FIRST_TIME = "first_time";
+
+    private Context context;
 
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
-
     static ArrayAdapter<Restaurant> adapter;
 
     //Give the csv files to the data classes so that the csv files can be read
@@ -63,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspectionManager.initialize(inputStreamInspection);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,29 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getData() {
-        Date currentDate = Calendar.getInstance().getTime();
 
-        File file = new File(ProgressMessage.fileFinalRestaurant);
+        context = this;
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        if (file.exists()){
-            Date fileDate = new Date(file.lastModified());
-
-            long differenceInMilliSec = currentDate.getTime() - fileDate.getTime();
-            long diffHours = TimeUnit.MILLISECONDS.toHours(differenceInMilliSec);
-
-            if (diffHours > 1){
-                FragmentManager manager = getSupportFragmentManager();
-                DownloadMessage dialog = new DownloadMessage();
-                dialog.show(manager, MESSAGE_DIALOGUE);
-            }
-        } else {
-            FragmentManager manager = getSupportFragmentManager();
-            DownloadMessage dialog = new DownloadMessage();
-            dialog.show(manager, MESSAGE_DIALOGUE);
-        }
-
-
+        checkFileDate();
         InputStream inputStreamRestaurant = null;
         InputStream inputStreamInspection = null;
         try {
@@ -126,6 +119,30 @@ public class MainActivity extends AppCompatActivity {
                     getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
 
+    }
+
+    private void checkFileDate(){
+        Date currentDate = Calendar.getInstance().getTime();
+
+        File fileRestaurant = new File(ProgressMessage.fileFinalRestaurant);
+        File fileInspection = new File(ProgressMessage.fileFinalRestaurant);
+        if (fileRestaurant.exists() && fileInspection.exists()){
+
+            Date fileDateRestaurant = new Date(fileRestaurant.lastModified());
+            Date fileDateInspection = new Date(fileInspection.lastModified());
+
+            long timeDifferentRestaurant = currentDate.getTime() - fileDateRestaurant.getTime();
+            long diffRestaurant = TimeUnit.MILLISECONDS.toHours(timeDifferentRestaurant);
+
+            long timeDifferentInspection = currentDate.getTime() - fileDateInspection.getTime();
+            long diffInspection = TimeUnit.MILLISECONDS.toHours(timeDifferentInspection);
+
+            if (diffInspection > 20 || diffRestaurant > 20){
+                new updateChecker().execute();
+            }
+        } else {
+            new updateChecker().execute();
+        }
     }
 
     private void populateListView() {
@@ -276,4 +293,134 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class updateChecker extends AsyncTask<Void, Void, Void> {
+
+        private Date lastModifiedRestaurant;
+        private Date lastModifiedInspection;
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                readRestaurant();
+                readInspection();
+            } catch (IOException | JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            promptDownload();
+        }
+
+        private void readRestaurant() throws IOException, JSONException, ParseException {
+            URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=restaurants");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
+            String totalInput = "";
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                totalInput += inputLine;
+            }
+            in.close();
+            JSONObject json = new JSONObject(totalInput);
+
+            JSONObject jsonObject = json.getJSONObject("result");
+            JSONArray jsonArray = jsonObject.getJSONArray("resources");
+            jsonObject = jsonArray.getJSONObject(0);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            String lastModified = jsonObject.getString("last_modified");
+            lastModified = lastModified.replace("T", " ");
+            lastModified = lastModified.substring(0, lastModified.length() - 3);
+            lastModifiedRestaurant = simpleDateFormat.parse(lastModified);
+
+            connection.disconnect();
+        }
+
+        //takes in the json that gives you the choice between varieties of files
+        //gets the csv containing useful data from it
+        private void readInspection() throws IOException, JSONException, ParseException {
+            URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
+            String totalInput = "";
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                totalInput += inputLine;
+
+            }
+            in.close();
+            JSONObject json = new JSONObject(totalInput);
+
+            JSONObject jsonObject = json.getJSONObject("result");
+            JSONArray jsonArray = jsonObject.getJSONArray("resources");
+            jsonObject = jsonArray.getJSONObject(0);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            String lastModified = jsonObject.getString("last_modified");
+            lastModified = lastModified.replace("T", " ");
+            lastModified = lastModified.substring(0, lastModified.length() - 3);
+            lastModifiedInspection = simpleDateFormat.parse(lastModified);
+
+            connection.disconnect();
+        }
+
+        private void promptDownload() {
+            String tempPath = context.getFilesDir().getAbsolutePath();
+
+            File fileRestaurant = new File
+                    (tempPath + "/" + ProgressMessage.fileFinalRestaurant);
+
+            File fileInspection = new File
+                    (tempPath + "/" + ProgressMessage.fileFinalInspection);
+
+            if (fileRestaurant.exists() && fileInspection.exists()) {
+                Date fileDateRestaurant = new Date(fileRestaurant.lastModified());
+                Date fileDateInspection = new Date(fileInspection.lastModified());
+
+                if (lastModifiedInspection != null && lastModifiedRestaurant != null){
+                    long timeDifferentRestaurant =
+                            lastModifiedRestaurant.getTime() - fileDateRestaurant.getTime();
+
+                    long timeDifferentInspection =
+                            lastModifiedInspection.getTime() - fileDateInspection.getTime();
+
+                    if (checkFirstTime()
+                            && ((timeDifferentRestaurant) > 0 || (timeDifferentInspection) > 0)) {
+                        FragmentManager manager = getSupportFragmentManager();
+                        DownloadMessage dialog = new DownloadMessage();
+                        dialog.show(manager, MESSAGE_DIALOGUE);
+                    }
+                }
+            } else if (checkFirstTime()) {
+                FragmentManager manager = getSupportFragmentManager();
+                DownloadMessage dialog = new DownloadMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            }
+
+        }
+
+        private boolean checkFirstTime(){
+            RestaurantManager restaurants = RestaurantManager.getInstance();
+
+            if (restaurants.isFirstRun()){
+                restaurants.setFirstRun(false);
+                return true;
+            }
+            return false;
+        }
+    }
 }

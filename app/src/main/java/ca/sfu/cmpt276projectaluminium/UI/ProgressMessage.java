@@ -38,10 +38,10 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
     private ProgressBar progressBar;
 
-    static final String fileRestaurant = "tempRestaurant.csv";
+    private static final String fileRestaurant = "tempRestaurant.csv";
     static final String fileFinalRestaurant = "restaurant.csv";
 
-    static final String fileInspection = "tempInspection.csv";
+    private static final String fileInspection = "tempInspection.csv";
     static final String fileFinalInspection = "inspection.csv";
 
     @Override
@@ -66,6 +66,11 @@ public class ProgressMessage extends AppCompatDialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 cancel = true;
+                String tempPath = getActivity().getFilesDir().getAbsolutePath();
+                File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
+                tempRestaurant.delete();
+                File tempInspection = new File (tempPath + "/" + fileInspection);
+                tempInspection.delete();
 
             }
         };
@@ -93,14 +98,8 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
     public class CSVRetriever extends AsyncTask<ProgressBar, Integer, ProgressBar> {
 
-        private String formatRestaurant;
         private String CSVUrlRestaurant;
-        private String lastModifiedRestaurant;
-
-
-        private String formatInspection;
         private String CSVUrlInspection;
-        private String lastModifiedInspection;
 
         private WeakReference<Context> weakContext;
 
@@ -119,11 +118,11 @@ public class ProgressMessage extends AppCompatDialogFragment {
         protected ProgressBar doInBackground(ProgressBar... progressBars) {
             try {
                 readRestaurant();
-                publishProgress(25);
+                publishProgress(5);
                 readInspection();
-                publishProgress(50);
+                publishProgress(10);
                 getRestaurantCSV();
-                publishProgress(75);
+                publishProgress(15);
                 getInspectionCSV();
                 publishProgress(99);
 
@@ -137,14 +136,8 @@ public class ProgressMessage extends AppCompatDialogFragment {
         //Delete Functions Do nothing???
         @Override
         protected void onPostExecute(ProgressBar progressBar) {
-            String tempPath = weakContext.get().getFilesDir().getAbsolutePath();
-            if (cancel){
-                File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
-                tempRestaurant.delete();
-                File tempInspection = new File (tempPath + "/" + fileInspection);
-                tempInspection.delete();
-            } else {
-                //File.createTempFile();
+            if (!cancel) {
+                String tempPath = weakContext.get().getFilesDir().getAbsolutePath();
                 weakContext.get().deleteFile(fileFinalRestaurant);
                 weakContext.get().deleteFile(fileFinalInspection);
 
@@ -178,10 +171,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
             JSONObject jsonObject = json.getJSONObject("result");
             JSONArray jsonArray = jsonObject.getJSONArray("resources");
             jsonObject = jsonArray.getJSONObject(0);
-
-            formatRestaurant = jsonObject.getString("format");
             CSVUrlRestaurant = jsonObject.getString("url");
-            lastModifiedRestaurant = jsonObject.getString("last_modified");
 
             connection.disconnect();
         }
@@ -207,10 +197,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
             JSONObject jsonObject = json.getJSONObject("result");
             JSONArray jsonArray = jsonObject.getJSONArray("resources");
             jsonObject = jsonArray.getJSONObject(0);
-
-            formatInspection = jsonObject.getString("format");
             CSVUrlInspection = jsonObject.getString("url");
-            lastModifiedInspection = jsonObject.getString("last_modified");
 
             connection.disconnect();
         }
@@ -243,19 +230,25 @@ public class ProgressMessage extends AppCompatDialogFragment {
             URL url = new URL(CSVUrlInspection);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             InputStream inputStreamInspection = connection.getInputStream();
-            publishProgress(80);
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(inputStreamInspection));
             String totalInput = "";
             String inputLine;
 
-            publishProgress(90);
+            int count = 0;
+            int progress = 0;
+
             while ((inputLine = in.readLine()) != null) {
                 totalInput = totalInput + inputLine + "\n";
+
+                if (count % 1000 == 0 && progress + 20 != 99){
+                    publishProgress(20 + progress);
+                    progress++;
+                }
+                count++;
             }
 
             in.close();
-            publishProgress(95);
 
             FileOutputStream fos = weakContext.get().openFileOutput(fileInspection, Context.MODE_PRIVATE);
             fos.write(totalInput.getBytes());
@@ -264,29 +257,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             connection.disconnect();
         }
 
-        public String getFormatRestaurant() {
-            return formatRestaurant;
-        }
-
-        public String getCSVUrlRestaurant() {
-            return CSVUrlRestaurant;
-        }
-
-        public String getLastModifiedRestaurant() {
-            return lastModifiedRestaurant;
-        }
-
-        public String getFormatInspection() {
-            return formatInspection;
-        }
-
-        public String getCSVUrlInspection() {
-            return CSVUrlInspection;
-        }
-
-        public String getLastModifiedInspection() {
-            return lastModifiedInspection;
-        }
 
     }
 

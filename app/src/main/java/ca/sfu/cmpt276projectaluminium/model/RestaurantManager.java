@@ -2,8 +2,6 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +10,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 /* Sources:
  * https://stackabuse.com/reading-and-writing-csvs-in-java/
@@ -32,6 +29,9 @@ public class RestaurantManager implements Iterable<Restaurant>{
     private static final String TAG = "RestaurantManager";
 
     private ArrayList<Restaurant> restaurantList = new ArrayList<>();
+
+    //checks whether this is the first time running or not
+    private boolean firstRun = true;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -53,8 +53,9 @@ public class RestaurantManager implements Iterable<Restaurant>{
      * Should be called once, on program initialization
      */
     public void initialize(InputStream is) {
-        //empties the list in case of additional runs
+        //Clears out the arrayList to stop old elements from remaining around
         restaurantList = new ArrayList<>();
+
         // Get data out of the restaurants file and store it in a readable way.
         ArrayList<String> restaurantData = getFileData(is);
 
@@ -113,30 +114,35 @@ public class RestaurantManager implements Iterable<Restaurant>{
             }
 
             // If the current csv row is data (and not the title), then add it to the list
-            if (!(restaurantValues[0].toUpperCase().equals("TRACKINGNUMBER"))) {
-                // Extract the comma-spliced-values into variables
-                String trackingNumber = restaurantValues[0];
-                String name = restaurantValues[1];
-                String address = restaurantValues[2];
-                String city = restaurantValues[3];
-                String type = restaurantValues[4];
-                double latitude = 0;
-                double longitude = 0;
-                try {
-                    latitude = Double.parseDouble(restaurantValues[5]);
-                    longitude = Double.parseDouble(restaurantValues[6]);
-                } catch (NumberFormatException e){
-                    e.printStackTrace();
-                }
-                // Create a restaurant
-                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
-                        latitude, longitude);
+            if (restaurantValues.length > 0
+                    && !(restaurantValues[0].toUpperCase().equals("TRACKINGNUMBER"))
+                    && !restaurantValues[0].equals("")) {
 
-                // Store the restaurant inside the list of restaurants
-                this.restaurantList.add(restaurant);
+                    // Extract the comma-spliced-values into variables
+                    String trackingNumber = restaurantValues[0];
+                    String name = restaurantValues[1];
+                    String address = restaurantValues[2];
+                    String city = restaurantValues[3];
+                    String type = restaurantValues[4];
+                    double latitude = 0;
+                    double longitude = 0;
+                    try {
+                        latitude = Double.parseDouble(restaurantValues[5]);
+                        longitude = Double.parseDouble(restaurantValues[6]);
+                    } catch (NumberFormatException e){
+                        latitude = Double.parseDouble(restaurantValues[6]);
+                        longitude = Double.parseDouble(restaurantValues[7]);
+                    }
+
+                    // Create a restaurant
+                    Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                            latitude, longitude);
+
+                    // Store the restaurant inside the list of restaurants
+                    this.restaurantList.add(restaurant);
+
             }
         }
-
         Collections.sort(this.restaurantList);
     }
 
@@ -157,6 +163,14 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
         // This should only be returned if an invalid trackingNumber was passed in
         return null;
+    }
+
+    public boolean isFirstRun() {
+        return firstRun;
+    }
+
+    public void setFirstRun(boolean firstRun) {
+        this.firstRun = firstRun;
     }
 
     public int getSize() {
