@@ -10,5 +10,5 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="34dp"
         android:layout_marginTop="19dp"
-        android:text="New Data Avaliable: Would you like to download now?" />
+        android:text="@string/new_data_avaliable_would_you_like_to_download_now" />
 </RelativeLayout>
