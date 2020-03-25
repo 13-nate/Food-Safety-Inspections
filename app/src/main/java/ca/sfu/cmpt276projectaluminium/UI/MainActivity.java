@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         inspectionManager.initialize(inputStreamInspection);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         onBottomToolBarClick();
        // setMenuColor();
     }
-
 
 
     private void getData() {

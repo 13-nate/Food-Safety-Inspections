@@ -113,9 +113,6 @@ public class InspectionManager {
      *         False otherwise
      */
     private boolean isHazardBeforeViolationLump(String[] parsedInspectionLine) {
-        if (parsedInspectionLine.length < 6){
-            return false;
-        }
         if (parsedInspectionLine[5].equals("")) {
             return false;
         }
@@ -210,9 +207,7 @@ public class InspectionManager {
 
             // We want use csv lines that have data on them, so we don't do anything in the event
             // that a csv line filled with column titles is read in.
-            if (parsedInspectionLine.length != 0
-                    && !parsedInspectionLine[0].toUpperCase().equals("TRACKINGNUMBER")
-                    && !parsedInspectionLine[0].equals("")) {
+            if (parsedInspectionLine.length > 5 && !parsedInspectionLine[0].toLowerCase().equals("trackingnumber")) {
                 // Figure out which style of input we are reading, then read it based off that
                 // This is necessary because iteration 1 and the city of surrey data have different
                 // orders for their data
