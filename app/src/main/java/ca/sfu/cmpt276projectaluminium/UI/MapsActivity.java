@@ -132,8 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     void InitializeManagers() {
         // The csv data is stored in the raw resources folder so we pull our data from there
         RestaurantManager.getInstance(getResources().openRawResource(R.raw.restaurants_itr1));
-        InspectionManager inspectionManager = InspectionManager.getInstance();
-        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
+        InspectionManager.getInstance(getResources().openRawResource(R.raw.inspectionreports_itr1));
     }
 
     // this calls to heck for google play and then checks for gps
