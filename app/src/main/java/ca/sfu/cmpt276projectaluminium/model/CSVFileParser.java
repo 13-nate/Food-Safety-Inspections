@@ -78,43 +78,6 @@ public class CSVFileParser {
         return restaurants;
     }
 
-    private boolean isInteger(String s) {
-        try {
-            Integer.parseInt(s);
-        } catch(NumberFormatException | NullPointerException e) {
-            return false;
-        }
-
-        // We're here if is possible to convert the string to an int
-        return true;
-    }
-
-    /**
-     * If the hazard rating is ordered before the violation lump, then the parsed inspection line
-     * will have a string at index 5, if the hazard rating is ordered after, then the parsed
-     * inspection line will have an integer at index 5.
-     * If the hazard rating is before the violation dump, then index 5 will have:
-     *  - a string
-     * If the hazard rating is after the violation dump, then index 5 will have either:
-     *  - an integer OR
-     *  - an empty string
-     * @param parsedInspectionLine The array that holds the data all split up
-     * @return True if the hazard rating comes before violation lump order-wise in the string.
-     *         False otherwise
-     */
-    private boolean isHazardBeforeViolationLump(List<String> parsedInspectionLine) {
-        if (parsedInspectionLine.get(5).equals("")) {
-            return false;
-        }
-
-        return !isInteger(parsedInspectionLine.get(5));
-    }
-
-    // We know that if the string can be made into an integer, then it is not a hazard rating
-    private boolean isElementPartOfViolation(String s) {
-        return isInteger(s);
-    }
-
     /**
      * Converts all valid inspections from the csv into inspection objects and puts those in a list
      * - All invalid lines in input are ignored
@@ -200,6 +163,43 @@ public class CSVFileParser {
         }
 
         return inspections;
+    }
+
+    private boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch(NumberFormatException | NullPointerException e) {
+            return false;
+        }
+
+        // We're here if is possible to convert the string to an int
+        return true;
+    }
+
+    /**
+     * If the hazard rating is ordered before the violation lump, then the parsed inspection line
+     * will have a string at index 5, if the hazard rating is ordered after, then the parsed
+     * inspection line will have an integer at index 5.
+     * If the hazard rating is before the violation dump, then index 5 will have:
+     *  - a string
+     * If the hazard rating is after the violation dump, then index 5 will have either:
+     *  - an integer OR
+     *  - an empty string
+     * @param parsedInspectionLine The array that holds the data all split up
+     * @return True if the hazard rating comes before violation lump order-wise in the string.
+     *         False otherwise
+     */
+    private boolean isHazardBeforeViolationLump(List<String> parsedInspectionLine) {
+        if (parsedInspectionLine.get(5).equals("")) {
+            return false;
+        }
+
+        return !isInteger(parsedInspectionLine.get(5));
+    }
+
+    // We know that if the string can be made into an integer, then it is not a hazard rating
+    private boolean isElementPartOfViolation(String s) {
+        return isInteger(s);
     }
 
     /**
