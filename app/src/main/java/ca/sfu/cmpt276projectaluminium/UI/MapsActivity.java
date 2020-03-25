@@ -590,9 +590,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     restaurantPosition = clusterMarker.getPosition();
                     Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
                     if(marker != null){
-                        boolean flag = marker.isInfoWindowShown();
+
+                        boolean flag = false;
+                        marker.hideInfoWindow();
+                        flag = marker.isInfoWindowShown();
                         if (!flag)
                             marker.showInfoWindow();
+
                     }
                     break;
                 }

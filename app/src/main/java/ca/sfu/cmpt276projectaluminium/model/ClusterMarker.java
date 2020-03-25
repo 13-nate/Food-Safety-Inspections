@@ -86,26 +86,6 @@ public class ClusterMarker implements ClusterItem {
         this.trackingNum = trackingNum;
     }
 
-    private class CustomMapClusterRenderer<T extends ClusterItem> extends DefaultClusterRenderer<T> {
-        CustomMapClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
-            super(context, map, clusterManager);
-        }
 
-        @Override
-        protected void onClusterItemRendered(T clusterItem,Marker marker ){
-
-            super.onClusterItemRendered(clusterItem, marker);
-            getMarker(clusterItem).showInfoWindow();
-
-        }
-
-        @Override
-        protected void onClusterRendered(Cluster<T> cluster, Marker marker) {
-            super.onClusterRendered(cluster, marker);
-            //add infowindow to cluster icon
-            marker.setTitle("count");
-            marker.setSnippet("Total Count - " + cluster.getItems().size());
-        }
-    }
 
 }
