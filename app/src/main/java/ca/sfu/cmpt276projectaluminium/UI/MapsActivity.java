@@ -577,6 +577,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return intent;
     }
 
+    public void onBackPressed(){
+
+        //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
+        Log.i(TAGMAP,"onBackPressed");
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
 
     // Sources: https://stackoverflow.com/questions/36902890/how-i-can-call-showinfowindow-in-a-marker-within-cluster-manager
     public void goToRestaurantGpsLocation() {
