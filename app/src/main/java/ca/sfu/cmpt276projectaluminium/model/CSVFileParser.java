@@ -16,7 +16,7 @@ public class CSVFileParser {
     private static final String TAG = "CSVFileParser";
     private InputStream is;  // Stores raw csv data
     private List<List<String>> parsedCSVLines;
-
+    // TODO: Deal with an empty csv file
     /**
      * Loads an input stream into this objects memory that can be manipulated to produce lists of
      * restaurants/inspections if needed
@@ -26,11 +26,9 @@ public class CSVFileParser {
         this.is = is;
         parsedCSVLines = new ArrayList<>();
 
-        Log.e(TAG, "parseCSVInput: " + parsedCSVLines.toString(), null);
         parseCSVInput();
-        Log.e(TAG, "parseCSVInput: " + parsedCSVLines.toString(), null);
         cleanUpParsedInput();
-        Log.e(TAG, "parseCSVInput: " + parsedCSVLines.toString(), null);
+        getInspectionList();
     }
 
     /**
@@ -39,8 +37,40 @@ public class CSVFileParser {
      * @return a list of restaurant objects
      */
     List<Restaurant> getRestaurantList() {
+        List<Restaurant> restaurants = new ArrayList<>();
 
-        return null;
+        for (List<String> parsedLine : parsedCSVLines) {
+            // Convert the parsed line to a restaurant object
+            try {
+                // If there are too few elements to make an object, throw an exception
+                if (parsedLine.size() < 7) {
+                    throw new ArrayIndexOutOfBoundsException("Not enough information to create an" +
+                            " object");
+                }
+
+                // Gather the relevant restaurant data
+                String trackingNumber = parsedLine.get(0);
+                String name = parsedLine.get(1);
+                String address = parsedLine.get(2);
+                String city = parsedLine.get(3);
+                String type = parsedLine.get(4);
+                double latitude = Double.parseDouble(parsedLine.get(5));
+                double longitude = Double.parseDouble(parsedLine.get(6));
+
+                // Create the restaurant
+                Restaurant restaurant = new Restaurant(trackingNumber, name, address, city, type,
+                        latitude, longitude);
+
+                // Store the restaurant
+                restaurants.add(restaurant);
+            } catch (Exception e) {
+                // Instead of crashing, we simply don't add anything to the list & then print a log
+                Log.e(TAG, "getRestaurantList: Unable to convert the following csv line to " +
+                        "a restaurant: \n" + parsedLine.toString(), e);
+            }
+        }
+
+        return restaurants;
     }
 
     /**
@@ -49,6 +79,13 @@ public class CSVFileParser {
      * @return a list of inspection objects
      */
     List<Restaurant> getInspectionList() {
+        List<Inspection> inspections = new ArrayList<>();
+
+        for (List<String> parsedLine : parsedCSVLines) {
+            // Check that size is a minimum
+
+            // Check what kind it is
+        }
 
         return null;
     }
@@ -122,8 +159,6 @@ public class CSVFileParser {
      * - https://stackoverflow.com/questions/2608665/how-can-i-trim-beginning-and-ending-double-quotes-from-a-string
      */
     private void cleanUpParsedInput() {
-        // TODO: ADD ERROR CHECK FOR EMPTY LIST
-
         // If the first line is empty or a title line without data, we remove the line
         List<String> firstLine = parsedCSVLines.get(0);
         boolean isEmpty = firstLine.size() == 0;
