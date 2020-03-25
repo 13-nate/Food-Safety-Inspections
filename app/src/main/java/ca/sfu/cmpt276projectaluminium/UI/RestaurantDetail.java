@@ -50,10 +50,10 @@ public class RestaurantDetail extends AppCompatActivity {
     boolean isFromMap = false;
 
     // Control what happens upon pressing back button
-    public boolean onOptionsItemSelected(MenuItem item) {
+    /*public boolean onOptionsItemSelected(MenuItem item) {
         finish();
         return true;
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +66,16 @@ public class RestaurantDetail extends AppCompatActivity {
 
         // Create a back button that we can control
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         GpsClickCallBack();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void initializeVariables() {

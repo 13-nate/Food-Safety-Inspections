@@ -79,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void registerClickCallBack() {
         ListView list = findViewById(R.id.restaurantListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -97,6 +102,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public void onBackPressed(){
+
+        //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 
     private void onBottomToolBarClick() {
@@ -286,13 +300,6 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
 
-        public void onBackPressed(){
 
-            //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
-            Intent a = new Intent(Intent.ACTION_MAIN);
-            a.addCategory(Intent.CATEGORY_HOME);
-            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(a);
-        }
     }
 }
