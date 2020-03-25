@@ -93,7 +93,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
     /**
      * Gets the csv files for the restaurants and inspections in the background
-     * enables the complete button when finished
      */
 
     public class CSVRetriever extends AsyncTask<ProgressBar, Integer, ProgressBar> {
