@@ -20,27 +20,21 @@ public class Inspection implements Comparable<Inspection> {
     private int numCriticalViolations;
     private int numNonCriticalViolations;
     private String hazardRating;
-    private ArrayList<Violation> violationList;
-
-    /**
-     * Private constructor so that inspections are only instantiated in ways that are allowed
-     */
-    private Inspection() {
-    }
+    private ArrayList<Violation> violations;
 
     /**
      * Constructor is package private as it should only be called by InspectionManager
      */
     Inspection(String trackingNumber, int inspectionDate, String type, int numCriticalViolations,
                int numNonCriticalViolations, String hazardRating,
-               ArrayList<Violation> violationList) {
+               ArrayList<Violation> violations) {
         this.trackingNumber = trackingNumber;
         this.inspectionDate = inspectionDate;
         this.type = type;
         this.numCriticalViolations = numCriticalViolations;
         this.numNonCriticalViolations = numNonCriticalViolations;
         this.hazardRating = hazardRating;
-        this.violationList = violationList;
+        this.violations = violations;
     }
 
     public String getTrackingNumber() {
@@ -72,19 +66,17 @@ public class Inspection implements Comparable<Inspection> {
     }
 
     public ArrayList<Violation> getViolations() {
-        return violationList;
+        return violations;
     }
 
-
+    // Sources
+    // - https://stackoverflow.com/questions/13624442/getting-last-day-of-the-month-in-a-given-string-date
+    // - https://stackoverflow.com/questions/7829571/milliseconds-to-days
     /**
      * Returns information about the inspection date based of today's date
      * if the inspection was less than 30 days ago return how many days ago it was
      * if the inspection was less than a 365 days ago return the month and day
      * if the inspection was more than 365 days return the month and year
-     */
-    /*Sources
-    https://stackoverflow.com/questions/13624442/getting-last-day-of-the-month-in-a-given-string-date
-    https://stackoverflow.com/questions/7829571/milliseconds-to-days
      */
     public String intelligentDate() {
         // Used to format the inspection day String into a date
@@ -149,10 +141,9 @@ public class Inspection implements Comparable<Inspection> {
         return smartDate;
     }
 
-    /* Sources:
-    https://dzone.com/articles/java-comparable-interface-in-five-minutes
-    https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
-     */
+    // Sources:
+    // - https://dzone.com/articles/java-comparable-interface-in-five-minutes
+    // - https://stackoverflow.com/questions/5153496/how-can-i-compare-two-strings-in-java-and-define-which-of-them-is-smaller-than-t
     /**
      * Allows the RestaurantManager to be sorted by its Name
      */
