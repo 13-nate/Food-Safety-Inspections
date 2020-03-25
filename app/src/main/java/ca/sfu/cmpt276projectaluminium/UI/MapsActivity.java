@@ -50,6 +50,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import java.util.ArrayList;
 
 import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.model.CSVFileParser;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -129,6 +130,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //Give the csv files to the data classes so that the csv files can be read
     void initializeDataClasses() {
+        CSVFileParser test =
+                new CSVFileParser(getResources().openRawResource(R.raw.restaurants_itr1));
         // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
         RestaurantManager restaurantManager = RestaurantManager.getInstance();
         // Fill the InspectionManager with inspections using the csv file stored in raw resources
