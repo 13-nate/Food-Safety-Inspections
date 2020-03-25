@@ -261,14 +261,14 @@ public class CSVFileParser {
         }
     }
 
+    // Sources:
+    // - https://stackoverflow.com/questions/1196586/calling-remove-in-foreach-loop-in-java
+    // - https://stackoverflow.com/questions/2608665/how-can-i-trim-beginning-and-ending-double-quotes-from-a-string
     /**
      * Cleans up the input by removing unnecessary clutter:
      * - Any quotes are removed
      * - Any empty lines are removed
      * - The header line is removed
-     * Sources:
-     * - https://stackoverflow.com/questions/1196586/calling-remove-in-foreach-loop-in-java
-     * - https://stackoverflow.com/questions/2608665/how-can-i-trim-beginning-and-ending-double-quotes-from-a-string
      */
     private void cleanUpParsedInput() {
         // If the first line is empty or a title line without data, we remove the line
