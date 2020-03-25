@@ -581,6 +581,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Sources: https://stackoverflow.com/questions/36902890/how-i-can-call-showinfowindow-in-a-marker-within-cluster-manager
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
+        Marker mark1 = null;
         LatLng restaurantPosition = new LatLng(0.0, 0.0);
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
@@ -589,8 +590,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (trackingNum.equals(clusterMarker.getTrackingNum())) {
                     restaurantPosition = clusterMarker.getPosition();
                     Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
+                    mark1 = marker;
                     if(marker != null){
-
                         boolean flag = false;
                         marker.hideInfoWindow();
                         flag = marker.isInfoWindowShown();
@@ -603,6 +604,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             try {
                 moveCamera(restaurantPosition, DEFAULT_ZOOM);
+                if(mark1 != null){
+                    boolean flag = false;
+                    mark1.hideInfoWindow();
+                    flag = mark1.isInfoWindowShown();
+                    if (!flag)
+                        mark1.showInfoWindow();
+
+                }
             } catch (Exception e) {
                 e.printStackTrace(); }
         }
