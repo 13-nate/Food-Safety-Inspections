@@ -21,9 +21,7 @@ import java.util.List;
  * Manages data about restaurants by storing them all in an easily accessible list
  */
 public class RestaurantManager implements Iterable<Restaurant>{
-    private static final String TAG = "RestaurantManager";
-
-    private List<Restaurant> restaurantList;
+    private List<Restaurant> restaurants;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -31,7 +29,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
     private static RestaurantManager instance;
     // Private to prevent anyone else from instantiating
     private RestaurantManager() {
-        this.restaurantList = new ArrayList<>();
+        this.restaurants = new ArrayList<>();
     }
     // This version is called when you need to simply access the currently stored data
     public static RestaurantManager getInstance() {
@@ -48,8 +46,8 @@ public class RestaurantManager implements Iterable<Restaurant>{
         }
 
         CSVFileParser fileParser = new CSVFileParser(is);
-        instance.restaurantList = fileParser.getRestaurants();
-        Collections.sort(instance.restaurantList);
+        instance.restaurants = fileParser.getRestaurants();
+        Collections.sort(instance.restaurants);
 
         return instance;
     }
@@ -62,7 +60,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     public Restaurant recreateRestaurant(String trackingNumber) {
         // Find a restaurant that matches the trackingNumber and return it.
-        for (Restaurant restaurant : this.restaurantList) {
+        for (Restaurant restaurant : this.restaurants) {
             boolean trackingNumberMatches = restaurant.getTrackingNumber().equals(trackingNumber);
             if (trackingNumberMatches) {
                 return restaurant;
@@ -74,7 +72,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
     }
 
     public int getSize() {
-        return this.restaurantList.size();
+        return this.restaurants.size();
     }
 
     /**
@@ -82,6 +80,6 @@ public class RestaurantManager implements Iterable<Restaurant>{
      */
     @Override
     public Iterator<Restaurant> iterator () {
-        return this.restaurantList.iterator();
+        return this.restaurants.iterator();
     }
 }

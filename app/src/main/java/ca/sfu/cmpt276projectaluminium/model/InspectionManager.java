@@ -1,12 +1,6 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
-import android.util.Log;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,8 +12,6 @@ import java.util.List;
  * Manages data about a Restaurant's inspections by storing them all in an easily accessible list
  */
 public class InspectionManager {
-    private static final String TAG = "InspectionManager";
-
     private List<Inspection> allInspections;
 
     private Inspection noInspection = new Inspection("None", 0, "No type",
