@@ -128,19 +128,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestLocationUpdates();
     }
 
-    //Give the csv files to the data classes so that the csv files can be read
-    void initializeDataClasses() {
-        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager restaurantManager = RestaurantManager.getInstance();
-        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+    // Fill our model with the csv data
+    void InitializeManagers() {
+        // The csv data is stored in the raw resources folder so we pull our data from there
+        RestaurantManager.getInstance(getResources().openRawResource(R.raw.restaurants_itr1));
         InspectionManager inspectionManager = InspectionManager.getInstance();
-        if (restaurantManager.getSize() == 0) {
-            restaurantManager.initialize(getResources().openRawResource(R.raw.restaurants_itr1));
-            inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
-        }
+        inspectionManager.initialize(getResources().openRawResource(R.raw.inspectionreports_itr1));
     }
 
-    // this calls to heck for goolge play and then checks for gps
+    // this calls to heck for google play and then checks for gps
     private boolean checkMapServices() {
         if (isServicesOK()) {
             if (isMapsEnabled()) {
@@ -366,7 +362,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        initializeDataClasses();
+        // Fill our model with the csv data
+        InitializeManagers();
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
