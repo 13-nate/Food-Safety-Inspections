@@ -47,7 +47,6 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
@@ -78,7 +77,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
-    private static final String TRACKING_NUM = null;
 
 
     private GoogleMap mMap;
@@ -92,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // want to change camera to User on startUp
     private boolean mapSartUp = true;
     private Collection<Marker> markers = new ArrayList<>();
-    private Marker mark1 = null;
+
 
     @Override
     protected void onResume() {
@@ -569,7 +567,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
-        intent.putExtra(TRACKING_NUM, trackingNum);
+        intent.putExtra("makeGPSIntent num", trackingNum);
         intent.putExtra("makeGPSIntent bool", gpsIntent);
         return intent;
     }
@@ -587,33 +585,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Sources: https://stackoverflow.com/questions/36902890/how-i-can-call-showinfowindow-in-a-marker-within-cluster-manager
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
+        Marker mark1 = null;
         boolean flag = false;
         LatLng restaurantPosition = new LatLng(0.0, 0.0);
-        int i = 0;
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
-            String trackingNum = intent.getStringExtra(TRACKING_NUM);
-            for (i=0;i<mClusterMarkers.size();i++) {
-                ClusterMarker clusterMarker = mClusterMarkers.get(i);
-                if(trackingNum == clusterMarker.getTrackingNum()){
-                    flag = true;
-                }
-                if (flag) {
+            String trackingNum = intent.getStringExtra("makeGPSIntent num");
+            for (ClusterMarker clusterMarker : mClusterMarkers) {
+                if (trackingNum.equals(clusterMarker.getTrackingNum())) {
                     restaurantPosition = clusterMarker.getPosition();
                     Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
                     mark1 = marker;
                     if(marker != null){
+
                         marker.hideInfoWindow();
-                        marker.showInfoWindow();
+                        if (!flag) {
+                            marker.showInfoWindow();
+                            flag = true;
+                        }
+
                     }
                     break;
                 }
             }
-
             try {
                 moveCamera(restaurantPosition, DEFAULT_ZOOM);
                 if(mark1 != null){
-                    mark1.showInfoWindow();
+                    if (flag)
+                        mark1.showInfoWindow();
+
                 }
             } catch (Exception e) {
                 e.printStackTrace(); }
