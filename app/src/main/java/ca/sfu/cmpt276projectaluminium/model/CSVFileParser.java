@@ -39,6 +39,7 @@ public class CSVFileParser {
     List<Restaurant> getRestaurantList() {
         List<Restaurant> restaurants = new ArrayList<>();
 
+        // Turn each line of parsed CSV data into a restaurant object
         for (List<String> parsedLine : parsedCSVLines) {
             // Convert the parsed line to a restaurant object
             try {
@@ -73,21 +74,128 @@ public class CSVFileParser {
         return restaurants;
     }
 
+    private boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch(NumberFormatException | NullPointerException e) {
+            return false;
+        }
+
+        // We're here if is possible to convert the string to an int
+        return true;
+    }
+
+    /**
+     * If the hazard rating is ordered before the violation lump, then the parsed inspection line
+     * will have a string at index 5, if the hazard rating is ordered after, then the parsed
+     * inspection line will have an integer at index 5.
+     * If the hazard rating is before the violation dump, then index 5 will have:
+     *  - a string
+     * If the hazard rating is after the violation dump, then index 5 will have either:
+     *  - an integer OR
+     *  - an empty string
+     * @param parsedInspectionLine The array that holds the data all split up
+     * @return True if the hazard rating comes before violation lump order-wise in the string.
+     *         False otherwise
+     */
+    private boolean isHazardBeforeViolationLump(List<String> parsedInspectionLine) {
+        if (parsedInspectionLine.get(5).equals("")) {
+            return false;
+        }
+
+        return !isInteger(parsedInspectionLine.get(5));
+    }
+
+    // We know that if the string can be made into an integer, then it is not a hazard rating
+    private boolean isElementPartOfViolation(String s) {
+        return isInteger(s);
+    }
+
     /**
      * Converts all valid inspections from the csv into inspection objects and puts those in a list
      * - All invalid lines in input are ignored
      * @return a list of inspection objects
      */
-    List<Restaurant> getInspectionList() {
+    List<Inspection> getInspectionList() {
         List<Inspection> inspections = new ArrayList<>();
 
+        // Turn each line of parsed CSV data into an inspection object
         for (List<String> parsedLine : parsedCSVLines) {
-            // Check that size is a minimum
+            // Convert the parsed line to a restaurant object
+            try {
+                // If there are too few elements to make an object, throw an exception
+                if (parsedLine.size() < 6) {
+                    throw new ArrayIndexOutOfBoundsException("Not enough information to create an" +
+                            " object");
+                }
 
-            // Check what kind it is
+                // Figure out where the hazard is in this data (There's two types of formatting)
+                boolean hazardIsFirst = isHazardBeforeViolationLump(parsedLine);
+
+                /*
+                    Gather the relevant inspection data
+                 */
+                // No matter how hazard rating and violations are ordered, we 100% know the location of
+                // these first few variables
+                String trackingNumber = parsedLine.get(0);
+                int inspectionDate = Integer.parseInt(parsedLine.get(1));
+                String type = parsedLine.get(2);
+                int numCriticalViolations = Integer.parseInt(parsedLine.get(3));
+                int numNonCriticalViolations = Integer.parseInt(parsedLine.get(4));
+
+                // We need to parse through violations (which are 4 long), so we first find the index that
+                // the violation lump starts at.  That depends on whether or not the hazard comes first
+                int violationStartIndex;
+                if (hazardIsFirst) {
+                    violationStartIndex = 6;
+                } else {
+                    violationStartIndex = 5;
+                }
+
+                // Here we parse through violations, 4 at a time, and stop once we find an item that is not
+                // part of a violation
+                ArrayList<Violation> violations = new ArrayList<>();
+                for (int i = violationStartIndex; i < parsedLine.size(); i += 4) {
+                    // If we are looking at the hazard variable, we don't have to do anything.
+                    // If we are not looking at the hazard variable, then we can infer that this variable is
+                    // the start of a set of four violation variables
+                    if (isElementPartOfViolation(parsedLine.get(i))) {
+                        // Grab the variables that are a part of the violation
+                        int id = Integer.parseInt(parsedLine.get(i));
+                        String severity = parsedLine.get(i + 1);
+                        String description = parsedLine.get(i + 2);
+                        String repeat = parsedLine.get(i + 3);
+
+                        // Put them in our list of violations
+                        violations.add(new Violation(id, severity, description, repeat));
+                    }
+                }
+
+                // Finally, we assign hazard to a variable, its index depends on whether or not it came
+                // before the violations
+                String hazardRating;
+                if (hazardIsFirst) {
+                    hazardRating = parsedLine.get(5);
+                } else {
+                    int lastIndex = parsedLine.size() - 1;
+                    hazardRating = parsedLine.get(lastIndex);
+                }
+
+                // Create the inspection
+                Inspection inspection = new Inspection(trackingNumber, inspectionDate, type,
+                        numCriticalViolations, numNonCriticalViolations, hazardRating,
+                        violations);
+
+                // Store the inspection
+                inspections.add(inspection);
+            } catch (Exception e) {
+                // Instead of crashing, we simply don't add anything to the list & then print a log
+                Log.e(TAG, "getInspectionList: Unable to convert the following csv line to " +
+                        "an inspection: \n" + parsedLine.toString(), e);
+            }
         }
 
-        return null;
+        return inspections;
     }
 
     /**
@@ -183,16 +291,6 @@ public class CSVFileParser {
             }
         }
 
-    }
-
-    /**
-     * Checks if the parsed CSV input is valid.
-     * @param parsedCSVLine The CSV input that corresponds to a restaurant object
-     * @return True if input can be made into an object with no problems, false otherwise
-     */
-    private boolean isValidRestaurant(List<String> parsedCSVLine) {
-
-        return false;
     }
 
     /**
