@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +31,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import ca.sfu.cmpt276projectaluminium.R;
+
+/**
+ * The code behind the alert message
+ * Runs the download, and contains the necessary components for downloading the csv
+ */
 
 public class ProgressMessage extends AppCompatDialogFragment {
 
@@ -101,8 +107,9 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
         private String CSVUrlRestaurant;
         private String CSVUrlInspection;
-
+        boolean exceptionRaised = true;
         private WeakReference<Context> weakContext;
+        private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
 
         CSVRetriever(Context context) {
             weakContext = new WeakReference<>(context);
@@ -127,6 +134,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
                 getInspectionCSV();
                 publishProgress(99);
 
+                exceptionRaised = false;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -137,20 +145,26 @@ public class ProgressMessage extends AppCompatDialogFragment {
         //Delete Functions Do nothing???
         @Override
         protected void onPostExecute(ProgressBar progressBar) {
-            if (!cancel) {
-                String tempPath = weakContext.get().getFilesDir().getAbsolutePath();
-                weakContext.get().deleteFile(fileFinalRestaurant);
-                weakContext.get().deleteFile(fileFinalInspection);
+            if (exceptionRaised){
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                ErrorMessage dialog = new ErrorMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            } else {
+                if (!cancel) {
+                    String tempPath = weakContext.get().getFilesDir().getAbsolutePath();
+                    weakContext.get().deleteFile(fileFinalRestaurant);
+                    weakContext.get().deleteFile(fileFinalInspection);
 
-                File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
-                tempRestaurant.renameTo(new File (tempPath + "/" + fileFinalRestaurant));
+                    File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
+                    tempRestaurant.renameTo(new File (tempPath + "/" + fileFinalRestaurant));
 
-                File tempInspection = new File (tempPath + "/" + fileInspection);
-                tempInspection.renameTo(new File (tempPath + "/" + fileFinalInspection));
+                    File tempInspection = new File (tempPath + "/" + fileInspection);
+                    tempInspection.renameTo(new File (tempPath + "/" + fileFinalInspection));
 
+                }
+                dismiss();
+                getActivity().recreate();
             }
-            dismiss();
-            getActivity().recreate();
         }
 
         private void readRestaurant() throws IOException, JSONException{

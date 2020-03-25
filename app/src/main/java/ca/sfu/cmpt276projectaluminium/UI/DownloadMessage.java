@@ -15,7 +15,7 @@ import ca.sfu.cmpt276projectaluminium.R;
 
 /**
  * The code behind the alert message
- * Handles what the alert message is and how it behaves
+ * Opens the progress message on ok
  */
 
 public class DownloadMessage extends AppCompatDialogFragment{

@@ -71,4 +71,5 @@
     <string name="no_gps_do_u_want"> =This application requires GPS to work properly, do you want to enable it?</string>
     <string name="no_map_requests"> = You can\'t make Map Request</string>
     <string name="new_data_avaliable_would_you_like_to_download_now">New Data Avaliable: Would you like to download now?</string>
+    <string name="error_could_not_check_for_updates">Error: Could not check for updates</string>
 </resources>

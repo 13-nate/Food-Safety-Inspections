@@ -95,7 +95,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
     private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
-    public static final String FIRST_TIME = "first_time";
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
@@ -676,11 +675,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         private Date lastModifiedRestaurant;
         private Date lastModifiedInspection;
+        boolean exceptionRaised = true;
         @Override
         protected Void doInBackground(Void... voids) {
             try {
                 readRestaurant();
                 readInspection();
+                exceptionRaised = false;
             } catch (IOException | JSONException | ParseException e) {
                 e.printStackTrace();
             }
@@ -690,8 +691,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
-            promptDownload();
+            if (exceptionRaised){
+                FragmentManager manager = getSupportFragmentManager();
+                ErrorMessage dialog = new ErrorMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            } else {
+                promptDownload();
+            }
         }
 
         private void readRestaurant() throws IOException, JSONException, ParseException {
