@@ -422,6 +422,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // Source:
                 // - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
                 // - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
+                // - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
                 mClusterManager.setOnClusterClickListener(cluster -> {
                     List<Restaurant> restaurants = new ArrayList<>();
                     cluster.getItems();
@@ -436,16 +437,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
                     }
 
-                    // Convert that list to a dialog popup like the one in mainActivity
-                    for (Restaurant r : restaurants) {
-                        Log.e(TAG, "onClusterItemInfoWindowClick: PAY ATTENTION TO THIS B" + r.getName(), null);
-                    }
-
                     // Create builder for dialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,
+                            R.style.darkDialogTheme);
                     // Set attributes for dialog
-                    builder.setIcon(R.drawable.ic_launcher_foreground);
-                    builder.setTitle("Restaurants at tapped location:");
+                    builder.setTitle("Restaurants at tapped location:\n");
 
                     // Create cancel button for dialog
                     builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
