@@ -1,41 +1,35 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
-import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // Sources:
 // https://stackoverflow.com/questions/5089300/how-can-i-change-the-image-of-an-imageview
@@ -53,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
+    //Give the csv files to the data classes so that the csv files can be read
+    void initializeDataClasses(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
+        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
+        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
+
+        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +62,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(getString(R.string.restaurants));
 
+        getData();
+
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
        // setMenuColor();
+    }
+
+
+    private void getData() {
+
+        Button button = findViewById(R.id.data);
+        button.setEnabled(false);
+
+        new CSVRetriever(this).execute(button);
+        button.setOnClickListener(v -> {
+            recreate();
+        });
+
+        InputStream inputStreamRestaurant = null;
+        InputStream inputStreamInspection = null;
+        try {
+            inputStreamRestaurant = openFileInput(CSVRetriever.fileRestaurant);
+            inputStreamInspection = openFileInput(CSVRetriever.fileInspection);
+            initializeDataClasses(inputStreamRestaurant, inputStreamInspection);
+            button.setVisibility(View.GONE);
+
+        } catch (FileNotFoundException e) {
+            try {
+                if (inputStreamRestaurant != null) {
+                    inputStreamRestaurant.close();
+                }
+                if (inputStreamInspection != null) {
+                    inputStreamInspection.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            initializeDataClasses(getResources().openRawResource(R.raw.restaurants_itr1),
+                    getResources().openRawResource(R.raw.inspectionreports_itr1));
+        }
+
     }
 
     private void populateListView() {
