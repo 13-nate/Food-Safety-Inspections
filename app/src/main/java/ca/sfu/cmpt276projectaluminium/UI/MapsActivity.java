@@ -456,12 +456,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 );
                 mClusterManager.setRenderer(mClusterManagerRenderer);
 
-                // Create a listener for clusters.  The listener will open a list of restaurants
-                // inside the cluster.  This will be used to display clustered restaurants.
-                // Source:
-                // - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
-                // - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
-                // - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
+                /*
+                 Create a listener for clusters.  The listener will open a list of restaurants
+                 inside the cluster.  This will be used to display clustered restaurants.
+                 Source:
+                 - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
+                 - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
+                 - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
+                 */
                 mClusterManager.setOnClusterClickListener(cluster -> {
                     // Used to recreate restaurant objects
                     RestaurantManager rManager = RestaurantManager.getInstance();

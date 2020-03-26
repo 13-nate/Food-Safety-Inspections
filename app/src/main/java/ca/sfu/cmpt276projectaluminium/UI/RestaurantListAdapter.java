@@ -20,9 +20,11 @@ import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 
-// Sources:
-// - https://stackoverflow.com/questions/6958279/how-to-use-a-custom-arrayadapter-in-a-separate-class
-//      - Help make this external
+/*
+Sources:
+ - https://stackoverflow.com/questions/6958279/how-to-use-a-custom-arrayadapter-in-a-separate-class
+    - Help make this external
+ */
 
 // Inner class has reference to outer class
 public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
