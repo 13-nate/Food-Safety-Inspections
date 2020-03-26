@@ -437,8 +437,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Fill our model with the csv data
-        initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1), getResources().openRawResource(R.raw.inspectionreports_itr1));
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
