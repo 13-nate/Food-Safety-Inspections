@@ -43,9 +43,15 @@ public class MainActivity extends AppCompatActivity {
     //for incorrect version
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
-
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
+
+    void initializeManagers(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
+        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
+        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
+        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +66,7 @@ public class MainActivity extends AppCompatActivity {
        // setMenuColor();
     }
 
-    void initializeManagers(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
-        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
-        // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
-    }
+
 
     private void getData() {
 
@@ -313,6 +314,4 @@ public class MainActivity extends AppCompatActivity {
             return  itemView;
         }
     }
-
-
 }
