@@ -24,6 +24,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -454,9 +456,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
                     // Use an arrayAdapter to converts objects to a list view
-                    final ArrayAdapter<Restaurant> arrayAdapter = new RestaurantListAdapter(MapsActivity.this, restaurants);
+                    final ArrayAdapter<Restaurant> arrayAdapter
+                            = new RestaurantListAdapter(MapsActivity.this, restaurants);
                     ListView restaurantListView = new ListView(this);
                     restaurantListView.setAdapter(arrayAdapter);
+
+                    // Make the list view elements clickable
+                    // - Clicking a restaurant will take you to the restaurant details activity
+                    restaurantListView.setOnItemClickListener((parent, view, position, id) -> {
+                        Restaurant clickedRestaurant = restaurants.get(position);
+                        Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
+                                clickedRestaurant.getTrackingNumber());
+                        startActivity(intent);
+                    });
 
                     // Put the listView inside our dialog
                     builder.setView(restaurantListView);
