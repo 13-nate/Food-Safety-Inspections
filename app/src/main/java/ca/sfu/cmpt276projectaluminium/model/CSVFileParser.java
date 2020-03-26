@@ -274,7 +274,8 @@ public class CSVFileParser {
         // If the first line is empty or a title line without data, we remove the line
         List<String> firstLine = parsedCSVLines.get(0);
         boolean isEmpty = firstLine.size() == 0 || firstLine.get(0).equals("");
-        if (isEmpty || firstLine.get(0).toLowerCase().equals("\"trackingnumber\"")) {
+        if (isEmpty || firstLine.get(0).toLowerCase().equals("\"trackingnumber\"")
+                    || firstLine.get(0).toLowerCase().equals("trackingnumber")) {
             // Remove the line
             parsedCSVLines.remove(0);
         }
