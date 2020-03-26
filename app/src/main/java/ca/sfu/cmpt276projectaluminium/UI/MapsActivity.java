@@ -24,6 +24,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,9 +50,9 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.model.CSVFileParser;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -68,7 +70,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker> {
-
+    private static final String TAG = "MapsActivity";
     private static final String TAGMAP = "MapsActivity";
     private LocationCallback locationCallback;
 
@@ -412,6 +414,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mClusterManager
                 );
                 mClusterManager.setRenderer(mClusterManagerRenderer);
+
+                // Create a listener for clusters.  The listener will open a list of restaurants
+                // inside the cluster.  This will be used to display clustered restaurants.
+                // Source:
+                // - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
+                // - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
+                mClusterManager.setOnClusterClickListener(cluster -> {
+                    List<Restaurant> restaurants = new ArrayList<>();
+                    cluster.getItems();
+
+                    // This loop is going to look at every cluster in the group and:
+                    // - Get the corresponding restaurant
+                    // - Put it in a list
+                    // After the loop we can then convert the list to a dialog popup
+                    for (Object o : cluster.getItems()) {
+                        ClusterMarker cm = (ClusterMarker)o;
+                        RestaurantManager rManager = RestaurantManager.getInstance();
+                        restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
+                    }
+
+                    // Convert that list to a dialog popup like the one in mainActivity
+                    for (Restaurant r : restaurants) {
+                        Log.e(TAG, "onClusterItemInfoWindowClick: PAY ATTENTION TO THIS B" + r.getName(), null);
+                    }
+
+                    // Create builder for dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                    // Set attributes for dialog
+                    builder.setIcon(R.drawable.ic_launcher_foreground);
+                    builder.setTitle("Restaurants at tapped location:");
+
+                    // Create cancel button for dialog
+                    builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    // Use an arrayAdapter to converts objects to a list view
+                    final ArrayAdapter<Restaurant> arrayAdapter = new RestaurantListAdapter(MapsActivity.this, restaurants);
+                    ListView restaurantListView = new ListView(this);
+                    restaurantListView.setAdapter(arrayAdapter);
+
+                    // Put the listView inside our dialog
+                    builder.setView(restaurantListView);
+
+                    // Show our dialog
+                    builder.show();
+
+                    return false;
+                });
             }
 
             // for each restaurant get there details
