@@ -140,7 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
-        getData();
+
         getDeviceLocation();
         requestLocationUpdates();
     }
@@ -443,6 +443,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        getData();
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
