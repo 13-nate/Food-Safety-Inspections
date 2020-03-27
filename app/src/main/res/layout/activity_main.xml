@@ -150,4 +150,22 @@
             android:textSize="18sp" />
     </LinearLayout>
 
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="4dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/layoutLow"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <Button
+        android:id="@+id/data"
+        android:layout_width="60dp"
+        android:layout_height="48dp"
+        android:enabled="false"
+        android:text="Loading Data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
