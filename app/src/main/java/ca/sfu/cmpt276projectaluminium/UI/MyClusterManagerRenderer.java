@@ -58,13 +58,12 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     }
 
     @Override
-    public Marker getMarker(Cluster<ClusterMarker> cluster) {
-        return super.getMarker(cluster);
+    protected void onClusterItemRendered(ClusterMarker clusterItem,Marker marker ){
+
+        super.onClusterItemRendered(clusterItem, marker);
+        getMarker(clusterItem).showInfoWindow();
+
     }
 
-    @Override
-    public Marker getMarker(ClusterMarker clusterItem) {
-        return super.getMarker(clusterItem);
-    }
 }
 
