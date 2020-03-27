@@ -6,11 +6,13 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="376dp"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginStart="17dp"
-        android:layout_marginTop="37dp" />
+        android:layout_marginTop="37dp"
+        android:layout_marginEnd="18dp" />
 
 </RelativeLayout>

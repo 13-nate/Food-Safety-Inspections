@@ -18,9 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,52 +43,16 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> restaurantArray = new ArrayList<>();
 
-    void initializeManagers(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
-        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
-        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
-        // Fill the InspectionManager with inspections using the csv file stored in raw resources
-        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(getString(R.string.restaurants));
-        getData();
 
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
        // setMenuColor();
-    }
-
-
-
-    private void getData() {
-
-        InputStream inputStreamRestaurant = null;
-        InputStream inputStreamInspection = null;
-        try {
-            inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
-            inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
-            initializeManagers(inputStreamRestaurant, inputStreamInspection);
-
-        } catch (FileNotFoundException e) {
-            try {
-                if (inputStreamRestaurant != null) {
-                    inputStreamRestaurant.close();
-                }
-                if (inputStreamInspection != null) {
-                    inputStreamInspection.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1),
-                    getResources().openRawResource(R.raw.inspectionreports_itr1));
-        }
-
     }
 
     private void populateListView() {

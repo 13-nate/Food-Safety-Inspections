@@ -129,7 +129,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         onBottomToolBarClick();
         setMenuColor();
-        getData();
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -141,6 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
+        getData();
         getDeviceLocation();
         requestLocationUpdates();
     }
@@ -156,29 +156,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void getData() {
+        RestaurantManager restaurants = RestaurantManager.getInstance();
 
-        checkFileDate();
-        InputStream inputStreamRestaurant = null;
-        InputStream inputStreamInspection = null;
-        try {
-            inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
-            inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
-            initializeManagers(inputStreamRestaurant, inputStreamInspection);
-
-        } catch (FileNotFoundException e) {
+        if (restaurants.isUpdateData()){
+            restaurants.setUpdateData(false);
+            checkFileDate();
+            InputStream inputStreamRestaurant = null;
+            InputStream inputStreamInspection = null;
             try {
-                if (inputStreamRestaurant != null) {
-                    inputStreamRestaurant.close();
+                inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
+                inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
+                initializeManagers(inputStreamRestaurant, inputStreamInspection);
+
+            } catch (FileNotFoundException e) {
+                try {
+                    if (inputStreamRestaurant != null) {
+                        inputStreamRestaurant.close();
+                    }
+                    if (inputStreamInspection != null) {
+                        inputStreamInspection.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
-                if (inputStreamInspection != null) {
-                    inputStreamInspection.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1),
+                        getResources().openRawResource(R.raw.inspectionreports_itr1));
             }
-            initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1),
-                    getResources().openRawResource(R.raw.inspectionreports_itr1));
         }
+
+
 
     }
 

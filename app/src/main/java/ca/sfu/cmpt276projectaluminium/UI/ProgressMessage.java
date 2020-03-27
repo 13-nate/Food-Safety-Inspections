@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 /**
  * The code behind the alert message
@@ -50,6 +51,10 @@ public class ProgressMessage extends AppCompatDialogFragment {
 
     private static final String fileInspection = "tempInspection.csv";
     static final String fileFinalInspection = "inspection.csv";
+
+    private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
+
+    private AlertDialog dialog;
 
     @Override
     public void dismiss() {
@@ -82,13 +87,41 @@ public class ProgressMessage extends AppCompatDialogFragment {
             }
         };
 
+        DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!cancel) {
+                    String tempPath = getActivity().getFilesDir().getAbsolutePath();
+                    getActivity().deleteFile(fileFinalRestaurant);
+                    getActivity().deleteFile(fileFinalInspection);
 
-        return new AlertDialog.Builder(getActivity())
+                    File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
+                    tempRestaurant.renameTo(new File (tempPath + "/" + fileFinalRestaurant));
+
+                    File tempInspection = new File (tempPath + "/" + fileInspection);
+                    tempInspection.renameTo(new File (tempPath + "/" + fileFinalInspection));
+
+                    RestaurantManager restaurants = RestaurantManager.getInstance();
+                    restaurants.setUpdateData(true);
+                    dismiss();
+                    getActivity().recreate();
+                }
+            }
+        };
+
+        dialog = new AlertDialog.Builder(getActivity())
                 .setTitle(PROGRESS)
                 .setView(view)
+                .setPositiveButton(android.R.string.ok, okListener)
                 .setNegativeButton(android.R.string.cancel, listener)
                 .create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        return dialog;
     }
+
 
 
     //Sources:
@@ -132,7 +165,7 @@ public class ProgressMessage extends AppCompatDialogFragment {
                 getRestaurantCSV();
                 publishProgress(15);
                 getInspectionCSV();
-                publishProgress(99);
+                publishProgress(100);
 
                 exceptionRaised = false;
             } catch (IOException | JSONException e) {
@@ -149,22 +182,9 @@ public class ProgressMessage extends AppCompatDialogFragment {
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 ErrorMessage dialog = new ErrorMessage();
                 dialog.show(manager, MESSAGE_DIALOGUE);
-            } else {
-                if (!cancel) {
-                    String tempPath = weakContext.get().getFilesDir().getAbsolutePath();
-                    weakContext.get().deleteFile(fileFinalRestaurant);
-                    weakContext.get().deleteFile(fileFinalInspection);
-
-                    File tempRestaurant = new File (tempPath + "/" + fileRestaurant);
-                    tempRestaurant.renameTo(new File (tempPath + "/" + fileFinalRestaurant));
-
-                    File tempInspection = new File (tempPath + "/" + fileInspection);
-                    tempInspection.renameTo(new File (tempPath + "/" + fileFinalInspection));
-
-                }
                 dismiss();
-                getActivity().recreate();
             }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
         }
 
         private void readRestaurant() throws IOException, JSONException{
