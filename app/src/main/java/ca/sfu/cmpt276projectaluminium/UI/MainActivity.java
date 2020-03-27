@@ -113,12 +113,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(a);
     }
 
-    private void onBottomToolBarClick() {
-        /*Sources:
-        // https://androidwave.com/bottom-navigation-bar-android-example/
-        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
 
-         */
+    /**
+     * This way the user can see which activity they are in and can easily tell which icon
+     * represents what, not use fragments for both so need to force a color change between activities
+     * source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
+     * https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+     */
+    private void onBottomToolBarClick() {
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -228,9 +230,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Display image based on hazard level and set the add the restaurant information into the
+         * list
+         */
         @NonNull
         @Override
-        //display image bases on position
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             // make sure we have a view to work with (may have been given null
             View itemView = convertView;
@@ -296,10 +301,7 @@ public class MainActivity extends AppCompatActivity {
             TextView dateTxt = itemView.findViewById(R.id.txtdate);
             dateTxt.setText(getString(R.string.Last_inspection) + " "
                     + newestInspection.intelligentDate());
-
             return  itemView;
         }
-
-
     }
 }

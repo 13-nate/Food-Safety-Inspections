@@ -19,7 +19,8 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import ca.sfu.cmpt276projectaluminium.R;
 
 /**
- * Renders custom cluster class to render images and add restaurant info to pegs
+ * These are the custom cluster items to hold some restaurant information when looking at them as
+ * markers
  */
 public class ClusterMarker implements ClusterItem {
 

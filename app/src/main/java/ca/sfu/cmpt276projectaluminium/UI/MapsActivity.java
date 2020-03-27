@@ -30,7 +30,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,13 +45,13 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
+import ca.sfu.cmpt276projectaluminium.model.MyClusterManagerRenderer;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
@@ -62,6 +61,11 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  *
  * It first asks for permissions then checks the location permissions and then will display there
  * location
+ *
+ * Sources:
+ * https://www.youtube.com/playlist?list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt
+ * https://www.youtube.com/playlist?list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi
+ * The above sources are video playLists that where used to do alot of this class
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
@@ -69,12 +73,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
-
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
+    public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
 
 
     private GoogleMap mMap;
@@ -86,12 +90,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean restaurantCordinatesRequest = false;
     private Boolean mapInitialized = false;
     private LatLng restaurantPosition;
-    // want to change camera to User on startUp
+    // lets us go to user location on start up
     private boolean mapSartUp = true;
     // This is used to remove the marker from the manager so there are no duplicates when coming
     // back from a gpsClick
     private ClusterMarker restaurantClusterMarker;
-
 
     @Override
     protected void onResume() {
@@ -183,7 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.no_gps_do_u_want))
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -296,7 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             float currentZoom;
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
             Intent intent = getIntent();
-            boolean goToRestaurant = intent.getBooleanExtra("makeGPSIntent bool", false);
+            boolean goToRestaurant = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
             if (mapSartUp && !goToRestaurant) {
                 currentZoom = DEFAULT_ZOOM;
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
@@ -367,11 +370,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             requestLocationUpdates();
             mMap.setMyLocationEnabled(true);
         }
+
+        initManagerAndRenderer();
+        /* Don't want a random infoWindow to appear, because the last icon rendered will have
+            one showing if there is more than one marker on the map, in the case where there is
+            only one marker on the map we want one to shoe because we called goToRestaurantLocation
+            and want to show the user that restaurants infoWindow
+         */
+        Intent intent =getIntent();
+        restaurantCordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
+        if(restaurantCordinatesRequest) {
+            mClusterManagerRenderer.setShouldRenderInfoWindow(true);
+        } else {
+            mClusterManagerRenderer.setShouldRenderInfoWindow(false);
+        }
+
         addMapMarkers();
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
         // only executes  if coming from  a restaurant
         goToRestaurantGpsLocation();
+        onMapClickCallBack();
+    }
+
+    public void onMapClickCallBack() {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng clickedPosition) {
@@ -379,21 +401,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(restaurantCordinatesRequest){
                     Log.d(TAGMAP, "ifStateMent");
                     mClusterManager.removeItem(restaurantClusterMarker);
+                    initManagerAndRenderer();
+                    mClusterManagerRenderer.setShouldRenderInfoWindow(false);
                     addMapMarkers();
                     restaurantCordinatesRequest=false;
                 }
             }
         });
-
     }
 
-    //Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
-
-    // Loop through all the restaurants and place markers
-    private void addMapMarkers() {
-        RestaurantManager restaurantManager;
-
-        // Make sure map not null
+    public void initManagerAndRenderer() {
         if (mMap != null) {
             // Create a new manger if we don't have one.
             if (mClusterManager == null) {
@@ -406,87 +423,85 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap,
                         mClusterManager
                 );
-
-                mClusterManager.clearItems();
-                mMap.clear();
-                mClusterMarkers.clear();
-
-                mClusterManager.setRenderer(mClusterManagerRenderer);
             }
-
-            //set up info windows
-            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
-                    new CustomInfoWindowAdapter(MapsActivity.this)
-            );
-            // for each restaurant get there details
-            restaurantManager = RestaurantManager.getInstance();
-            for (Restaurant r : restaurantManager) {
-                String snippet;
-                try {
-                    // Get relevant inspections
-                    InspectionManager inspectionManager = InspectionManager.getInstance();
-                    ArrayList<Inspection> inspections;
-                    inspections = inspectionManager.getInspections(r.getTrackingNumber());
-
-                    // Get the newest inspection
-                    Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
-                    String hazardRating = newestInspection.getHazardRating();
-                    int iconHazard;
-                    if (hazardRating.equals("Low")) {
-                        iconHazard = R.drawable.hazard_low;
-
-                    } else if (hazardRating.equals("Moderate")) {
-                        iconHazard = R.drawable.hazard_medium;
-
-                    } else if (hazardRating.equals("High")) {
-                        iconHazard = R.drawable.hazard_high;
-
-                    } else {
-                        iconHazard = R.drawable.not_available;
-                    }
-                    snippet = r.getAddress() + "\n "
-                            + getString(R.string.hazard_level) + " " + hazardRating;
-
-                    //create individual marker per restaurant
-                    ClusterMarker newClusterMarker = new ClusterMarker(
-                            new LatLng(r.getLatitude(), r.getLongitude()),
-                            r.getName(), //title
-                            snippet,
-                            iconHazard,
-                            r.getTrackingNumber()
-                    );
-                    // adds cluster to map
-                    mClusterManager.addItem(newClusterMarker);
-
-                    // reference list for markers
-                    mClusterMarkers.add(newClusterMarker);
-                } catch (NullPointerException e) {
-                    Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
-                }
-
-            }
-
-            // adds every thing to the map at end of the loop
-            mClusterManager.cluster();
-
         }
     }
-
-    private void onBottomToolBarClick() {
-        /*Sources:
-        // https://androidwave.com/bottom-navigation-bar-android-example/
-        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
-
+        /**
+         * Loop through all the restaurants and place markers
+         * Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
          */
+    private void addMapMarkers() {
+        RestaurantManager restaurantManager;
+
+        // Make sure map not null
+        if (mMap != null) {
+            initManagerAndRenderer();
+            mClusterManager.clearItems();
+            mMap.clear();
+            mClusterMarkers.clear();
+            mClusterManager.setRenderer(mClusterManagerRenderer);
+        }
+
+        //set up info windows
+        mClusterManager.getMarkerCollection().setInfoWindowAdapter(
+                new CustomInfoWindowAdapter(MapsActivity.this)
+        );
+        // for each restaurant get there details
+        restaurantManager = RestaurantManager.getInstance();
+        for (Restaurant r : restaurantManager) {
+            String snippet;
+            try {
+                // Get relevant inspections
+                InspectionManager inspectionManager = InspectionManager.getInstance();
+                ArrayList<Inspection> inspections;
+                inspections = inspectionManager.getInspections(r.getTrackingNumber());
+                // Get the newest inspection
+                Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
+                String hazardRating = newestInspection.getHazardRating();
+                int iconHazard;
+                if (hazardRating.equals("Low")) {
+                    iconHazard = R.drawable.hazard_low;
+                } else if (hazardRating.equals("Moderate")) {
+                    iconHazard = R.drawable.hazard_medium;
+                } else if (hazardRating.equals("High")) {
+                    iconHazard = R.drawable.hazard_high;
+                } else {
+                    iconHazard = R.drawable.not_available;
+                }
+                snippet = r.getAddress() + "\n "
+                        + getString(R.string.hazard_level) + " " + hazardRating;
+                //create individual marker per restaurant
+                ClusterMarker newClusterMarker = new ClusterMarker(
+                        new LatLng(r.getLatitude(), r.getLongitude()),
+                        r.getName(), //title
+                        snippet,
+                        iconHazard,
+                        r.getTrackingNumber()
+                );
+                // adds cluster to map
+                mClusterManager.addItem(newClusterMarker);
+                // reference list for markers
+                mClusterMarkers.add(newClusterMarker);
+            } catch (NullPointerException e) {
+                Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
+            }
+        }
+        // adds every thing to the map at end of the loop
+        mClusterManager.cluster();
+    }
+
+    /*Sources:
+        https://androidwave.com/bottom-navigation-bar-android-example/
+        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+         */
+    private void onBottomToolBarClick() {
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 // switch based on id of item clicked, id defined in the bottom_navigation_menu
-
                 switch (item.getItemId()) {
-
                     case R.id.navigationBulletList:
                         //in this case we are in the map activity and want to go to main
                         Intent intent = MainActivity.makeIntent(MapsActivity.this);
@@ -502,11 +517,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-    // This way the user can see which activity they are in and can easly tell
-    // which icon represents what
+    /**
+     * This way the user can see which activity they are in and can easily tell which icon
+     * represents what, not use fragments for both so need to force a color change between activities
+     * source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
+     * https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+     */
     private void setMenuColor() {
-        // source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
 
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
@@ -516,20 +533,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new int[]{android.R.attr.state_checked},   // checked
                 new int[]{}                                // default
         };
-
         // Fill in color corresponding to state defined in state
         int[] colors = new int[]{
                 Color.parseColor("#ff0000"),
                 Color.parseColor("#000000"),
                 Color.parseColor("#ff0000"),
         };
-
         // set color list
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         // apply to icon color
         bottomNavigation.setItemIconTintList(navigationViewColorStateList);
     }
-
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarker item) {
@@ -539,7 +553,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         clickedMarker.getTrackingNum(), true);
                 startActivity(intent);
                 finish();
-
             }
         }
     }
@@ -579,16 +592,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra("makeGPSIntent num", trackingNum);
         intent.putExtra("makeGPSIntent bool", gpsIntent);
         return intent;
     }
-
     public void onBackPressed() {
-
         //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
         Log.i(TAGMAP, "onBackPressed");
         Intent a = new Intent(Intent.ACTION_MAIN);
