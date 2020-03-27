@@ -589,8 +589,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
             String trackingNum = intent.getStringExtra("makeGPSIntent num");
+            boolean flag1 = false;
             for (ClusterMarker clusterMarker : mClusterMarkers) {
-                if (trackingNum.equals(clusterMarker.getTrackingNum())) {
+                if (clusterMarker.getTrackingNum().contains(trackingNum) || trackingNum.contains(clusterMarker.getTrackingNum()) ){
                     restaurantPosition = clusterMarker.getPosition();
                     Marker marker = mClusterManagerRenderer.getMarker(clusterMarker);
                     mark1 = marker;
@@ -602,8 +603,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             marker.showInfoWindow();
 
                     }
+                    flag1 = true;
                     break;
                 }
+                if (flag1)
+                    break;
             }
             try {
                 moveCamera(restaurantPosition, DEFAULT_ZOOM);
