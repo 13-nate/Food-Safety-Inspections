@@ -2,7 +2,6 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +22,10 @@ import java.util.List;
  */
 public class RestaurantManager implements Iterable<Restaurant>{
     private List<Restaurant> restaurants;
+
+    //checks whether this is the first time running or not
+    private boolean firstRun = true;
+    private boolean updateData = true;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -70,6 +73,22 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
         // This should only be returned if an invalid trackingNumber was passed in
         return null;
+    }
+
+    public boolean isFirstRun() {
+        return firstRun;
+    }
+
+    public void setFirstRun(boolean firstRun) {
+        this.firstRun = firstRun;
+    }
+
+    public boolean isUpdateData() {
+        return updateData;
+    }
+
+    public void setUpdateData(boolean updateData) {
+        this.updateData = updateData;
     }
 
     public int getSize() {

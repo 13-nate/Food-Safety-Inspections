@@ -21,15 +21,24 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
-
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,10 +53,26 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.model.CSVFileParser;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -74,6 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
+    private LocationCallback locationCallback;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int ERROR_DIALOG_REQUEST = 9001;
@@ -81,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
     public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
     public static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
-
+    private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
@@ -132,10 +159,70 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Fill our model with the csv data
-    void InitializeManagers() {
-        // The csv data is stored in the raw resources folder so we pull our data from there
-        RestaurantManager.getInstance(getResources().openRawResource(R.raw.restaurants_itr1));
-        InspectionManager.getInstance(getResources().openRawResource(R.raw.inspectionreports_itr1));
+    void initializeManagers(InputStream inputStreamRestaurant, InputStream inputStreamInspection) {
+        // Fill the RestaurantManager with restaurants using the csv file stored in raw resources
+        RestaurantManager restaurantManager = RestaurantManager.getInstance(inputStreamRestaurant);
+        // Fill the InspectionManager with inspections using the csv file stored in raw resources
+        InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
+    }
+
+    private void getData() {
+        RestaurantManager restaurants = RestaurantManager.getInstance();
+
+        if (restaurants.isUpdateData()){
+            restaurants.setUpdateData(false);
+            checkFileDate();
+            InputStream inputStreamRestaurant = null;
+            InputStream inputStreamInspection = null;
+            try {
+                inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
+                inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
+                initializeManagers(inputStreamRestaurant, inputStreamInspection);
+
+            } catch (FileNotFoundException e) {
+                try {
+                    if (inputStreamRestaurant != null) {
+                        inputStreamRestaurant.close();
+                    }
+                    if (inputStreamInspection != null) {
+                        inputStreamInspection.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1),
+                        getResources().openRawResource(R.raw.inspectionreports_itr1));
+            }
+        }
+    }
+
+    private void checkFileDate(){
+        Date currentDate = Calendar.getInstance().getTime();
+
+        String tempPath = getFilesDir().getAbsolutePath();
+
+        File fileRestaurant = new File
+                (tempPath + "/" + ProgressMessage.fileFinalRestaurant);
+
+        File fileInspection = new File
+                (tempPath + "/" + ProgressMessage.fileFinalInspection);
+        if (fileRestaurant.exists() && fileInspection.exists()){
+
+            Date fileDateRestaurant = new Date(fileRestaurant.lastModified());
+            Date fileDateInspection = new Date(fileInspection.lastModified());
+
+            long timeDifferentRestaurant = currentDate.getTime() - fileDateRestaurant.getTime();
+            long diffRestaurant = TimeUnit.MILLISECONDS.toHours(timeDifferentRestaurant);
+
+            long timeDifferentInspection = currentDate.getTime() - fileDateInspection.getTime();
+            long diffInspection = TimeUnit.MILLISECONDS.toHours(timeDifferentInspection);
+
+            if (diffInspection > 20 || diffRestaurant > 20){
+                new updateChecker().execute();
+            }
+        } else {
+            new updateChecker().execute();
+        }
     }
 
     // this calls to heck for google play and then checks for gps
@@ -346,8 +433,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Fill our model with the csv data
-        InitializeManagers();
+        getData();
         // For dark mode
         // Source https://github.com/googlemaps/android-samples
         try {
@@ -491,7 +577,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*Sources:
         https://androidwave.com/bottom-navigation-bar-android-example/
         https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
-         */
+     */
     private void onBottomToolBarClick() {
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
@@ -521,10 +607,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
      */
     private void setMenuColor() {
-
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
-
         int[][] states = new int[][]{
                 new int[]{-android.R.attr.state_checked},  // unchecked
                 new int[]{android.R.attr.state_checked},   // checked
@@ -595,7 +679,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
         return intent;
     }
-    
+
     //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
     public void onBackPressed() {
         Log.i(TAGMAP, "onBackPressed");
@@ -627,4 +711,143 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    private class updateChecker extends AsyncTask<Void, Void, Void> {
+
+        private Date lastModifiedRestaurant;
+        private Date lastModifiedInspection;
+        boolean exceptionRaised = true;
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                readRestaurant();
+                readInspection();
+                exceptionRaised = false;
+            } catch (IOException | JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (exceptionRaised){
+                FragmentManager manager = getSupportFragmentManager();
+                ErrorMessage dialog = new ErrorMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            } else {
+                promptDownload();
+            }
+        }
+
+        private void readRestaurant() throws IOException, JSONException, ParseException {
+            URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=restaurants");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
+            String totalInput = "";
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                totalInput += inputLine;
+            }
+            in.close();
+            JSONObject json = new JSONObject(totalInput);
+
+            JSONObject jsonObject = json.getJSONObject("result");
+            JSONArray jsonArray = jsonObject.getJSONArray("resources");
+            jsonObject = jsonArray.getJSONObject(0);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            String lastModified = jsonObject.getString("last_modified");
+            lastModified = lastModified.replace("T", " ");
+            lastModified = lastModified.substring(0, lastModified.length() - 3);
+            lastModifiedRestaurant = simpleDateFormat.parse(lastModified);
+
+            connection.disconnect();
+        }
+
+        //takes in the json that gives you the choice between varieties of files
+        //gets the csv containing useful data from it
+        private void readInspection() throws IOException, JSONException, ParseException {
+            URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
+            String totalInput = "";
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                totalInput += inputLine;
+
+            }
+            in.close();
+            JSONObject json = new JSONObject(totalInput);
+
+            JSONObject jsonObject = json.getJSONObject("result");
+            JSONArray jsonArray = jsonObject.getJSONArray("resources");
+            jsonObject = jsonArray.getJSONObject(0);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            String lastModified = jsonObject.getString("last_modified");
+            lastModified = lastModified.replace("T", " ");
+            lastModified = lastModified.substring(0, lastModified.length() - 3);
+            lastModifiedInspection = simpleDateFormat.parse(lastModified);
+
+            connection.disconnect();
+        }
+
+        private void promptDownload() {
+            String tempPath = MapsActivity.this.getFilesDir().getAbsolutePath();
+
+            File fileRestaurant = new File
+                    (tempPath + "/" + ProgressMessage.fileFinalRestaurant);
+
+            File fileInspection = new File
+                    (tempPath + "/" + ProgressMessage.fileFinalInspection);
+
+            if (fileRestaurant.exists() && fileInspection.exists()) {
+                Date fileDateRestaurant = new Date(fileRestaurant.lastModified());
+                Date fileDateInspection = new Date(fileInspection.lastModified());
+
+                if (lastModifiedInspection != null && lastModifiedRestaurant != null){
+                    long timeDifferentRestaurant =
+                            lastModifiedRestaurant.getTime() - fileDateRestaurant.getTime();
+
+                    long timeDifferentInspection =
+                            lastModifiedInspection.getTime() - fileDateInspection.getTime();
+
+                    if (checkFirstTime()
+                            && ((timeDifferentRestaurant) > 0 || (timeDifferentInspection) > 0)) {
+                        FragmentManager manager = getSupportFragmentManager();
+                        DownloadMessage dialog = new DownloadMessage();
+                        dialog.show(manager, MESSAGE_DIALOGUE);
+                    }
+                }
+            } else if (checkFirstTime()) {
+                FragmentManager manager = getSupportFragmentManager();
+                DownloadMessage dialog = new DownloadMessage();
+                dialog.show(manager, MESSAGE_DIALOGUE);
+            }
+
+        }
+
+        private boolean checkFirstTime(){
+            RestaurantManager restaurants = RestaurantManager.getInstance();
+
+            if (restaurants.isFirstRun()){
+                restaurants.setFirstRun(false);
+                return true;
+            }
+            return false;
+        }
+    }
+
 }
