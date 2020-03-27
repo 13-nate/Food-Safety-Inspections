@@ -602,7 +602,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
         Marker mark1 = null;
-        restaurantPosition = new LatLng(0.0, 0.0);
         restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
         if (restaurantCordinatesRequest) {
             String trackingNum = intent.getStringExtra("makeGPSIntent num");
@@ -621,5 +620,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
 }
