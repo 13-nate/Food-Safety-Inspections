@@ -21,11 +21,13 @@ import ca.sfu.cmpt276projectaluminium.R;
 public class DownloadMessage extends AppCompatDialogFragment{
 
     private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
-    private static final String DOWNLOAD = "Download Prompt";
+    private static String DOWNLOAD = "Download Prompt";
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        DOWNLOAD = getActivity().getString(R.string.Download);
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.downloadprompt, null);
 

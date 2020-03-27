@@ -18,11 +18,12 @@ import ca.sfu.cmpt276projectaluminium.R;
 
 public class ErrorMessage extends AppCompatDialogFragment {
 
-    private static final String ERROR = "An Error has Occurred:";
+    private static String ERROR = "An Error has Occurred:";
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ERROR = getActivity().getString(R.string.ERROR);
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.errormessage, null);
 

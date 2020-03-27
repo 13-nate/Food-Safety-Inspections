@@ -40,7 +40,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 public class ProgressMessage extends AppCompatDialogFragment {
 
-    private static final String PROGRESS = "Downloading:";
+    private static String PROGRESS = "Downloading:";
 
     private static boolean cancel;
 
@@ -64,6 +64,8 @@ public class ProgressMessage extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
+        PROGRESS = getActivity().getString(R.string.progress);
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.progressbar, null);
 
@@ -175,7 +177,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             return progressBars[0];
         }
 
-        //Delete Functions Do nothing???
         @Override
         protected void onPostExecute(ProgressBar progressBar) {
             if (exceptionRaised){
