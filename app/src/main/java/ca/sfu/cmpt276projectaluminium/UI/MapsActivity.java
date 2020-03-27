@@ -80,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
     public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
+    public static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
 
 
     private GoogleMap mMap;
@@ -423,10 +424,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-        /**
-         * Loop through all the restaurants and place markers
-         * Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
-         */
+
+    /**
+     * Loop through all the restaurants and place markers
+     * Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
+     * */
     private void addMapMarkers() {
         RestaurantManager restaurantManager;
 
@@ -438,7 +440,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mClusterMarkers.clear();
             mClusterManager.setRenderer(mClusterManagerRenderer);
         }
-
         //set up info windows
         mClusterManager.getMarkerCollection().setInfoWindowAdapter(
                 new CustomInfoWindowAdapter(MapsActivity.this)
@@ -507,7 +508,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return true;
                     case R.id.navigationMap:
                         // in this case we are in the main activity so don't want anything to happen
-                        // require bool value so return true when the item is clicked
                 }
                 return false;
             }
@@ -591,12 +591,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
-        intent.putExtra("makeGPSIntent num", trackingNum);
-        intent.putExtra("makeGPSIntent bool", gpsIntent);
+        intent.putExtra(MAKE_GPS_INTENT_NUM, trackingNum);
+        intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
         return intent;
     }
+    
+    //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
     public void onBackPressed() {
-        //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
         Log.i(TAGMAP, "onBackPressed");
         Intent a = new Intent(Intent.ACTION_MAIN);
         a.addCategory(Intent.CATEGORY_HOME);
@@ -608,10 +609,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // https://stackoverflow.com/questions/52288720/how-to-change-visibility-of-markers-in-clustermanager-while-also-having-access-t
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
-        Marker mark1 = null;
-        restaurantCordinatesRequest = intent.getBooleanExtra("makeGPSIntent bool", false);
+        restaurantCordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
         if (restaurantCordinatesRequest) {
-            String trackingNum = intent.getStringExtra("makeGPSIntent num");
+            String trackingNum = intent.getStringExtra(MAKE_GPS_INTENT_NUM);
             for (ClusterMarker clusterMarker : mClusterMarkers) {
                 mClusterManager.removeItem(clusterMarker);
                 if (trackingNum.equals(clusterMarker.getTrackingNum())) {

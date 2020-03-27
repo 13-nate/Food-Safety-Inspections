@@ -32,13 +32,11 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 /**
  * Implements Restaurant details and gets data for it
  * Also grants access to the inspection details activity
- *
- */
-
-//credits
-//https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
-//https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
-//https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
+ * Sources:
+ * https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
+ * https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
+ * https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
+ * */
 
 public class RestaurantDetail extends AppCompatActivity {
 
@@ -48,12 +46,6 @@ public class RestaurantDetail extends AppCompatActivity {
     Restaurant restaurant;
     String id;
     boolean isFromMap = false;
-
-    // Control what happens upon pressing back button
-    /*public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return true;
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +59,6 @@ public class RestaurantDetail extends AppCompatActivity {
         // Create a back button that we can control
         ActionBar actionBar = getSupportActionBar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
         GpsClickCallBack();
     }
 
@@ -98,7 +88,6 @@ public class RestaurantDetail extends AppCompatActivity {
         ArrayAdapter<Inspection> adapter = new inspectionAdapter();
         ListView list = findViewById(R.id.inspectionList);
         list.setAdapter(adapter);
-
     }
 
     private void loadText() {
@@ -126,10 +115,8 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
-
         inspectionAdapter(){
             super(RestaurantDetail.this, R.layout.inspections_view, inspections);
-
         }
 
         @NonNull
@@ -143,7 +130,6 @@ public class RestaurantDetail extends AppCompatActivity {
             }
 
             Inspection inspection = inspections.get(position);
-
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
 
             if (inspection.getHazardRating().toLowerCase().equals("low")){
@@ -217,6 +203,5 @@ public class RestaurantDetail extends AppCompatActivity {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
         startActivity(intent);
     }
-
 }
 
