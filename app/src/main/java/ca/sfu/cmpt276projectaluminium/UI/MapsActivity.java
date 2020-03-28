@@ -128,6 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ClusterMarker restaurantClusterMarker;
     private LocationManager locationManager;
     private MyLocationListener myLocListener;
+    private boolean goToRestaurant;
 
     @Override
     protected void onResume() {
@@ -383,8 +384,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onLocationChanged(Location location) {
             float currentZoom;
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
-            Intent intent = getIntent();
-            boolean goToRestaurant = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
             // on map
             if (mapSartUp && !goToRestaurant) {
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
@@ -492,6 +491,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     initManagerAndRenderer();
                     addMapMarkers();
                     restaurantCoordinatesRequest =false;
+                    goToRestaurant = false;
                     requestLocationUpdates();
                 }
             }
@@ -776,6 +776,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         restaurantCoordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
         if (restaurantCoordinatesRequest) {
+            goToRestaurant = true;
             double latitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LATITUDE, 0);
             double longitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LONGITUDE, 0);
             String title = intent.getStringExtra(MAKE_GPS_INTENT_TITLE);
