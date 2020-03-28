@@ -395,7 +395,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 currentZoom = mMap.getCameraPosition().zoom;
                 // go to a restaurantLocation or user location
                 if (goToRestaurant) {
-                    goToRestaurantGpsLocation();
                 } else {
                     // get current LatLng of user
                     LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
