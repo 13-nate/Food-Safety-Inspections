@@ -70,7 +70,7 @@ public class CSVFileParser {
                 restaurants.add(restaurant);
             } catch (Exception e) {
                 // Instead of crashing, we simply don't add anything to the list & then print a log
-                Log.e(TAG, "getRestaurants: Unable to convert the following csv line to " +
+                Log.w(TAG, "getRestaurants: Unable to convert the following csv line to " +
                         "a restaurant: \n" + parsedLine.toString(), e);
             }
         }
@@ -157,7 +157,7 @@ public class CSVFileParser {
                 inspections.add(inspection);
             } catch (Exception e) {
                 // Instead of crashing, we simply don't add anything to the list & then print a log
-                Log.e(TAG, "getInspections: Unable to convert the following csv line to " +
+                Log.w(TAG, "getInspections: Unable to convert the following csv line to " +
                         "an inspection: \n" + parsedLine.toString(), e);
             }
         }
@@ -226,7 +226,7 @@ public class CSVFileParser {
                 this.parsedCSVLines.add(SplitStringIntoList(CSVLine));
             }
         } catch (IOException ex) {
-            Log.e(TAG, "Error reading line", ex);
+            Log.e(TAG, "Error during the reading of the csv file", ex);
         } finally {
             try {
                 // Close the file
@@ -274,7 +274,8 @@ public class CSVFileParser {
         // If the first line is empty or a title line without data, we remove the line
         List<String> firstLine = parsedCSVLines.get(0);
         boolean isEmpty = firstLine.size() == 0 || firstLine.get(0).equals("");
-        if (isEmpty || firstLine.get(0).toLowerCase().equals("\"trackingnumber\"")) {
+        if (isEmpty || firstLine.get(0).toLowerCase().equals("\"trackingnumber\"")
+                    || firstLine.get(0).toLowerCase().equals("trackingnumber")) {
             // Remove the line
             parsedCSVLines.remove(0);
         }
