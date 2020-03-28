@@ -99,13 +99,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
-    public static final String MAKE_GPS_INTENT_LATITUDE = "make gps intent latitude";
-    public static final String MAKE_GPS_INTENT_LONGITUDE = "make gps intent longitude";
-    public static final String MAKE_GPS_INTENT_TITLE = "make gps intent title";
-    public static final String MAKE_GPS_INTENT_ADDRESS = "make gps intent address";
-    public static final String MAKE_GPS_INTENT_HAZARD_RATING = "make gps intent hazardRating";
-    public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
-    public static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
+    private static final String MAKE_GPS_INTENT_LATITUDE = "make gps intent latitude";
+    private static final String MAKE_GPS_INTENT_LONGITUDE = "make gps intent longitude";
+    private static final String MAKE_GPS_INTENT_TITLE = "make gps intent title";
+    private static final String MAKE_GPS_INTENT_ADDRESS = "make gps intent address";
+    private static final String MAKE_GPS_INTENT_HAZARD_RATING = "make gps intent hazardRating";
+    private static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
+    private static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
     private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
@@ -476,10 +476,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             addMapMarkers();
         }
         // Only executes  if coming from  a restaurant
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         goToRestaurantGpsLocation();
         onMapClickCallBack();
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
     }
 
     public void onMapClickCallBack() {
@@ -491,11 +491,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d(TAGMAP, "ifStateMent");
                     mClusterManager.removeItem(restaurantClusterMarker);
                     initManagerAndRenderer();
-                    mClusterManagerRenderer.setShouldRenderInfoWindow(false);
                     addMapMarkers();
                     restaurantCordinatesRequest=false;
                 }
-
             }
         });
     }
@@ -633,8 +631,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onClusterItemInfoWindowClick(ClusterMarker item) {
-        for (ClusterMarker clickedMarker : mClusterMarkers) {
+    public void onClusterItemInfoWindowClick(ClusterMarker clickedMarker) {
+        for (ClusterMarker item : mClusterMarkers) {
             if (item.getPosition() == clickedMarker.getPosition()) {
                 Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
                         clickedMarker.getTrackingNum(), true);
@@ -743,6 +741,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     trackingNum
             );
             mClusterManager.addItem(restaurantMaker);
+            mClusterMarkers.add(restaurantMaker);
             restaurantClusterMarker = restaurantMaker;
         }
         try {

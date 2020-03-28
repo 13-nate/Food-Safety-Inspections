@@ -12,6 +12,9 @@ import java.lang.ref.WeakReference;
 
 import ca.sfu.cmpt276projectaluminium.R;
 
+/**
+ * This makes the custom pop up window for the ClusterMarkers
+ */
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private final View mWindow;
     private WeakReference<Context> mContext;

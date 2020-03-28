@@ -206,6 +206,7 @@ public class RestaurantDetail extends AppCompatActivity {
             intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                     restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
                     restaurant.getAddress(), hazardLevel, true);
+            startActivity(intent);
         } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
             startActivity(intent);
