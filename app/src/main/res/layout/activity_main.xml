@@ -44,11 +44,11 @@
         android:id="@+id/layoutLow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/border_green"
         android:orientation="horizontal"
         android:padding="5dp"
+        app:layout_constraintEnd_toStartOf="@+id/layoutMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -71,11 +71,12 @@
         android:id="@+id/layoutHigh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="3dp"
         android:background="@drawable/border_red"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutMedium"
+        app:layout_constraintEnd_toStartOf="@+id/layoutNone"
         app:layout_constraintStart_toEndOf="@+id/layoutMedium"
         app:layout_constraintTop_toTopOf="@+id/layoutMedium">
 
@@ -99,11 +100,12 @@
         android:id="@+id/layoutMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="3dp"
         android:background="@drawable/border_yellow"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutLow"
+        app:layout_constraintEnd_toStartOf="@+id/layoutHigh"
         app:layout_constraintStart_toEndOf="@+id/layoutLow"
         app:layout_constraintTop_toTopOf="@+id/layoutLow">
 
@@ -126,12 +128,13 @@
         android:id="@+id/layoutNone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
 
+        android:layout_marginStart="3dp"
         android:background="@drawable/border_blue"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/layoutHigh"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/layoutHigh"
         app:layout_constraintTop_toTopOf="@+id/layoutHigh">
 
@@ -158,14 +161,5 @@
         android:background="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/layoutLow"
         tools:layout_editor_absoluteX="16dp" />
-
-    <Button
-        android:id="@+id/data"
-        android:layout_width="60dp"
-        android:layout_height="48dp"
-        android:enabled="false"
-        android:text="Loading Data"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
