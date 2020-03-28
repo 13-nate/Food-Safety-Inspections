@@ -2,6 +2,7 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,6 +18,7 @@ import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 
 public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
+    private static final String TAG = "MyClusterManagerRenderer";
     // generates icons
     private final IconGenerator iconGenerator;
 
@@ -55,6 +57,5 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
         //bigger than one cluster
         return cluster.getSize() > 1;
     }
-
 }
 

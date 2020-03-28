@@ -1,6 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import java.lang.ref.WeakReference;
 import ca.sfu.cmpt276projectaluminium.R;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+    private final static String TAG = "CustomInfoWindowAdapter";
     private final View mWindow;
     private WeakReference<Context> mContext;
 
