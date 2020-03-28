@@ -474,11 +474,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(!restaurantCoordinatesRequest) {
             addMapMarkers();
         }
+
         // Only executes  if coming from  a restaurant
         goToRestaurantGpsLocation();
         onMapClickCallBack();
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
+        getDeviceLocation();
     }
 
     public void onMapClickCallBack() {
@@ -499,6 +501,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void getDeviceLocation() {
+        if(!goToRestaurant) {
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            try {
+                if (mLocationPermissionGranted) {
+                    Task location = mFusedLocationProviderClient.getLastLocation();
+                    location.addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAGMAP, "found Location");
+                                Location currentLocation = (Location) task.getResult();
+
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                        DEFAULT_ZOOM);
+                            } else {
+                                Log.d(TAGMAP, "Location is null");
+                                Toast.makeText(MapsActivity.this,
+                                        "Unable to get current location", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        }
+                    });
+                }
+            } catch (SecurityException e) {
+                Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
+            }
+        }
+    }
     public void initManagerAndRenderer() {
         if (mMap != null) {
             // Create a new manger if we don't have one.
