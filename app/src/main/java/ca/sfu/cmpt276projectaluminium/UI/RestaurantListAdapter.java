@@ -26,7 +26,10 @@ Sources:
     - Help make this external
  */
 
-// Inner class has reference to outer class
+/**
+ * This class is used to convert a list of restaurants objects into a list of display objects for
+ * a list view
+ */
 public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
     private List<Restaurant> restaurants;
     private Context context;
