@@ -316,6 +316,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // assume false to begin with
@@ -386,13 +387,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onLocationChanged(Location location) {
             float currentZoom;
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
-            if (mapSartUp) {
-                currentZoom = DEFAULT_ZOOM;
-                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
+            Intent intent = getIntent();
+            boolean goToRestaurant = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
+            // on map
+            if (mapSartUp && !goToRestaurant) {
+                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
                 mapSartUp = false;
             } else {
                 currentZoom = mMap.getCameraPosition().zoom;
                 // go to a restaurantLocation or user location
+                if (goToRestaurant) {
+                    // in this case the we want to look at a restaurant
+                } else {
                     // get current LatLng of user
                     LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
                     // for smooth transition
@@ -402,6 +408,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .build();
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
                     mMap.animateCamera(cameraUpdate);
+                }
             }
         }
 
