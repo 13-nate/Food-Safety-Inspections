@@ -68,6 +68,11 @@ public class MainActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void registerClickCallBack() {
         ListView list = findViewById(R.id.restaurantListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,18 +87,28 @@ public class MainActivity extends AppCompatActivity {
                 */
 
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber(), false);
                 startActivity(intent);
             }
         });
     }
 
-    private void onBottomToolBarClick() {
-        /*Sources:
-        // https://androidwave.com/bottom-navigation-bar-android-example/
-        https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+    //Source: https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
+    public void onBackPressed(){
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
 
-         */
+
+    /**
+     * This way the user can see which activity they are in and can easily tell which icon
+     * represents what, not use fragments for both so need to force a color change between activities
+     * source: https://stackoverflow.com/questions/30967851/change-navigation-view-item-color-dynamically-android?rq=1
+     * https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
+     */
+    private void onBottomToolBarClick() {
         BottomNavigationView bottomNavigation;
         bottomNavigation = findViewById(R.id.bottom_navigationMaps);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -109,10 +124,9 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                         case R.id.navigationMap:
                             //in this case we are in the main activity and want to go to maps
-
-                                Intent intent = MapsActivity.makeIntent(MainActivity.this);
-                                startActivity(intent);
-                                finish();
+                            Intent intent = MapsActivity.makeIntent(MainActivity.this, false);
+                            startActivity(intent);
+                            finish();
                             //if we get here return false don't have proper services
                             return false;
                 }

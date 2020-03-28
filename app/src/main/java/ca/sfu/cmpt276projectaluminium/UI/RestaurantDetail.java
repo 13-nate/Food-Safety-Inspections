@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,26 +32,22 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 /**
  * Implements Restaurant details and gets data for it
  * Also grants access to the inspection details activity
- *
- */
-
-//credits
-//https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
-//https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
-//https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
+ * Sources:
+ * https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
+ * https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
+ * https://stackoverflow.com/questions/28144657/android-error-attempt-to-invoke-virtual-method-void-android-app-actionbar-on
+ * */
 
 public class RestaurantDetail extends AppCompatActivity {
 
     private static final String TAG = "RestaurantId";
+    private static final String lastActivity = "";
     private ArrayList<Inspection> inspections = new ArrayList<>();
-    Restaurant restaurant;
-    String id;
+    private Restaurant restaurant;
+    private String id;
+    private boolean isFromMap = false;
+    private String hazardLevel;
 
-    // Control what happens upon pressing back button
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +60,14 @@ public class RestaurantDetail extends AppCompatActivity {
 
         // Create a back button that we can control
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         GpsClickCallBack();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void initializeVariables() {
@@ -78,13 +81,15 @@ public class RestaurantDetail extends AppCompatActivity {
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
         //if null pointer thrown, an invalid id was passed
+
+        isFromMap = getIntent().getBooleanExtra(lastActivity,false);
+        //if last activity user visited is map activity
     }
 
     private void populateListView(){
         ArrayAdapter<Inspection> adapter = new inspectionAdapter();
         ListView list = findViewById(R.id.inspectionList);
         list.setAdapter(adapter);
-
     }
 
     private void loadText() {
@@ -104,17 +109,16 @@ public class RestaurantDetail extends AppCompatActivity {
         longitude.setText(tempLongitude);
     }
 
-    public static Intent makeIntent(Context context, String restaurantId){
+    public static Intent makeIntent(Context context, String restaurantId, boolean isFromMap){
         Intent intent = new Intent(context, RestaurantDetail.class);
         intent.putExtra(TAG, restaurantId);
+        intent.putExtra(lastActivity,isFromMap);
         return intent;
     }
 
     private class inspectionAdapter extends ArrayAdapter<Inspection> {
-
         inspectionAdapter(){
             super(RestaurantDetail.this, R.layout.inspections_view, inspections);
-
         }
 
         @NonNull
@@ -128,16 +132,16 @@ public class RestaurantDetail extends AppCompatActivity {
             }
 
             Inspection inspection = inspections.get(position);
-
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
+            hazardLevel = inspection.getHazardRating();
 
-            if (inspection.getHazardRating().toLowerCase().equals("low")){
+            if (hazardLevel.equals("Low")){
                 imageView.setImageResource(R.drawable.hazard_low);
                 listView.setBackground(getDrawable(R.drawable.border_green));
-            } else if (inspection.getHazardRating().toLowerCase().equals("moderate")){
+            } else if (hazardLevel.equals("Moderate")){
                 imageView.setImageResource(R.drawable.hazard_medium);
                 listView.setBackground(getDrawable(R.drawable.border_yellow));
-            } else if (inspection.getHazardRating().toLowerCase().equals("high")){
+            } else if (hazardLevel.equals("High")){
                 imageView.setImageResource(R.drawable.hazard_high);
                 listView.setBackground(getDrawable(R.drawable.border_red));
             } else {
@@ -186,10 +190,27 @@ public class RestaurantDetail extends AppCompatActivity {
         gpsCords.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
+                Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
+                        restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
+                        restaurant.getAddress(), hazardLevel, true);
                 startActivity(intent);
+                finish();
             }
         });
+    }
+
+    public void onBackPressed(){
+        Log.i(TAG,"onBackPressed");
+        Intent intent = null;
+        if(isFromMap) {
+            intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
+                    restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
+                    restaurant.getAddress(), hazardLevel, true);
+            startActivity(intent);
+        } else {
+            intent = MainActivity.makeIntent(RestaurantDetail.this);
+            startActivity(intent);
+        }
     }
 }
 

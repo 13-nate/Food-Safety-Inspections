@@ -75,5 +75,5 @@
     <string name="ERROR">An Error has Occurred:</string>
     <string name="Download">Download Prompt</string>
     <string name="progress">Downloading:</string>
-
+    <string name="yes">Yes</string>
 </resources>
