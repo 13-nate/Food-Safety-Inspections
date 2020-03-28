@@ -316,7 +316,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // assume false to begin with
@@ -356,9 +355,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void requestLocationUpdates() {
         MyLocationListener myLocListener = new MyLocationListener();
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
-        int minTime = 1;
+        int minTime = 3000;
         // The minimum distance (in meters) traveled until notified
-        float minDistance = .5f;
+        float minDistance = 2;
         // Get the location manager from the system
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
@@ -387,16 +386,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onLocationChanged(Location location) {
             float currentZoom;
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
-            Intent intent = getIntent();
-            boolean goToRestaurant = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
-            if (mapSartUp && !goToRestaurant) {
+            if (mapSartUp) {
                 currentZoom = DEFAULT_ZOOM;
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
+                mapSartUp = false;
             } else {
                 currentZoom = mMap.getCameraPosition().zoom;
                 // go to a restaurantLocation or user location
-                if (goToRestaurant) {
-                } else {
                     // get current LatLng of user
                     LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
                     // for smooth transition
@@ -406,7 +402,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .build();
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
                     mMap.animateCamera(cameraUpdate);
-                }
             }
         }
 
@@ -543,6 +538,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ArrayAdapter<Restaurant> arrayAdapter
                 = new RestaurantListAdapter(MapsActivity.this, restaurants);
         ListView restaurantListView = new ListView(this);
+        restaurantListView.setDividerHeight(15);
         restaurantListView.setAdapter(arrayAdapter);
 
         // Make the list view elements clickable
