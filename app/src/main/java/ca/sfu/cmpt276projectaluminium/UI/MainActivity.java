@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 */
 
                 Restaurant clickedRestaurant = restaurantArray.get(position);
-                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber());
+                Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber(), false);
                 startActivity(intent);
             }
         });

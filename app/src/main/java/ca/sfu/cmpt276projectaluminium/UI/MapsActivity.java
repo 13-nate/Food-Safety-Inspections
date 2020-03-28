@@ -575,73 +575,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mClusterManager.clearItems();
             mMap.clear();
             mClusterMarkers.clear();
-         /*
-         Create a listener for clusters.  The listener will open a list of restaurants
-         inside the cluster.  This will be used to display clustered restaurants.
-         Source:
-         - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
-         - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
-         - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
-         */
-        mClusterManager.setOnClusterClickListener(cluster -> {
-            // Used to recreate restaurant objects
-            RestaurantManager rManager = RestaurantManager.getInstance();
-            // Will hold restaurants that are inside the cluster
-            List<Restaurant> restaurants = new ArrayList<>();
-
-            // For each marker inside the cluster, store the corresponding restaurant
-            for (Object o : cluster.getItems()) {
-                ClusterMarker cm = (ClusterMarker)o;
-                restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
-            }
-
-            // Create a dialog popup that has a list with all restaurants inside the cluster
-            showDialogPopup(restaurants);
-
-            return false;
-        });
-        // for each restaurant get there details
-        restaurantManager = RestaurantManager.getInstance();
-        for (Restaurant r : restaurantManager) {
-            String snippet;
-            try {
-                // Get relevant inspections
-                InspectionManager inspectionManager = InspectionManager.getInstance();
-                ArrayList<Inspection> inspections;
-                inspections = inspectionManager.getInspections(r.getTrackingNumber());
-                // Get the newest inspection
-                Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
-                String hazardRating = newestInspection.getHazardRating();
-                int iconHazard;
-                if (hazardRating.equals("Low")) {
-                    iconHazard = R.drawable.hazard_low;
-                } else if (hazardRating.equals("Moderate")) {
-                    iconHazard = R.drawable.hazard_medium;
-                } else if (hazardRating.equals("High")) {
-                    iconHazard = R.drawable.hazard_high;
-                } else {
-                    iconHazard = R.drawable.not_available;
+            /*
+            Create a listener for clusters.  The listener will open a list of restaurants
+            inside the cluster.  This will be used to display clustered restaurants.
+            Source:
+            - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
+            - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
+            - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
+            */
+            mClusterManager.setOnClusterClickListener(cluster -> {
+                // Used to recreate restaurant objects
+                RestaurantManager rManager = RestaurantManager.getInstance();
+                 // Will hold restaurants that are inside the cluster
+                 List<Restaurant> restaurants = new ArrayList<>();
+                // For each marker inside the cluster, store the corresponding restaurant
+                for (Object o : cluster.getItems()) {
+                    ClusterMarker cm = (ClusterMarker) o;
+                    restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
                 }
-                snippet = r.getAddress() + "\n "
-                        + getString(R.string.hazard_level) + " " + hazardRating;
-                //create individual marker per restaurant
-                ClusterMarker newClusterMarker = new ClusterMarker(
-                        new LatLng(r.getLatitude(), r.getLongitude()),
-                        r.getName(), //title
-                        snippet,
-                        iconHazard,
-                        r.getTrackingNumber()
-                );
-                // adds cluster to map
-                mClusterManager.addItem(newClusterMarker);
-                // reference list for markers
-                mClusterMarkers.add(newClusterMarker);
-            } catch (NullPointerException e) {
-                Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
+             // Create a dialog popup that has a list with all restaurants inside the cluster
+             showDialogPopup(restaurants);
+             return false;
+            });
+            // for each restaurant get there details
+            restaurantManager = RestaurantManager.getInstance();
+            for (Restaurant r : restaurantManager) {
+                String snippet;
+                try {
+                    // Get relevant inspections
+                    InspectionManager inspectionManager = InspectionManager.getInstance();
+                    ArrayList<Inspection> inspections;
+                    inspections = inspectionManager.getInspections(r.getTrackingNumber());
+                    // Get the newest inspection
+                    Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
+                    String hazardRating = newestInspection.getHazardRating();
+                    int iconHazard;
+                    if (hazardRating.equals("Low")) {
+                        iconHazard = R.drawable.hazard_low;
+                    } else if (hazardRating.equals("Moderate")) {
+                        iconHazard = R.drawable.hazard_medium;
+                    } else if (hazardRating.equals("High")) {
+                        iconHazard = R.drawable.hazard_high;
+                    } else {
+                        iconHazard = R.drawable.not_available;
+                    }
+                    snippet = r.getAddress() + "\n "
+                            + getString(R.string.hazard_level) + " " + hazardRating;
+                    //create individual marker per restaurant
+                    ClusterMarker newClusterMarker = new ClusterMarker(
+                            new LatLng(r.getLatitude(), r.getLongitude()),
+                            r.getName(), //title
+                            snippet,
+                            iconHazard,
+                            r.getTrackingNumber()
+                    );
+                    // adds cluster to map
+                    mClusterManager.addItem(newClusterMarker);
+                    // reference list for markers
+                    mClusterMarkers.add(newClusterMarker);
+                } catch (NullPointerException e) {
+                    Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
+                }
             }
+            // adds every thing to the map at end of the loop
+            mClusterManager.cluster();
         }
-        // adds every thing to the map at end of the loop
-        mClusterManager.cluster();
     }
 
     /*Sources:
