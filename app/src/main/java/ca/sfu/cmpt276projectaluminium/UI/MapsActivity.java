@@ -99,17 +99,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
     private static final String TAGMAP = "MapsActivity";
-    private LocationCallback locationCallback;
-
+    public static final String MAKE_GPS_INTENT_LATITUDE = "make gps intent latitude";
+    public static final String MAKE_GPS_INTENT_LONGITUDE = "make gps intent longitude";
+    public static final String MAKE_GPS_INTENT_TITLE = "make gps intent title";
+    public static final String MAKE_GPS_INTENT_ADDRESS = "make gps intent address";
+    public static final String MAKE_GPS_INTENT_HAZARD_RATING = "make gps intent hazardRating";
+    public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
+    public static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
+    private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
-    public static final String MAKE_GPS_INTENT_BOOL = "makeGPSIntent bool";
-    public static final String MAKE_GPS_INTENT_NUM = "makeGPSIntent num";
-    private static final String MESSAGE_DIALOGUE = "MESSAGE_DIALOGUE";
 
+    private LocationCallback locationCallback;
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -468,11 +472,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             mClusterManagerRenderer.setShouldRenderInfoWindow(false);
         }
-
-        addMapMarkers();
+        // Don't add the map markers just want to see one marker the one we make in goToRestaurantGpsLocation();
+        if(!restaurantCordinatesRequest) {
+            addMapMarkers();
+        }
+        // Only executes  if coming from  a restaurant
         mMap.setOnCameraIdleListener(mClusterManager);
-        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-        // only executes  if coming from  a restaurant
+        mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         goToRestaurantGpsLocation();
         onMapClickCallBack();
     }
@@ -490,6 +496,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     addMapMarkers();
                     restaurantCordinatesRequest=false;
                 }
+
             }
         });
     }
@@ -508,6 +515,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mClusterManager
                 );
             }
+            mClusterManager.setRenderer(mClusterManagerRenderer);
+            //set up info windows
+            mClusterManager.getMarkerCollection().setInfoWindowAdapter(
+                    new CustomInfoWindowAdapter(MapsActivity.this)
+            );
         }
     }
 
@@ -516,20 +528,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
      * */
     private void addMapMarkers() {
+        Log.d(TAGMAP, "adding all markers");
         RestaurantManager restaurantManager;
-
         // Make sure map not null
         if (mMap != null) {
             initManagerAndRenderer();
             mClusterManager.clearItems();
             mMap.clear();
             mClusterMarkers.clear();
-            mClusterManager.setRenderer(mClusterManagerRenderer);
         }
-        //set up info windows
-        mClusterManager.getMarkerCollection().setInfoWindowAdapter(
-                new CustomInfoWindowAdapter(MapsActivity.this)
-        );
         // for each restaurant get there details
         restaurantManager = RestaurantManager.getInstance();
         for (Restaurant r : restaurantManager) {
@@ -673,9 +680,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-    public static Intent makeGPSIntent(Context context, String trackingNum, boolean gpsIntent) {
+    public static Intent makeGPSIntent(Context context, double latitude, double longitude,
+                                       String title, String trackingNum, String address,
+                                       String hazardRating, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
+        intent.putExtra(MAKE_GPS_INTENT_LATITUDE, latitude);
+        intent.putExtra(MAKE_GPS_INTENT_LONGITUDE, longitude);
+        intent.putExtra(MAKE_GPS_INTENT_TITLE, title);
+        intent.putExtra(MAKE_GPS_INTENT_ADDRESS, address);
         intent.putExtra(MAKE_GPS_INTENT_NUM, trackingNum);
+        intent.putExtra(MAKE_GPS_INTENT_HAZARD_RATING, hazardRating);
+        intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
+        return intent;
+    }
+
+    public static Intent makeIntent(Context context, boolean gpsIntent) {
+        Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
         return intent;
     }
@@ -695,20 +715,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         restaurantCordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
         if (restaurantCordinatesRequest) {
+            double latitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LATITUDE, 0);
+            double longitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LONGITUDE, 0);
+            String title = intent.getStringExtra(MAKE_GPS_INTENT_TITLE);
+            String address = intent.getStringExtra(MAKE_GPS_INTENT_ADDRESS);
+            String hazardRating = intent.getStringExtra(MAKE_GPS_INTENT_HAZARD_RATING);
             String trackingNum = intent.getStringExtra(MAKE_GPS_INTENT_NUM);
-            for (ClusterMarker clusterMarker : mClusterMarkers) {
-                mClusterManager.removeItem(clusterMarker);
-                if (trackingNum.equals(clusterMarker.getTrackingNum())) {
-                    restaurantPosition = clusterMarker.getPosition();
-                    mClusterManager.addItem(clusterMarker);
-                    restaurantClusterMarker = clusterMarker;
-                }
-                try {
-                    moveCamera(restaurantPosition, DEFAULT_ZOOM);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+            String snippet = address + "\n "
+                    + getString(R.string.hazard_level) + " " + hazardRating;
+            restaurantPosition = new LatLng(latitude, longitude);
+
+            int iconHazard;
+            if (hazardRating.equals("Low")) {
+                iconHazard = R.drawable.hazard_low;
+            } else if (hazardRating.equals("Moderate")) {
+                iconHazard = R.drawable.hazard_medium;
+            } else if (hazardRating.equals("High")) {
+                iconHazard = R.drawable.hazard_high;
+            } else {
+                iconHazard = R.drawable.not_available;
             }
+            ClusterMarker restaurantMaker = new ClusterMarker(
+                    restaurantPosition,
+                    title,
+                    snippet,
+                    iconHazard,
+                    trackingNum
+            );
+            mClusterManager.addItem(restaurantMaker);
+            restaurantClusterMarker = restaurantMaker;
+        }
+        try {
+            moveCamera(restaurantPosition, DEFAULT_ZOOM);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

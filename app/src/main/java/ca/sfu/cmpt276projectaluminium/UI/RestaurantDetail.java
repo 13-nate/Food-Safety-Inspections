@@ -43,9 +43,11 @@ public class RestaurantDetail extends AppCompatActivity {
     private static final String TAG = "RestaurantId";
     private static final String lastActivity = "";
     private ArrayList<Inspection> inspections = new ArrayList<>();
-    Restaurant restaurant;
-    String id;
-    boolean isFromMap = false;
+    private Restaurant restaurant;
+    private String id;
+    private boolean isFromMap = false;
+    private String hazardLevel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,14 +133,15 @@ public class RestaurantDetail extends AppCompatActivity {
 
             Inspection inspection = inspections.get(position);
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
+            hazardLevel = inspection.getHazardRating();
 
-            if (inspection.getHazardRating().toLowerCase().equals("low")){
+            if (hazardLevel.equals("Low")){
                 imageView.setImageResource(R.drawable.hazard_low);
                 listView.setBackground(getDrawable(R.drawable.border_green));
-            } else if (inspection.getHazardRating().toLowerCase().equals("moderate")){
+            } else if (hazardLevel.equals("Moderate")){
                 imageView.setImageResource(R.drawable.hazard_medium);
                 listView.setBackground(getDrawable(R.drawable.border_yellow));
-            } else if (inspection.getHazardRating().toLowerCase().equals("high")){
+            } else if (hazardLevel.equals("High")){
                 imageView.setImageResource(R.drawable.hazard_high);
                 listView.setBackground(getDrawable(R.drawable.border_red));
             } else {
@@ -187,7 +190,9 @@ public class RestaurantDetail extends AppCompatActivity {
         gpsCords.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
+                Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
+                        restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
+                        restaurant.getAddress(), hazardLevel, true);
                 startActivity(intent);
                 finish();
             }
@@ -197,11 +202,14 @@ public class RestaurantDetail extends AppCompatActivity {
     public void onBackPressed(){
         Log.i(TAG,"onBackPressed");
         Intent intent = null;
-        if(isFromMap)
-            intent= MapsActivity.makeGPSIntent(RestaurantDetail.this, id, true);
-        else
+        if(isFromMap) {
+            intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
+                    restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
+                    restaurant.getAddress(), hazardLevel, true);
+        } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
-        startActivity(intent);
+            startActivity(intent);
+        }
     }
 }
 
