@@ -354,9 +354,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void requestLocationUpdates() {
         myLocListener = new MyLocationListener();
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
-        int minTime = 10000;
+        int minTime = 5000;
         // The minimum distance (in meters) traveled until notified
-        float minDistance = 2;
+        float minDistance = 1;
         // Get the location manager from the system
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
