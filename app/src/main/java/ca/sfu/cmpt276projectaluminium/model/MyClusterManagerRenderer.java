@@ -2,6 +2,7 @@ package ca.sfu.cmpt276projectaluminium.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +24,7 @@ import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
  * these are videos from the video playlists mentioned in the Map activity
  */
 public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
+    private static final String TAG = "MyClusterManagerRenderer";
     // generates icons
     private final IconGenerator iconGenerator;
     private ImageView imageView;

@@ -25,6 +25,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -68,6 +70,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -98,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
+    private static final String TAG = "MapsActivity";
     private static final String TAGMAP = "MapsActivity";
     private static final String MAKE_GPS_INTENT_LATITUDE = "make gps intent latitude";
     private static final String MAKE_GPS_INTENT_LONGITUDE = "make gps intent longitude";
@@ -187,9 +191,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     if (inputStreamRestaurant != null) {
                         inputStreamRestaurant.close();
-                    }
-                    if (inputStreamInspection != null) {
-                        inputStreamInspection.close();
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -520,6 +521,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+    // Create a dialog with a list filled with restaurants that are in the cluster
+    // Then show it
+    private void showDialogPopup(List<Restaurant> restaurants) {
+        // Create builder for dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,
+                R.style.darkDialogTheme);
+        // Set attributes for dialog
+        builder.setTitle("Restaurants at tapped location:\n");
+
+        // Create cancel button for dialog
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+            }
+        });
+
+        // Use an arrayAdapter to converts objects to a list view
+        final ArrayAdapter<Restaurant> arrayAdapter
+                = new RestaurantListAdapter(MapsActivity.this, restaurants);
+        ListView restaurantListView = new ListView(this);
+        restaurantListView.setAdapter(arrayAdapter);
+
+        // Make the list view elements clickable
+        // - Clicking a restaurant will take you to the restaurant details activity
+        restaurantListView.setOnItemClickListener((parent, view, position, id) -> {
+            Restaurant clickedRestaurant = restaurants.get(position);
+            Intent intent = RestaurantDetail.makeIntent(MapsActivity.this,
+                    clickedRestaurant.getTrackingNumber(), true);
+            startActivity(intent);
+        });
+
+        // Put the listView inside our dialog
+        builder.setView(restaurantListView);
+
+        // Show our dialog
+        builder.show();
+    }
+
+
     /**
      * Loop through all the restaurants and place markers
      * Sources: https://codinginfinite.com/android-google-map-custom-marker-clustering/
@@ -533,7 +575,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mClusterManager.clearItems();
             mMap.clear();
             mClusterMarkers.clear();
-        }
+         /*
+         Create a listener for clusters.  The listener will open a list of restaurants
+         inside the cluster.  This will be used to display clustered restaurants.
+         Source:
+         - https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog/15763023
+         - https://stackoverflow.com/questions/3718523/create-listview-programmatically/6157182
+         - https://stackoverflow.com/questions/18346920/change-the-background-color-of-a-pop-up-dialog
+         */
+        mClusterManager.setOnClusterClickListener(cluster -> {
+            // Used to recreate restaurant objects
+            RestaurantManager rManager = RestaurantManager.getInstance();
+            // Will hold restaurants that are inside the cluster
+            List<Restaurant> restaurants = new ArrayList<>();
+
+            // For each marker inside the cluster, store the corresponding restaurant
+            for (Object o : cluster.getItems()) {
+                ClusterMarker cm = (ClusterMarker)o;
+                restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
+            }
+
+            // Create a dialog popup that has a list with all restaurants inside the cluster
+            showDialogPopup(restaurants);
+
+            return false;
+        });
         // for each restaurant get there details
         restaurantManager = RestaurantManager.getInstance();
         for (Restaurant r : restaurantManager) {
