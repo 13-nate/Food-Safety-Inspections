@@ -51,6 +51,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -397,7 +399,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 currentZoom = mMap.getCameraPosition().zoom;
                 // go to a restaurantLocation or user location
                 if (goToRestaurant) {
-                    // in this case the we want to look at a restaurant
+                    // in this case the we want to look at a restaurant and not the user so don't move the camera
                 } else {
                     // get current LatLng of user
                     LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
@@ -483,6 +485,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         onMapClickCallBack();
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
+        getDeviceLocation();
+    }
+
+    private void getDeviceLocation() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        try {
+            if(mLocationPermissionGranted) {
+                Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()) {
+                            Log.d(TAGMAP, "found Location");
+                            Location currentLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM);
+                        } else {
+                            Log.d(TAGMAP, "Location is null");
+                            Toast.makeText(MapsActivity.this,
+                                    "Unable to get current location", Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+            Log.e(TAGMAP, "getDeviceLocation: securityException: " + e.getMessage());
+        }
     }
 
     public void onMapClickCallBack() {
