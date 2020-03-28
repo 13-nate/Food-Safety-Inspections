@@ -29,17 +29,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,7 +44,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -102,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
 
-    private static final String TAG = "MapsActivity";
+
     private static final String TAGMAP = "MapsActivity";
     private static final String MAKE_GPS_INTENT_LATITUDE = "make gps intent latitude";
     private static final String MAKE_GPS_INTENT_LONGITUDE = "make gps intent longitude";
@@ -118,14 +113,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
 
-    private LocationCallback locationCallback;
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private ClusterManager mClusterManager;
     private MyClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
-    private Boolean restaurantCordinatesRequest = false;
+    private Boolean restaurantCoordinatesRequest = false;
     private Boolean mapInitialized = false;
     private LatLng restaurantPosition;
     // lets us go to user location on start up
@@ -133,6 +127,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // This is used to remove the marker from the manager so there are no duplicates when coming
     // back from a gpsClick
     private ClusterMarker restaurantClusterMarker;
+    private LocationManager locationManager;
+    private MyLocationListener myLocListener;
+    private boolean goToRestaurant;
 
     @Override
     protected void onResume() {
@@ -355,13 +352,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     https://blog.codecentric.de/en/2014/05/android-gps-positioning-location-strategies/
     */
     private void requestLocationUpdates() {
-        MyLocationListener myLocListener = new MyLocationListener();
+        myLocListener = new MyLocationListener();
         // The minimum time (in milliseconds) the system will wait until checking if the location changed
-        int minTime = 1;
+        int minTime = 10000;
         // The minimum distance (in meters) traveled until notified
-        float minDistance = .5f;
+        float minDistance = 2;
         // Get the location manager from the system
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // Get the best provider from the criteria specified, and false to say it can turn the provider on if it isn't already
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -388,15 +385,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onLocationChanged(Location location) {
             float currentZoom;
             //zoom and go to userLocation if we don't want to go a restaurant and app just started
-            Intent intent = getIntent();
-            boolean goToRestaurant = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
+            // on map
             if (mapSartUp && !goToRestaurant) {
-                currentZoom = DEFAULT_ZOOM;
-                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), currentZoom);
+                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
+                mapSartUp = false;
             } else {
                 currentZoom = mMap.getCameraPosition().zoom;
                 // go to a restaurantLocation or user location
                 if (goToRestaurant) {
+                    // in this case the we want to look at a restaurant and not the user so don't move the camera
                 } else {
                     // get current LatLng of user
                     LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
@@ -467,14 +464,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             and want to show the user that restaurants infoWindow
          */
         Intent intent =getIntent();
-        restaurantCordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
-        if(restaurantCordinatesRequest) {
+        restaurantCoordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
+        if(restaurantCoordinatesRequest) {
             mClusterManagerRenderer.setShouldRenderInfoWindow(true);
         } else {
             mClusterManagerRenderer.setShouldRenderInfoWindow(false);
         }
         // Don't add the map markers just want to see one marker the one we make in goToRestaurantGpsLocation();
-        if(!restaurantCordinatesRequest) {
+        if(!restaurantCoordinatesRequest) {
             addMapMarkers();
         }
         // Only executes  if coming from  a restaurant
@@ -489,12 +486,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng clickedPosition) {
                 Log.d(TAGMAP, "in map clickListener");
-                if(restaurantCordinatesRequest){
+                if(restaurantCoordinatesRequest){
                     Log.d(TAGMAP, "ifStateMent");
                     mClusterManager.removeItem(restaurantClusterMarker);
                     initManagerAndRenderer();
                     addMapMarkers();
-                    restaurantCordinatesRequest=false;
+                    restaurantCoordinatesRequest =false;
+                    goToRestaurant = false;
+                    requestLocationUpdates();
                 }
             }
         });
@@ -547,6 +546,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ArrayAdapter<Restaurant> arrayAdapter
                 = new RestaurantListAdapter(MapsActivity.this, restaurants);
         ListView restaurantListView = new ListView(this);
+        restaurantListView.setDividerHeight(15);
         restaurantListView.setAdapter(arrayAdapter);
 
         // Make the list view elements clickable
@@ -778,8 +778,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // https://stackoverflow.com/questions/52288720/how-to-change-visibility-of-markers-in-clustermanager-while-also-having-access-t
     public void goToRestaurantGpsLocation() {
         Intent intent = getIntent();
-        restaurantCordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
-        if (restaurantCordinatesRequest) {
+        restaurantCoordinatesRequest = intent.getBooleanExtra(MAKE_GPS_INTENT_BOOL, false);
+        if (restaurantCoordinatesRequest) {
+            goToRestaurant = true;
             double latitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LATITUDE, 0);
             double longitude = intent.getDoubleExtra(MAKE_GPS_INTENT_LONGITUDE, 0);
             String title = intent.getStringExtra(MAKE_GPS_INTENT_TITLE);
@@ -957,4 +958,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationManager.removeUpdates(myLocListener);
+        locationManager = null;
+    }
 }
