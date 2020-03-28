@@ -64,6 +64,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
@@ -488,6 +489,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dialog.dismiss();
             }
         });
+
+        // Sort the restaurants by alphabetical order
+        Collections.sort(restaurants);
 
         // Use an arrayAdapter to converts objects to a list view
         final ArrayAdapter<Restaurant> arrayAdapter
