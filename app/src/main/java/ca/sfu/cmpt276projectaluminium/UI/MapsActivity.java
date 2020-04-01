@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -137,7 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private MyLocationListener myLocListener;
     private boolean goToRestaurant;
-    private  ArrayList<ClusterMarker> removedMarkers = new ArrayList<>();
+    private  ArrayList<ClusterMarker> mClusterMarkersCopy = new ArrayList<>();
 
     //widgets
     private EditText mSearchText;
@@ -503,16 +504,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         || event.getAction() == KeyEvent.KEYCODE_ENTER) {
 
                     Toast.makeText(MapsActivity.this, mSearchText.getText(), Toast.LENGTH_SHORT).show();
+                    String searchText = mSearchText.getText().toString().toLowerCase().trim();
                     mClusterManager.clearItems();
-                    for (ClusterMarker clusterMarker : mClusterMarkers) {
-                        Log.d(TAGMAP, clusterMarker.getTitle() + mSearchText.getText());
-                        String searchText = mSearchText.getText().toString();
-                        if (searchText.contains(clusterMarker.getTitle())) {
-                            mClusterManager.addItem(clusterMarker);
+                    if(searchText == null || searchText.length() == 0){
+                        // in this case show all restaurants, mClusterMarkers has all of them
+                        mClusterManager.addItems(mClusterMarkers);
+                    } else {
+                        for(ClusterMarker clusterMarker: mClusterMarkers) {
+                            if(clusterMarker.getTitle().toLowerCase().contains(searchText)) {
+                                mClusterManager.addItem(clusterMarker);
+                            }
                         }
                     }
-                    mClusterManager.cluster();
                 }
+                mClusterManager.cluster();
                 return false;
             }
         });
@@ -707,6 +712,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
             }
+            mClusterMarkersCopy = new ArrayList<>(mClusterMarkers);
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
         }
@@ -1022,12 +1028,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             return false;
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        locationManager.removeUpdates(myLocListener);
-        locationManager = null;
     }
 }
