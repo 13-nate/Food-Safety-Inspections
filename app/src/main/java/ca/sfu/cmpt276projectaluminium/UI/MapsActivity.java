@@ -24,9 +24,13 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -44,6 +48,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -65,6 +71,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Calendar;
@@ -130,6 +137,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private MyLocationListener myLocListener;
     private boolean goToRestaurant;
+    private  ArrayList<ClusterMarker> removedMarkers = new ArrayList<>();
+
+    //widgets
+    private EditText mSearchText;
 
     @Override
     protected void onResume() {
@@ -481,6 +492,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         getDeviceLocation();
+
+        mSearchText = findViewById(R.id.input_search);
+        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH
+                        || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN
+                        || event.getAction() == KeyEvent.KEYCODE_ENTER) {
+
+                    Toast.makeText(MapsActivity.this, mSearchText.getText(), Toast.LENGTH_SHORT).show();
+                    mClusterManager.clearItems();
+                    for (ClusterMarker clusterMarker : mClusterMarkers) {
+                        Log.d(TAGMAP, clusterMarker.getTitle() + mSearchText.getText());
+                        String searchText = mSearchText.getText().toString();
+                        if (searchText.contains(clusterMarker.getTitle())) {
+                            mClusterManager.addItem(clusterMarker);
+                        }
+                    }
+                    mClusterManager.cluster();
+                }
+                return false;
+            }
+        });
     }
 
     public void onMapClickCallBack() {
