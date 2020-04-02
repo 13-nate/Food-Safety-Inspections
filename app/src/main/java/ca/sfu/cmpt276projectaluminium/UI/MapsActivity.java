@@ -2,6 +2,7 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -25,6 +26,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -100,7 +103,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  * https://www.youtube.com/playlist?list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi
  * The above sources are video playLists that where used to do alot of this class
  */
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
@@ -164,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         onBottomToolBarClick();
         setMenuColor();
+        getSupportActionBar().setTitle(getString(R.string.restaurants));
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -174,6 +178,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filter_menu, menu);
+        return true;
     }
 
     // Fill our model with the csv data
