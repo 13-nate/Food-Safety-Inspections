@@ -10,31 +10,14 @@
 
     <item android:id="@+id/filterHazard"
         android:title="Hazard Level"
-        app:showAsAction="never">
-        <menu>
-            <item
-                android:id="@+id/hazardLow"
-                android:title="Low"
-                app:showAsAction="never">
-            </item>
-            <item
-                android:id="@+id/hazardMedium"
-                android:title="Low"
-                app:showAsAction="never">
-            </item>
-            <item
-                android:id="@+id/hazardHigh"
-                android:title="Low"
-                app:showAsAction="never">
-            </item>
-        </menu>
+        app:showAsAction="never"/>
 
-    </item >
+
     <item android:id="@+id/filterViolations"
         android:title="Critical Violations Within the Last Year"
         app:showAsAction="never"/>
+
     <item android:id="@+id/filterFavourites"
         android:title="Favourite Restaurants"
         app:showAsAction="never"/>
-
 </menu>
