@@ -34,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -143,9 +144,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean goToRestaurant;
     private  ArrayList<ClusterMarker> mClusterMarkersCopy = new ArrayList<>();
 
-    //widgets
-    private EditText mSearchText;
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -181,10 +179,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+
+    // Sources: https://www.youtube.com/watch?v=oh4YOj9VkVE
+    // https://www.youtube.com/watch?v=sJ-Z9G0SDhc
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_Search);
+        SearchView searchView = (SearchView)searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                    Toast.makeText(MapsActivity.this, newText, Toast.LENGTH_SHORT).show();
+                    String searchText = newText.toLowerCase().trim();
+                    mClusterManager.clearItems();
+                    if(searchText == null || searchText.length() == 0){
+                        // in this case show all restaurants, mClusterMarkers has all of them
+                        mClusterManager.addItems(mClusterMarkers);
+                    } else {
+                        for(ClusterMarker clusterMarker: mClusterMarkers) {
+                            if(clusterMarker.getTitle().toLowerCase().contains(searchText)) {
+                                mClusterManager.addItem(clusterMarker);
+                            }
+                        }
+                    }
+                mClusterManager.cluster();
+                return false;
+            }
+        });
         return true;
     }
 
@@ -505,34 +534,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         getDeviceLocation();
-
-        mSearchText = findViewById(R.id.input_search);
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN
-                        || event.getAction() == KeyEvent.KEYCODE_ENTER) {
-
-                    Toast.makeText(MapsActivity.this, mSearchText.getText(), Toast.LENGTH_SHORT).show();
-                    String searchText = mSearchText.getText().toString().toLowerCase().trim();
-                    mClusterManager.clearItems();
-                    if(searchText == null || searchText.length() == 0){
-                        // in this case show all restaurants, mClusterMarkers has all of them
-                        mClusterManager.addItems(mClusterMarkers);
-                    } else {
-                        for(ClusterMarker clusterMarker: mClusterMarkers) {
-                            if(clusterMarker.getTitle().toLowerCase().contains(searchText)) {
-                                mClusterManager.addItem(clusterMarker);
-                            }
-                        }
-                    }
-                }
-                mClusterManager.cluster();
-                return false;
-            }
-        });
     }
 
     public void onMapClickCallBack() {
