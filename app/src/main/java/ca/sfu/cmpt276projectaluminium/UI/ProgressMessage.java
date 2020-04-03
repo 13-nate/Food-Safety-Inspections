@@ -64,17 +64,18 @@ public class ProgressMessage extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
         PROGRESS = getActivity().getString(R.string.progress);
+
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.progressbar, null);
 
-        cancel = false;
-        //gets the progress bar from the dialog xml
         progressBar = view.findViewById((R.id.progressBar));
+        cancel = false;
 
-        //runs a separate thread for the download
         new CSVRetriever(getContext()).execute(progressBar);
 
-        //cancel button, on cancel, deletes the temp files to keep the old files
+        //MainActivity.adapter.notifyDataSetChanged();
+
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +89,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             }
         };
 
-        //ok button, replaces the old files with the new ones
         DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -103,12 +103,9 @@ public class ProgressMessage extends AppCompatDialogFragment {
                     File tempInspection = new File (tempPath + "/" + fileInspection);
                     tempInspection.renameTo(new File (tempPath + "/" + fileFinalInspection));
 
-                    //sets update and check favourites so that getData knows to run itself
                     RestaurantManager restaurants = RestaurantManager.getInstance();
                     restaurants.setUpdateData(true);
-                    restaurants.setCheckFavourites(true);
                     dismiss();
-                    //re runs the activty to refresh itself, and load in the new data
                     getActivity().recreate();
                 }
             }
@@ -153,7 +150,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             weakContext = new WeakReference<>(context);
         }
 
-        //runs on publishProgress
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -189,12 +185,9 @@ public class ProgressMessage extends AppCompatDialogFragment {
                 dialog.show(manager, MESSAGE_DIALOGUE);
                 dismiss();
             }
-            //enables the ok button
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
         }
 
-        //takes in the json that gives you the choice between varieties of files
-        //gets the csv containing useful data from it
         private void readRestaurant() throws IOException, JSONException{
             URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=restaurants");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -245,7 +238,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             connection.disconnect();
         }
 
-        //gets the csv and loads it as a temp file
         private void getRestaurantCSV() throws IOException {
             URL url = new URL(CSVUrlRestaurant);
             int count;
@@ -266,7 +258,6 @@ public class ProgressMessage extends AppCompatDialogFragment {
             input.close();
         }
 
-        //gets the csv and loads it as a temp file
         private void getInspectionCSV() throws IOException {
             URL url = new URL(CSVUrlInspection);
 
@@ -286,6 +277,8 @@ public class ProgressMessage extends AppCompatDialogFragment {
             input.close();
 
         }
+
+
     }
 
 }

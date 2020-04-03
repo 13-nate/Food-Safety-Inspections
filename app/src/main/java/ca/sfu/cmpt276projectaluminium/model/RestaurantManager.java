@@ -22,12 +22,10 @@ import java.util.List;
  */
 public class RestaurantManager implements Iterable<Restaurant>{
     private List<Restaurant> restaurants;
-    private List<String> favourites;
 
     //checks whether this is the first time running or not
     private boolean firstRun = true;
     private boolean updateData = true;
-    private boolean checkFavourites = false;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -36,7 +34,6 @@ public class RestaurantManager implements Iterable<Restaurant>{
     // Private to prevent anyone else from instantiating
     private RestaurantManager() {
         this.restaurants = new ArrayList<>();
-        this.favourites = new ArrayList<>();
     }
     // This version is called when you need to simply access the currently stored data
     public static RestaurantManager getInstance() {
@@ -94,39 +91,8 @@ public class RestaurantManager implements Iterable<Restaurant>{
         this.updateData = updateData;
     }
 
-    public boolean isCheckFavourites() {
-        return checkFavourites;
-    }
-
-    public void setCheckFavourites(boolean checkFavourites) {
-        this.checkFavourites = checkFavourites;
-    }
-
     public int getSize() {
         return this.restaurants.size();
-    }
-
-    public void addFavourite(String trackingNumber){
-        favourites.add(trackingNumber);
-    }
-    public void deleteFavourite(String trackingNumber){
-        favourites.remove(trackingNumber);
-    }
-    public Boolean isFavourite(String trackingNumber){
-        for (String favourite: favourites){
-            if (favourite.equals(trackingNumber)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void resetFavourites(){
-        favourites = new ArrayList<>();
-    }
-
-    public List<String> getFavourites() {
-        return favourites;
     }
 
     /**
