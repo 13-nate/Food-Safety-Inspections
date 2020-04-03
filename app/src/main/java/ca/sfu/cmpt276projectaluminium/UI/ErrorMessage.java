@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import ca.sfu.cmpt276projectaluminium.R;
 
 /**
- * The code behind the alert message
- * Opens the progress message on ok
+ * The code behind the error message
+ * Only runs if the checking for updates or downloading updates encountered an error
  */
 
 public class ErrorMessage extends AppCompatDialogFragment {

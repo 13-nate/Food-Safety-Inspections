@@ -2,7 +2,6 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,6 +18,7 @@ import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
+import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 /*
 Sources:
@@ -156,6 +156,12 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         } else {
             hazardImage.setImageResource(R.drawable.not_available);
             itemView.setBackground(context.getDrawable(R.drawable.border_blue));
+        }
+
+        RestaurantManager restaurantManager = RestaurantManager.getInstance();
+
+        if (restaurantManager.isFavourite(currentRestaurant.getTrackingNumber())){
+            itemView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryDark));
         }
 
         // Fetch the imageView so we can later set it to a restaurant icon
