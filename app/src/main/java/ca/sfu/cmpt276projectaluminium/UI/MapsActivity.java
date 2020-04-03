@@ -128,6 +128,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
     public static final String HAZARD_FILTER_PICKED = "hazard filter picked";
+    public static final String MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS = "make gps intent totalCriticalViolations";
 
     public static Context contextApp;
 
@@ -563,7 +564,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<ClusterMarker> applyFilters(ArrayList<ClusterMarker> markers) {
         String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
         List<ClusterMarker> toRemove = new ArrayList<>();
-        if(HazardFilter != "No filter") {
+        if(HazardFilter != "No filter" || HazardFilter != "None" ) {
             for(ClusterMarker clusterMarker: markers) {
                 if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
                     toRemove.add(clusterMarker);
@@ -573,6 +574,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mClusterManager.clearItems();
             mClusterManager.addItems(markers);
             mClusterManager.cluster();
+        } else {
+            markers = mClusterMarkersCopy;
         }
         return markers;
     }
@@ -736,6 +739,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     InspectionManager inspectionManager = InspectionManager.getInstance();
                     ArrayList<Inspection> inspections;
                     inspections = inspectionManager.getInspections(r.getTrackingNumber());
+                    int criticalViolationsWithInAYear = 0;
+                    for(Inspection inspection: inspections){
+                        criticalViolationsWithInAYear += inspection.getNumCriticalViolations();
+                    }
                     // Get the newest inspection
                     Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
                     String hazardRating = newestInspection.getHazardRating();
@@ -758,7 +765,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             snippet,
                             hazardRating,
                             iconHazard,
-                            r.getTrackingNumber()
+                            r.getTrackingNumber(),
+                            criticalViolationsWithInAYear
                     );
                     // adds cluster to map
                     mClusterManager.addItem(newClusterMarker);
@@ -875,7 +883,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public static Intent makeGPSIntent(Context context, double latitude, double longitude,
                                        String title, String trackingNum, String address,
-                                       String hazardRating, boolean gpsIntent) {
+                                       String hazardRating, int totalCriticalViolations, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra(MAKE_GPS_INTENT_LATITUDE, latitude);
         intent.putExtra(MAKE_GPS_INTENT_LONGITUDE, longitude);
@@ -884,6 +892,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra(MAKE_GPS_INTENT_NUM, trackingNum);
         intent.putExtra(MAKE_GPS_INTENT_HAZARD_RATING, hazardRating);
         intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
+        intent.putExtra(MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS, totalCriticalViolations);
         return intent;
     }
 
@@ -915,6 +924,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             String address = intent.getStringExtra(MAKE_GPS_INTENT_ADDRESS);
             String hazardRating = intent.getStringExtra(MAKE_GPS_INTENT_HAZARD_RATING);
             String trackingNum = intent.getStringExtra(MAKE_GPS_INTENT_NUM);
+            int criticalViolationsWithinAYear = intent.getIntExtra(MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS,0);
 
             String snippet = address + "\n "
                     + getString(R.string.hazard_level) + " " + hazardRating;
@@ -936,7 +946,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     snippet,
                     hazardRating,
                     iconHazard,
-                    trackingNum
+                    trackingNum,
+                    criticalViolationsWithinAYear
             );
             mClusterManager.addItem(restaurantMaker);
             mClusterMarkers.add(restaurantMaker);

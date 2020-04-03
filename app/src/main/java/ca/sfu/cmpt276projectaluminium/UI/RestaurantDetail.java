@@ -47,6 +47,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private String id;
     private boolean isFromMap = false;
     private String hazardLevel;
+    private int totalNumberOfCriticalViolations;
 
 
     @Override
@@ -81,6 +82,10 @@ public class RestaurantDetail extends AppCompatActivity {
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
         //if null pointer thrown, an invalid id was passed
+
+        for(Inspection inspection: inspections) {
+            totalNumberOfCriticalViolations += inspection.getNumCriticalViolations();
+        }
 
         isFromMap = getIntent().getBooleanExtra(lastActivity,false);
         //if last activity user visited is map activity
@@ -192,7 +197,7 @@ public class RestaurantDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                         restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                        restaurant.getAddress(), hazardLevel, true);
+                        restaurant.getAddress(), hazardLevel,totalNumberOfCriticalViolations, true);
                 startActivity(intent);
                 finish();
             }
@@ -205,7 +210,7 @@ public class RestaurantDetail extends AppCompatActivity {
         if(isFromMap) {
             intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                     restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                    restaurant.getAddress(), hazardLevel, true);
+                    restaurant.getAddress(), hazardLevel,totalNumberOfCriticalViolations, true);
             startActivity(intent);
         } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
