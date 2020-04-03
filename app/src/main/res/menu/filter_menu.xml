@@ -6,18 +6,5 @@
         android:icon="@drawable/ic_search_white_24dp"
         android:title="Restaurants"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always|collapseActionView" />
-
-    <item android:id="@+id/filterHazard"
-        android:title="Hazard Level"
-        app:showAsAction="never"/>
-
-
-    <item android:id="@+id/filterViolations"
-        android:title="Critical Violations Within the Last Year"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/filterFavourites"
-        android:title="Favourite Restaurants"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom|collapseActionView" />
 </menu>

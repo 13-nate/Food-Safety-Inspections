@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".UI.FilterActivity">
+
+    <RadioGroup
+        android:id="@+id/hazardGroup"
+        android:layout_width="108dp"
+        android:layout_height="91dp"
+        app:layout_constraintStart_toStartOf="@+id/textViewHazard"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHazard">
+
+        <RadioButton
+            android:id="@+id/radioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorWhite"
+            android:text="@string/low"
+            android:textColor="@color/colorWhite" />
+
+        <RadioButton
+            android:id="@+id/radioButton2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorWhite"
+            android:text="@string/medium"
+            android:textColor="@color/colorWhite" />
+
+        <RadioButton
+            android:id="@+id/radioButton3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorWhite"
+            android:text="@string/high"
+            android:textColor="@color/colorWhite" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/textViewHazard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/hazard_level"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:text="Favourites"
+        android:textColor="@color/colorWhite"
+        android:trackTint="@color/colorWhite"
+        app:layout_constraintStart_toEndOf="@id/hazardGroup"
+        tools:layout_editor_absoluteY="35dp" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="270dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Enter number of Violations "
+        android:inputType="number"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="@+id/violationGroup"
+        app:layout_constraintTop_toBottomOf="@+id/violationGroup" />
+
+    <RadioGroup
+        android:id="@+id/violationGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/hazardGroup"
+        app:layout_constraintTop_toBottomOf="@+id/violatoinsTextView">
+
+        <RadioButton
+            android:id="@+id/radioButton4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorWhite"
+            android:text="Less than or equal to"
+            android:textColor="@color/colorWhite" />
+
+        <RadioButton
+            android:id="@+id/radioButton5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorWhite"
+            android:text="Greater than or equal to"
+            android:textColor="@color/colorWhite" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/violatoinsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Critical Violation Within The last Year"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="@+id/hazardGroup"
+        app:layout_constraintTop_toBottomOf="@+id/hazardGroup" />
+</androidx.constraintlayout.widget.ConstraintLayout>

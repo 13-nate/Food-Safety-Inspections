@@ -27,13 +27,16 @@ public class ClusterMarker implements ClusterItem {
     private LatLng position;
     private String title;
     private String snippet;
+    private String hazardLevel;
     private int iconHazard;
     private String trackingNum;
 
-    public ClusterMarker(LatLng position, String title, String snippet, int iconHazard, String trackingNum) {
+    public ClusterMarker(LatLng position, String title, String snippet, String hazardLevel,
+                         int iconHazard, String trackingNum) {
         this.position = position;
         this.title = title;
         this.snippet = snippet;
+        this.hazardLevel = hazardLevel;
         this.iconHazard = iconHazard;
         this.trackingNum = trackingNum;
 
@@ -85,5 +88,13 @@ public class ClusterMarker implements ClusterItem {
 
     public void setTrackingNum(String trackingNum) {
         this.trackingNum = trackingNum;
+    }
+
+    public String getHazardLevel() {
+        return hazardLevel;
+    }
+
+    public void setHazardLevel(String hazardLevel) {
+        this.hazardLevel = hazardLevel;
     }
 }
