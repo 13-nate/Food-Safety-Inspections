@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:buttonTint="@color/colorWhite"
-            android:text="@string/medium"
+            android:text="Moderate"
             android:textColor="@color/colorWhite" />
 
         <RadioButton
@@ -59,7 +59,7 @@
         android:textColor="@color/colorWhite"
         android:trackTint="@color/colorWhite"
         app:layout_constraintStart_toEndOf="@id/hazardGroup"
-        tools:layout_editor_absoluteY="35dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewHazard" />
 
     <EditText
         android:id="@+id/editTextViolations"

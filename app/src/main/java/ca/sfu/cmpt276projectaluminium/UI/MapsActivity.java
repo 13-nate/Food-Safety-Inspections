@@ -34,6 +34,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -90,6 +91,7 @@ import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.MyClusterManagerRenderer;
+import ca.sfu.cmpt276projectaluminium.model.QueryPreferences;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
@@ -125,6 +127,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
+    public static final String HAZARD_FILTER_PICKED = "hazard filter picked";
+
+    public static Context contextApp;
+
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
@@ -164,6 +170,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        contextApp = getApplicationContext();
         onBottomToolBarClick();
         setMenuColor();
         getSupportActionBar().setTitle(getString(R.string.restaurants));
@@ -198,6 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                mClusterMarkersCopy.clear();
                 String searchText = newText.toLowerCase().trim();
                 mClusterManager.clearItems();
                 if (searchText == null || searchText.length() == 0) {
@@ -209,8 +217,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mClusterMarkersCopy.add(clusterMarker);
                         }
                     }
-                    mClusterManager.addItems(mClusterMarkersCopy);
                 }
+                mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
                 mClusterManager.addItems(mClusterMarkersCopy);
                 mClusterManager.cluster();
                 return false;
@@ -536,7 +544,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         getDeviceLocation();
+        filterClickCallBack();
+        applyFilters(mClusterMarkersCopy);
     }
+
+    private void filterClickCallBack() {
+        ImageView searchSettings = findViewById(R.id.searchSettings);
+        searchSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = FilterActivity.makeIntent(MapsActivity.this);
+                startActivity(intent);
+            }
+        });
+    }
+
+    //sources: https://www.baeldung.com/java-concurrentmodificationexception
+    private ArrayList<ClusterMarker> applyFilters(ArrayList<ClusterMarker> markers) {
+        String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
+        List<ClusterMarker> toRemove = new ArrayList<>();
+        if(HazardFilter != "No filter") {
+            for(ClusterMarker clusterMarker: markers) {
+                if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
+                    toRemove.add(clusterMarker);
+                }
+            }
+            markers.removeAll(toRemove);
+            mClusterManager.clearItems();
+            mClusterManager.addItems(markers);
+            mClusterManager.cluster();
+        }
+        return markers;
+    }
+
 
     public void onMapClickCallBack() {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -728,6 +768,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
             }
+            mClusterMarkersCopy.addAll(mClusterMarkers);
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
         }
@@ -1045,4 +1086,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     }
+
+    public static Context getContextApp() {
+        return contextApp;
+    }
+
 }
