@@ -132,6 +132,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public static final String VIOLATION_FILTER_PICKED = "violation filter picked";
     public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
+    public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
+    public static final int VIOLATION_PICKED = 1;
 
     public static Context contextApp;
 
@@ -219,7 +221,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mClusterManager.cluster();
                 } else {
                     for (ClusterMarker clusterMarker : mClusterMarkers) {
-                        if (clusterMarker.getTitle().toLowerCase().contains(searchText)) {
+                        if (clusterMarker.getTitle().toLowerCase().startsWith(searchText)) {
                             mClusterMarkersCopy.add(clusterMarker);
                         }
                         mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
@@ -551,7 +553,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         getDeviceLocation();
         filterClickCallBack();
-        applyFilters(mClusterMarkersCopy);
     }
 
     private void filterClickCallBack() {
@@ -579,36 +580,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
             markers.removeAll(toRemove);
-            mClusterManager.clearItems();
-            mClusterManager.addItems(markers);
-            mClusterManager.cluster();
         }
-
         toRemove.clear();
         String violationFilter = QueryPreferences.getStoredStringQuery(contextApp, VIOLATION_FILTER_PICKED);
         int violationNumber = QueryPreferences.getStoredIntQuery(contextApp, VIOLATIONS_NUMBER_PICKED);
-        if(violationFilter.equals("Less than or equal to")) {
-            for(ClusterMarker clusterMarker: markers) {
-                if(clusterMarker.getCriticalViolationsWithInAYear() > violationNumber) {
-                    toRemove.add(clusterMarker);
+        int wasAViolationNumberPicked = QueryPreferences.getStoredIntQuery(contextApp, IS_VIOLATIONS_PICKED);
+        if(wasAViolationNumberPicked == VIOLATION_PICKED) {
+            if (violationFilter.equals("Less than or equal to")) {
+                for (ClusterMarker clusterMarker : markers) {
+                    if (clusterMarker.getCriticalViolationsWithInAYear() > violationNumber) {
+                        toRemove.add(clusterMarker);
+                    }
                 }
+                markers.removeAll(toRemove);
             }
-            markers.removeAll(toRemove);
-            mClusterManager.clearItems();
-            mClusterManager.addItems(markers);
-            mClusterManager.cluster();
-        }
-        if(violationFilter.equals("Greater than or equal to")) {
-            for(ClusterMarker clusterMarker: markers) {
-                if(clusterMarker.getCriticalViolationsWithInAYear() < violationNumber) {
-                    toRemove.add(clusterMarker);
+            if (violationFilter.equals("Greater than or equal to")) {
+                for (ClusterMarker clusterMarker : markers) {
+                    if (clusterMarker.getCriticalViolationsWithInAYear() < violationNumber) {
+                        toRemove.add(clusterMarker);
+                    }
                 }
+                markers.removeAll(toRemove);
             }
-            markers.removeAll(toRemove);
-            mClusterManager.clearItems();
-            mClusterManager.addItems(markers);
-            mClusterManager.cluster();
         }
+        mClusterManager.clearItems();
+        mClusterManager.addItems(markers);
         return markers;
     }
 
@@ -621,11 +617,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(restaurantCoordinatesRequest){
                     Log.d(TAGMAP, "ifStateMent");
                     mClusterManager.removeItem(restaurantClusterMarker);
+                    mClusterMarkersCopy.remove(restaurantClusterMarker);
+                    mClusterMarkers.remove(restaurantClusterMarker);
                     initManagerAndRenderer();
+                    mClusterManagerRenderer.setShouldRenderInfoWindow(false);
                     addMapMarkers();
                     restaurantCoordinatesRequest =false;
                     goToRestaurant = false;
-                    requestLocationUpdates();
                 }
             }
         });
@@ -643,7 +641,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if (task.isSuccessful()) {
                                 Log.d(TAGMAP, "found Location");
                                 Location currentLocation = (Location) task.getResult();
-
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM);
                             } else {
@@ -800,8 +797,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             r.getTrackingNumber(),
                             criticalViolationsWithInAYear
                     );
-                    // adds cluster to map
-                    mClusterManager.addItem(newClusterMarker);
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
                 } catch (NullPointerException e) {
@@ -809,7 +804,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
             mClusterMarkersCopy.addAll(mClusterMarkers);
+            mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
             // adds every thing to the map at end of the loop
+            mClusterManager.addItems(mClusterMarkersCopy);
             mClusterManager.cluster();
         }
     }

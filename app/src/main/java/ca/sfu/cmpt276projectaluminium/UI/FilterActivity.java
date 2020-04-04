@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -21,6 +24,9 @@ public class FilterActivity extends AppCompatActivity {
     public static final String VIOLATION_GROUP_INDEX = "violation group index";
     public static final String VIOLATION_FILTER_PICKED = "violation filter picked";
     public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
+    public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
+    public static final int VIOLATION_PICKED = 1;
+    public static final int VIOLATION_NOT_PICKED = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,14 @@ public class FilterActivity extends AppCompatActivity {
         int violationIndexSelected  = QueryPreferences.getStoredIntQuery(this,VIOLATION_GROUP_INDEX);
         if(violationIndexSelected != 0) {
             ((RadioButton)violationGroup.getChildAt(violationIndexSelected)).setChecked(true);
+            EditText violationNumber =  findViewById(R.id.numberOfViolations);
+            int wasAViolationPicked = QueryPreferences.getStoredIntQuery(MapsActivity.getContextApp(),
+                    IS_VIOLATIONS_PICKED);
+            if(wasAViolationPicked == VIOLATION_PICKED) {
+                int numberOfViolations = QueryPreferences.getStoredIntQuery(MapsActivity.getContextApp(),
+                        VIOLATIONS_NUMBER_PICKED);
+                violationNumber.setText("" + numberOfViolations);
+            }
         } else {
             ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
         }
@@ -95,9 +109,24 @@ public class FilterActivity extends AppCompatActivity {
                     QueryPreferences.setStoredIntQuery(FilterActivity.this,
                             VIOLATION_GROUP_INDEX, index);
 
-                    String hazardFilterWanted = checkedRadioButton.getText().toString();
+                    String violationFilterWanted = checkedRadioButton.getText().toString();
                     QueryPreferences.setStoredStringQuery(MapsActivity.getContextApp(),
-                            VIOLATION_FILTER_PICKED, hazardFilterWanted);
+                            VIOLATION_FILTER_PICKED, violationFilterWanted);
+                    if(index == 0) {
+                        QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                                IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);
+                        EditText violationNumber = findViewById(R.id.numberOfViolations);
+                        violationNumber.setText("");
+                        violationNumber.setHint("Pick an equality first");
+                        violationNumber.setFocusable(false);
+                        violationNumber.setEnabled(false);
+                    } else {
+                        EditText violationNumber = findViewById(R.id.numberOfViolations);
+                        violationNumber.setHint("Enter number of Violations");
+                        violationNumber.setFocusable(true);
+                        violationNumber.setEnabled(true);
+                        violationNumber.setCursorVisible(true);
+                    }
                 }
             }
         });
@@ -118,10 +147,27 @@ public class FilterActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String violationsText = violationNumber.getText().toString();
-                int violationsNum = Integer.parseInt(violationsText);
-                QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
-                        VIOLATIONS_NUMBER_PICKED, violationsNum);
+                RadioGroup violationGroup = findViewById(R.id.violationGroup);
+                boolean equalityPicked = ((RadioButton)violationGroup.getChildAt(0)).isChecked();
 
+                if(equalityPicked) {
+                    violationNumber.setHint("Pick an equality first");
+                }
+                if(violationsText.equals("")){
+                    ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
+                    SharedPreferences clearData = PreferenceManager.getDefaultSharedPreferences(MapsActivity.getContextApp());
+                    SharedPreferences.Editor editor = clearData.edit();
+                    editor.remove(VIOLATIONS_NUMBER_PICKED);
+                    editor.apply();
+                    QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                            IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);
+                } else {
+                    int violationsNum = Integer.parseInt(violationsText);
+                    QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                            VIOLATIONS_NUMBER_PICKED, violationsNum);
+                    QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                            IS_VIOLATIONS_PICKED, VIOLATION_PICKED);
+                }
             }
 
             @Override

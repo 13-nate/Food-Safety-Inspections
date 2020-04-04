@@ -21,7 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -55,7 +61,11 @@ public class RestaurantDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
-        initializeVariables();
+        try {
+            initializeVariables();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         populateListView();
         loadText();
         registerClickCallBack();
@@ -72,7 +82,7 @@ public class RestaurantDetail extends AppCompatActivity {
         return true;
     }
 
-    private void initializeVariables() {
+    private void initializeVariables() throws ParseException {
         id = getIntent().getStringExtra(TAG);
 
         // Create the restaurant object for the restaurant that was clicked on
@@ -84,12 +94,32 @@ public class RestaurantDetail extends AppCompatActivity {
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
         //if null pointer thrown, an invalid id was passed
 
-        for(Inspection inspection: inspections) {
-            totalNumberOfCriticalViolations += inspection.getNumCriticalViolations();
-        }
+        getCriticalInspectionWithinAYear(inspections);
 
         isFromMap = getIntent().getBooleanExtra(lastActivity,false);
         //if last activity user visited is map activity
+    }
+
+    private void getCriticalInspectionWithinAYear(ArrayList<Inspection> inspections) throws ParseException {
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        for(Inspection inspection: inspections) {
+            try {
+                int dateNumber = inspection.getInspectionDate();
+                // change inspection from an int to a string then finally to a date data type
+                String dateToFormat = String.valueOf(dateNumber);
+                Date inspectionDay = formatDate.parse(dateToFormat);
+
+                // Get today's date find the difference between it and the inspection date
+                Date today = Calendar.getInstance().getTime();
+                long differenceInMilliSec = today.getTime() - inspectionDay.getTime();
+                long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
+                if(diffInDays <= 365) {
+                    totalNumberOfCriticalViolations += inspection.getNumCriticalViolations();
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void populateListView(){
