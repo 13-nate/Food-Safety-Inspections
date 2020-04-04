@@ -211,17 +211,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mClusterManager.clearItems();
                 if (searchText == null || searchText.length() == 0) {
                     // in this case show all restaurants, mClusterMarkers has all of them
+                    mClusterMarkers = applyFilters(mClusterMarkers);
                     mClusterManager.addItems(mClusterMarkers);
+                    mClusterManager.cluster();
                 } else {
                     for (ClusterMarker clusterMarker : mClusterMarkers) {
                         if (clusterMarker.getTitle().toLowerCase().contains(searchText)) {
                             mClusterMarkersCopy.add(clusterMarker);
+                            mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
+                            mClusterManager.addItems(mClusterMarkersCopy);
+                            mClusterManager.cluster();
                         }
                     }
                 }
-                mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
-                mClusterManager.addItems(mClusterMarkersCopy);
-                mClusterManager.cluster();
                 return false;
             }
         });
@@ -564,7 +566,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<ClusterMarker> applyFilters(ArrayList<ClusterMarker> markers) {
         String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
         List<ClusterMarker> toRemove = new ArrayList<>();
-        if(HazardFilter != "No filter" || HazardFilter != "None" ) {
+
+        if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
+            markers = mClusterMarkers;
+        } else {
             for(ClusterMarker clusterMarker: markers) {
                 if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
                     toRemove.add(clusterMarker);
@@ -574,8 +579,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mClusterManager.clearItems();
             mClusterManager.addItems(markers);
             mClusterManager.cluster();
-        } else {
-            markers = mClusterMarkersCopy;
         }
         return markers;
     }

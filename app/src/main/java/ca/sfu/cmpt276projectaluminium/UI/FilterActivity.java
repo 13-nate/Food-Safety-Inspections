@@ -41,7 +41,7 @@ public class FilterActivity extends AppCompatActivity {
         }
 
         RadioGroup violationGroup = findViewById(R.id.violationGroup);
-        int violationIndexSelected  = QueryPreferences.getStoredIntQuery(this,HAZARD_GROUP_INDEX);
+        int violationIndexSelected  = QueryPreferences.getStoredIntQuery(this,VIOLATION_GROUP_INDEX);
         if(violationIndexSelected != 0) {
             ((RadioButton)violationGroup.getChildAt(violationIndexSelected)).setChecked(true);
         } else {
