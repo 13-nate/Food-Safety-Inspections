@@ -117,12 +117,12 @@ public class FilterActivity extends AppCompatActivity {
                                 IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setText("");
-                        violationNumber.setHint("Pick an equality first");
+                        violationNumber.setHint(getString(R.string.pick_an_equality_first));
                         violationNumber.setFocusable(false);
                         violationNumber.setEnabled(false);
                     } else {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
-                        violationNumber.setHint("Enter number of Violations");
+                        violationNumber.setHint(getString(R.string.enter_number_of_violations));
                         violationNumber.setFocusable(true);
                         violationNumber.setEnabled(true);
                         violationNumber.setCursorVisible(true);
@@ -151,7 +151,7 @@ public class FilterActivity extends AppCompatActivity {
                 boolean equalityPicked = ((RadioButton)violationGroup.getChildAt(0)).isChecked();
 
                 if(equalityPicked) {
-                    violationNumber.setHint("Pick an equality first");
+                    violationNumber.setHint(getString(R.string.pick_an_equality_first));
                 }
                 if(violationsText.equals("")){
                     ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);

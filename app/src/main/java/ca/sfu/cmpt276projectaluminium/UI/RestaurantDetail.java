@@ -100,7 +100,8 @@ public class RestaurantDetail extends AppCompatActivity {
         //if last activity user visited is map activity
     }
 
-    private void getCriticalInspectionWithinAYear(ArrayList<Inspection> inspections) throws ParseException {
+    private void getCriticalInspectionWithinAYear(ArrayList<Inspection> inspections) {
+        totalNumberOfCriticalViolations = 0;
         SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
         for(Inspection inspection: inspections) {
             try {

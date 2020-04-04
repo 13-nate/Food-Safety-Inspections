@@ -83,6 +83,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
@@ -134,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
     public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
     public static final int VIOLATION_PICKED = 1;
+    private int totalNumberOfCriticalViolations;
 
     public static Context contextApp;
 
@@ -768,10 +770,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     InspectionManager inspectionManager = InspectionManager.getInstance();
                     ArrayList<Inspection> inspections;
                     inspections = inspectionManager.getInspections(r.getTrackingNumber());
-                    int criticalViolationsWithInAYear = 0;
-                    for(Inspection inspection: inspections){
-                        criticalViolationsWithInAYear += inspection.getNumCriticalViolations();
-                    }
+                    getCriticalInspectionWithinAYear(inspections);
                     // Get the newest inspection
                     Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
                     String hazardRating = newestInspection.getHazardRating();
@@ -795,7 +794,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             hazardRating,
                             iconHazard,
                             r.getTrackingNumber(),
-                            criticalViolationsWithInAYear
+                            totalNumberOfCriticalViolations
                     );
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
@@ -808,6 +807,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // adds every thing to the map at end of the loop
             mClusterManager.addItems(mClusterMarkersCopy);
             mClusterManager.cluster();
+        }
+    }
+
+    private void getCriticalInspectionWithinAYear(ArrayList<Inspection> inspections) {
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        totalNumberOfCriticalViolations=0;
+        for(Inspection inspection: inspections) {
+            try {
+                int dateNumber = inspection.getInspectionDate();
+                // change inspection from an int to a string then finally to a date data type
+                String dateToFormat = String.valueOf(dateNumber);
+                Date inspectionDay = formatDate.parse(dateToFormat);
+
+                // Get today's date find the difference between it and the inspection date
+                Date today = Calendar.getInstance().getTime();
+                long differenceInMilliSec = today.getTime() - inspectionDay.getTime();
+                long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
+                if(diffInDays <= 365) {
+                    totalNumberOfCriticalViolations += inspection.getNumCriticalViolations();
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 
