@@ -130,6 +130,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String HAZARD_FILTER_PICKED = "hazard filter picked";
     public static final String MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS = "make gps intent totalCriticalViolations";
 
+    public static final String VIOLATION_FILTER_PICKED = "violation filter picked";
+    public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
+
     public static Context contextApp;
 
 
@@ -218,10 +221,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     for (ClusterMarker clusterMarker : mClusterMarkers) {
                         if (clusterMarker.getTitle().toLowerCase().contains(searchText)) {
                             mClusterMarkersCopy.add(clusterMarker);
-                            mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
-                            mClusterManager.addItems(mClusterMarkersCopy);
-                            mClusterManager.cluster();
                         }
+                        mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
+                        mClusterManager.addItems(mClusterMarkersCopy);
+                        mClusterManager.cluster();
                     }
                 }
                 return false;
@@ -572,6 +575,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             for(ClusterMarker clusterMarker: markers) {
                 if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
+                    toRemove.add(clusterMarker);
+                }
+            }
+            markers.removeAll(toRemove);
+            mClusterManager.clearItems();
+            mClusterManager.addItems(markers);
+            mClusterManager.cluster();
+        }
+
+        toRemove.clear();
+        String violationFilter = QueryPreferences.getStoredStringQuery(contextApp, VIOLATION_FILTER_PICKED);
+        int violationNumber = QueryPreferences.getStoredIntQuery(contextApp, VIOLATIONS_NUMBER_PICKED);
+        if(violationFilter.equals("Less than or equal to")) {
+            for(ClusterMarker clusterMarker: markers) {
+                if(clusterMarker.getCriticalViolationsWithInAYear() > violationNumber) {
+                    toRemove.add(clusterMarker);
+                }
+            }
+            markers.removeAll(toRemove);
+            mClusterManager.clearItems();
+            mClusterManager.addItems(markers);
+            mClusterManager.cluster();
+        }
+        if(violationFilter.equals("Greater than or equal to")) {
+            for(ClusterMarker clusterMarker: markers) {
+                if(clusterMarker.getCriticalViolationsWithInAYear() < violationNumber) {
                     toRemove.add(clusterMarker);
                 }
             }
@@ -954,6 +983,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             );
             mClusterManager.addItem(restaurantMaker);
             mClusterMarkers.add(restaurantMaker);
+            mClusterMarkersCopy.add(restaurantMaker);
             restaurantClusterMarker = restaurantMaker;
         }
         try {

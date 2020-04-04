@@ -47,6 +47,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private String id;
     private boolean isFromMap = false;
     private String hazardLevel;
+    private String mostRecentHazard;
     private int totalNumberOfCriticalViolations;
 
 
@@ -139,7 +140,6 @@ public class RestaurantDetail extends AppCompatActivity {
             Inspection inspection = inspections.get(position);
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
             hazardLevel = inspection.getHazardRating();
-
             if (hazardLevel.equals("Low")){
                 imageView.setImageResource(R.drawable.hazard_low);
                 listView.setBackground(getDrawable(R.drawable.border_green));
@@ -195,9 +195,10 @@ public class RestaurantDetail extends AppCompatActivity {
         gpsCords.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mostRecentHazard = inspections.get(0).getHazardRating();
                 Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                         restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                        restaurant.getAddress(), hazardLevel,totalNumberOfCriticalViolations, true);
+                        restaurant.getAddress(), mostRecentHazard, totalNumberOfCriticalViolations, true);
                 startActivity(intent);
                 finish();
             }
