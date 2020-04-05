@@ -8,6 +8,7 @@ import java.util.List;
  * - Search String (Ex. Part of a restaurant name)
  * - Hazard level of the most recent inspection
  * - Number of critical violations within the last year
+ * - Whether we want violations below or above the provided number (or not at all)
  * The output from the class should be the restaurants that meet the search criteria (in a list)
  */
 public class SearchFilter {
@@ -15,6 +16,7 @@ public class SearchFilter {
     private String query;  // If the restaurant is not being searched for by name, this should be ""
     private String hazardRating;  // Can be Any, Low, Moderate, or High
     private int numOfCritViolations;
+    private String violationFilterType;  // Can be "none", "below", or "above"
 
     /**
      * Initialize the search filter with the appropriate search criteria
@@ -24,10 +26,12 @@ public class SearchFilter {
      * @param numOfCritViolations Any restaurant with more critical violations than this number will
      *                            be filtered out
      */
-    public SearchFilter(String query, String hazardRating, int numOfCritViolations) {
+    public SearchFilter(String query, String hazardRating, int numOfCritViolations,
+                        String violationFilterType) {
         this.query = query.toLowerCase();
         this.hazardRating = hazardRating.toLowerCase();
         this.numOfCritViolations = numOfCritViolations;
+        this.violationFilterType = violationFilterType.toLowerCase();
         this.filteredRestaurants = new ArrayList<>();
 
         // Put all restaurants that match the search criteria in a list
@@ -100,14 +104,32 @@ public class SearchFilter {
         }
     }
 
+    // Ensures that the violations in the past year are at the level required by the filter
     private Boolean violationsMatch(Restaurant restaurant) {
         // If the number of violations is not provided to the filter
-        // return true;
+        if (this.violationFilterType.equals("none")) {
+            return true;
+        }
 
-        // If the number of violations of the restaurant are in the required threshold
-        // return true;
-        // else
-        // return false;
-        return true;
+        // Get the number of critical violations within the last year for the restaurant
+//        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
+
+        // If the number of violations of the restaurant <= the threshold provided
+        if (this.violationFilterType.equals("below")) {
+            if (critViolationsWithinYear <= this.numOfCritViolations) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // If the number of violations of the restaurant >= the threshold provided
+        if (this.violationFilterType.equals("above")) {
+            if (critViolationsWithinYear >= this.numOfCritViolations) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }
