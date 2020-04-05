@@ -112,6 +112,7 @@ public class SearchFilter {
         }
 
         // Get the number of critical violations within the last year for the restaurant
+        int critViolationsWithinYear = this.numOfCritViolations;
 //        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
 
         // If the number of violations of the restaurant <= the threshold provided
