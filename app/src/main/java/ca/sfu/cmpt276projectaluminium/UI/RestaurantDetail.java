@@ -32,6 +32,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 /**
  * Implements Restaurant details and gets data for it
  * Also grants access to the inspection details activity
+ * Also enables favourites
  * Sources:
  * https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
  * https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar

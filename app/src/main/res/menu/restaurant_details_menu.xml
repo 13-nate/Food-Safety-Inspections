@@ -7,5 +7,4 @@
         android:icon="@drawable/unfavourite"
         android:title="@string/restaurant_details"
         app:showAsAction="ifRoom"/>
-
 </menu>

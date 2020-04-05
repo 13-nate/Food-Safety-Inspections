@@ -81,7 +81,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 
 /**
- * Displays the google map.
+ * Displays the google map
  *
  * It first asks for permissions then checks the location permissions and then will display there
  * location
@@ -174,7 +174,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //gets data from the csv
     //if there is no csv files on internal memory, take the default one
-    //also runs checkfiledate, which checks for download
+    //also runs checkFileDate, which checks for download
     private void getData() {
         RestaurantManager restaurants = RestaurantManager.getInstance();
 

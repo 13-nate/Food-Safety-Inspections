@@ -26,7 +26,9 @@ public class RestaurantManager implements Iterable<Restaurant>{
 
     //checks whether this is the first time running or not
     private boolean firstRun = true;
+    //checks whether the data has updated or not
     private boolean updateData = true;
+    //checks whether favourites should be checked for updates or not
     private boolean checkFavourites = false;
 
     /*

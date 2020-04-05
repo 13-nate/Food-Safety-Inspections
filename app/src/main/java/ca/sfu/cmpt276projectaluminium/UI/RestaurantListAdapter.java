@@ -27,7 +27,7 @@ Sources:
  */
 
 /**
- * This class is used to convert a list of restaurants objects into a list of display objects for
+ * This class is used to convert a list of restaurant objects into a list of display objects for
  * a list view
  */
 public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {

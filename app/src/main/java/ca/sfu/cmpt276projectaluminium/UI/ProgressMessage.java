@@ -34,7 +34,7 @@ import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 
 /**
- * The code behind the alert message
+ * The code behind the progress message
  * Runs the download, and contains the necessary components for downloading the csv
  */
 

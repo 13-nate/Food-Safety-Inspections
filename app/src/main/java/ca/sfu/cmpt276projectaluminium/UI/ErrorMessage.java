@@ -14,6 +14,7 @@ import ca.sfu.cmpt276projectaluminium.R;
 /**
  * The code behind the error message
  * Only runs if the checking for updates or downloading updates encountered an error
+ * Just a error message
  */
 
 public class ErrorMessage extends AppCompatDialogFragment {
