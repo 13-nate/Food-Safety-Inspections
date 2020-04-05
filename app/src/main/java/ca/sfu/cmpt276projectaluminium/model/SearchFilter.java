@@ -71,11 +71,7 @@ public class SearchFilter {
     // Returns false if the restaurant name does not contain the query
     private Boolean nameMatches(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        if (restaurantName.contains(this.query)) {
-            return true;
-        } else {
-            return false;
-        }
+        return restaurantName.contains(this.query);
     }
 
     // Ensures that the most recent hazard rating of the restaurant matches the one provided to the
@@ -97,40 +93,25 @@ public class SearchFilter {
         }
 
         // If the restaurant's most recent hazard rating matches the hazard rating provided...
-        if (restaurantMostRecentHazardRating.equals(this.hazardRating)) {
-            return true;
-        } else {
-            return false;
-        }
+        return restaurantMostRecentHazardRating.equals(this.hazardRating);
     }
 
     // Ensures that the violations in the past year are at the level required by the filter
+    // Returns true if the restaurant's violations from the past year are within bounds
+    // Returns false if the restaurant's violations from the past year are not within bounds
     private Boolean violationsMatch(Restaurant restaurant) {
-        // If the number of violations is not provided to the filter
-        if (this.violationFilterType.equals("none")) {
-            return true;
-        }
-
         // Get the number of critical violations within the last year for the restaurant
         int critViolationsWithinYear = this.numOfCritViolations;
 //        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
 
-        // If the number of violations of the restaurant <= the threshold provided
+        // Return true if the violation is within bounds, false if it is not
         if (this.violationFilterType.equals("below")) {
-            if (critViolationsWithinYear <= this.numOfCritViolations) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        // If the number of violations of the restaurant >= the threshold provided
-        if (this.violationFilterType.equals("above")) {
-            if (critViolationsWithinYear >= this.numOfCritViolations) {
-                return true;
-            } else {
-                return false;
-            }
+            return critViolationsWithinYear <= this.numOfCritViolations;
+        } else if (this.violationFilterType.equals("above")) {
+            return critViolationsWithinYear >= this.numOfCritViolations;
+        } else {
+            // If the number of violations is not provided to the filter, return true
+            return true;
         }
     }
 }
