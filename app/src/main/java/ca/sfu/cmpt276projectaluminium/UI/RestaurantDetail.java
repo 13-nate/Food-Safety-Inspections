@@ -54,7 +54,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private boolean isFromMap = false;
     private String hazardLevel;
     private String mostRecentHazard;
-    private int totalNumberOfCriticalViolations;
+    private int criticalViolationsWithinAYear;
 
 
     @Override
@@ -92,35 +92,13 @@ public class RestaurantDetail extends AppCompatActivity {
         // Get a list of inspections for this restaurant
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
-        //if null pointer thrown, an invalid id was passed
+        criticalViolationsWithinAYear = inspectionManager.
+                getNumCriticalViolationsWithinYear(restaurant.getTrackingNumber());
 
-        getCriticalInspectionWithinAYear(inspections);
+        //if null pointer thrown, an invalid id was passed
 
         isFromMap = getIntent().getBooleanExtra(lastActivity,false);
         //if last activity user visited is map activity
-    }
-
-    private void getCriticalInspectionWithinAYear(ArrayList<Inspection> inspections) {
-        totalNumberOfCriticalViolations = 0;
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-        for(Inspection inspection: inspections) {
-            try {
-                int dateNumber = inspection.getInspectionDate();
-                // change inspection from an int to a string then finally to a date data type
-                String dateToFormat = String.valueOf(dateNumber);
-                Date inspectionDay = formatDate.parse(dateToFormat);
-
-                // Get today's date find the difference between it and the inspection date
-                Date today = Calendar.getInstance().getTime();
-                long differenceInMilliSec = today.getTime() - inspectionDay.getTime();
-                long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
-                if(diffInDays <= 365) {
-                    totalNumberOfCriticalViolations += inspection.getNumCriticalViolations();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void populateListView(){
@@ -229,7 +207,7 @@ public class RestaurantDetail extends AppCompatActivity {
                 mostRecentHazard = inspections.get(0).getHazardRating();
                 Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                         restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                        restaurant.getAddress(), mostRecentHazard, totalNumberOfCriticalViolations, true);
+                        restaurant.getAddress(), mostRecentHazard, criticalViolationsWithinAYear, true);
                 startActivity(intent);
                 finish();
             }
@@ -242,7 +220,7 @@ public class RestaurantDetail extends AppCompatActivity {
         if(isFromMap) {
             intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                     restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                    restaurant.getAddress(), hazardLevel,totalNumberOfCriticalViolations, true);
+                    restaurant.getAddress(), hazardLevel,criticalViolationsWithinAYear, true);
             startActivity(intent);
         } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
