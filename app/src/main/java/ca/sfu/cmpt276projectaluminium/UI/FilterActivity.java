@@ -118,14 +118,14 @@ public class FilterActivity extends AppCompatActivity {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setText("");
                         violationNumber.setHint(getString(R.string.pick_an_equality_first));
-                        violationNumber.setFocusable(false);
                         violationNumber.setEnabled(false);
+                        violationNumber.setClickable(false);
+
                     } else {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setHint(getString(R.string.enter_number_of_violations));
-                        violationNumber.setFocusable(true);
+                        violationNumber.setClickable(true);
                         violationNumber.setEnabled(true);
-                        violationNumber.setCursorVisible(true);
                     }
                 }
             }
