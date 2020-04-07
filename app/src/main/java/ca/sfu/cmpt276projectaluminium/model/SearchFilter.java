@@ -226,14 +226,7 @@ public class SearchFilter {
      */
     private Boolean hazardRatingMatches(Restaurant restaurant) {
         // Get the most recent inspection's hazard rating
-        InspectionManager inspectionManager = InspectionManager.getInstance();
-        List<Inspection> inspections =
-                inspectionManager.getInspections(restaurant.getTrackingNumber());
-        Inspection mostRecentInspection = inspectionManager.getMostRecentInspection(inspections);
-        String restaurantMostRecentHazardRating =
-                mostRecentInspection.getHazardRating().toLowerCase();
-
-        // todo: restaurantMostRecentHazardRating = restaurant.getmostrecentinspectionhazardrating();
+        String restaurantMostRecentHazardRating = restaurant.getMostRecentInspectionHazardRating();
 
         // If no specific hazard rating is used for this filter (Any hazard rating fine)...
         if (this.hazardRating.equals("any")) {
