@@ -148,7 +148,7 @@ public class SearchFilter {
      * term filter
      */
     public void resetSearchTerm() {
-        this.searchTerm = "";
+        setSearchTerm("");
     }
 
     /**
@@ -156,7 +156,7 @@ public class SearchFilter {
      * rating filter
      */
     public void resetHazardRating() {
-        this.hazardRating = "any";
+        setHazardRating("any");
     }
 
     /**
@@ -164,18 +164,18 @@ public class SearchFilter {
      * filter
      */
     public void resetViolationsFilters() {
-        this.violationsThreshold = 0;
-        this.violationFilterType = "none";
+        setViolationsThreshold(0);
+        setViolationFilterType("none");
     }
 
     /**
      * If you do not want to filter by anything, call this method and it will reset all filters
      */
     public void resetAllFilters() {
-        this.searchTerm = "";
-        this.hazardRating = "any";
-        this.violationsThreshold = 0;
-        this.violationFilterType = "none";
+        setSearchTerm("");
+        setHazardRating("any");
+        setViolationsThreshold(0);
+        setViolationFilterType("none");
     }
 
     /**
