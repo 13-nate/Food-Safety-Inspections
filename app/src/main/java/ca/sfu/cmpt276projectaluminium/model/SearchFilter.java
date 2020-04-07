@@ -60,7 +60,7 @@ public class SearchFilter {
     public void setSearchTerm(String searchTerm) {
         // The searchTerm cannot be null (If you want to clear the search term, just pass in "")
         if (searchTerm != null) {
-            this.searchTerm = searchTerm;
+            this.searchTerm = searchTerm.toLowerCase();
         } else {
             Log.e(TAG, "setSearchTerm: searchTerm cannot be null.", null);
         }
@@ -78,14 +78,22 @@ public class SearchFilter {
      * @param hazardRating The hazard rating used to filter out restaurants
      */
     public void setHazardRating(String hazardRating) {
-        // The hazard rating must be one of four specified strings.  Also, it cannot be null.
-        if (hazardRating != null &&
-                (hazardRating.equals("any") || hazardRating.equals("low") ||
-                        hazardRating.equals("moderate") || hazardRating.equals("high"))) {
+        // Passed in strings cannot be null.
+        if (hazardRating == null) {
+            Log.e(TAG, "setViolationFilterType: hazardRating cannot be null.", null);
+            return;
+        }
+
+        // Convert the string to lowercase for consistency
+        hazardRating = hazardRating.toLowerCase();
+
+        // The hazard rating must be one of four specified strings.
+        if (hazardRating.equals("any") || hazardRating.equals("low") ||
+                hazardRating.equals("moderate") || hazardRating.equals("high")) {
             this.hazardRating = hazardRating;
         } else {
             Log.e(TAG, "setSearchTerm: hazardRating can only be \"any\", \"low\", " +
-                    "\"moderate\", or \"high\".  hazardRating cannot be null.", null);
+                    "\"moderate\", or \"high\".", null);
         }
     }
 
@@ -116,14 +124,22 @@ public class SearchFilter {
      * @param violationFilterType The filter type is used to filter out restaurants
      */
     public void setViolationFilterType(String violationFilterType) {
-        // The filter type must be one of three specified strings.  Also, it cannot be null.
-        if (violationFilterType != null &&
-                (violationFilterType.equals("none") || violationFilterType.equals("below") ||
-                        violationFilterType.equals("above"))) {
+        // Passed in strings cannot be null.
+        if (violationFilterType == null) {
+            Log.e(TAG, "setViolationFilterType: violationFilterType cannot be null.", null);
+            return;
+        }
+
+        // Convert the string to lowercase for consistency
+        violationFilterType = violationFilterType.toLowerCase();
+
+        // The filter type must be one of three specified strings.
+        if (violationFilterType.equals("none") || violationFilterType.equals("below") ||
+                violationFilterType.equals("above")) {
             this.violationFilterType = violationFilterType;
         } else {
             Log.e(TAG, "setSearchTerm: violationFilterType can only be \"none\", " +
-                    "\"below\", or \"above\".  violationFilterType cannot be null.", null);
+                    "\"below\", or \"above\".", null);
         }
     }
 
