@@ -59,8 +59,8 @@
     <string name="violation402">Employee didn't wash hands</string>
     <string name="violation403">Employee lacks hygiene</string>
     <string name="violation404">Employee smoking on premises</string>
-    <string name="violation501">Operator missing Food Safe</string>
-    <string name="violation502">Staff missing Food Safe</string>
+    <string name="violation501">Operator missing and Food Safe</string>
+    <string name="violation502">Staff missing and Food Safe</string>
     <string name="invalid_id">invalid ID</string>
     <string name="violations">Violations:</string>
     <string name="hazard_level">Hazard Level:</string>
