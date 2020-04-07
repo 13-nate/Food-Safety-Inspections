@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import java.util.List;
  * - Call getRestaurants to get your list of filtered restaurants
  */
 public class SearchFilter {
+    private static final String TAG = "model.SearchFilter";
+
     private List<Restaurant> filteredRestaurants;
     private String searchTerm;  // If the restaurant is not being searched for by name, this should be ""
     private String hazardRating;
@@ -58,7 +62,7 @@ public class SearchFilter {
         if (searchTerm != null) {
             this.searchTerm = searchTerm;
         } else {
-            // TODO: REPORT THE BAD TO THE DEVELOPER
+            Log.e(TAG, "setSearchTerm: searchTerm cannot be null.", null);
         }
 
     }
@@ -80,7 +84,8 @@ public class SearchFilter {
                         hazardRating.equals("moderate") || hazardRating.equals("high"))) {
             this.hazardRating = hazardRating;
         } else {
-            // TODO: REPORT THE BAD TO THE DEVELOPER
+            Log.e(TAG, "setSearchTerm: hazardRating can only be \"any\", \"low\", " +
+                    "\"moderate\", or \"high\".  hazardRating cannot be null.", null);
         }
     }
 
@@ -94,7 +99,8 @@ public class SearchFilter {
         if (violationsThreshold >= 0) {
             this.violationsThreshold = violationsThreshold;
         } else {
-            // TODO: REPORT THE BAD TO THE DEVELOPER
+            Log.e(TAG, "setSearchTerm: violationsThreshold must be a non-negative " +
+                    "number.", null);
         }
     }
 
@@ -116,7 +122,8 @@ public class SearchFilter {
                         violationFilterType.equals("above"))) {
             this.violationFilterType = violationFilterType;
         } else {
-            // TODO: REPORT THE BAD TO THE DEVELOPER
+            Log.e(TAG, "setSearchTerm: violationFilterType can only be \"none\", " +
+                    "\"below\", or \"above\".  violationFilterType cannot be null.", null);
         }
     }
 
