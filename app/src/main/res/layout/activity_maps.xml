@@ -25,6 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".UI.MapsActivity"></fragment>
+
+        <ImageView
+            android:id="@+id/searchSettings"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            app:srcCompat="@drawable/ic_settings_white_24dp" />
+
     </FrameLayout>
 
 
@@ -39,7 +49,9 @@
         app:menu="@menu/bottom_navigation_menu"
         tools:layout_conversion_absoluteHeight="0dp"
         tools:layout_conversion_absoluteWidth="0dp"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="16dp" >
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <!--<ImageView
         android:layout_width="40dp"

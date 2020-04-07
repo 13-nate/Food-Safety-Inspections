@@ -21,7 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
@@ -47,13 +53,19 @@ public class RestaurantDetail extends AppCompatActivity {
     private String id;
     private boolean isFromMap = false;
     private String hazardLevel;
+    private String mostRecentHazard;
+    private int criticalViolationsWithinAYear;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
-        initializeVariables();
+        try {
+            initializeVariables();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         populateListView();
         loadText();
         registerClickCallBack();
@@ -70,7 +82,7 @@ public class RestaurantDetail extends AppCompatActivity {
         return true;
     }
 
-    private void initializeVariables() {
+    private void initializeVariables() throws ParseException {
         id = getIntent().getStringExtra(TAG);
 
         // Create the restaurant object for the restaurant that was clicked on
@@ -80,6 +92,9 @@ public class RestaurantDetail extends AppCompatActivity {
         // Get a list of inspections for this restaurant
         InspectionManager inspectionManager = InspectionManager.getInstance();
         inspections = inspectionManager.getInspections(restaurant.getTrackingNumber());
+        criticalViolationsWithinAYear = inspectionManager.
+                getNumCriticalViolationsWithinYear(restaurant.getTrackingNumber());
+
         //if null pointer thrown, an invalid id was passed
 
         isFromMap = getIntent().getBooleanExtra(lastActivity,false);
@@ -134,7 +149,6 @@ public class RestaurantDetail extends AppCompatActivity {
             Inspection inspection = inspections.get(position);
             ImageView imageView = listView.findViewById(R.id.hazardIcon);
             hazardLevel = inspection.getHazardRating();
-
             if (hazardLevel.equals("Low")){
                 imageView.setImageResource(R.drawable.hazard_low);
                 listView.setBackground(getDrawable(R.drawable.border_green));
@@ -190,9 +204,10 @@ public class RestaurantDetail extends AppCompatActivity {
         gpsCords.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mostRecentHazard = inspections.get(0).getHazardRating();
                 Intent intent = MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                         restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                        restaurant.getAddress(), hazardLevel, true);
+                        restaurant.getAddress(), mostRecentHazard, criticalViolationsWithinAYear, true);
                 startActivity(intent);
                 finish();
             }
@@ -205,7 +220,7 @@ public class RestaurantDetail extends AppCompatActivity {
         if(isFromMap) {
             intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                     restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                    restaurant.getAddress(), hazardLevel, true);
+                    restaurant.getAddress(), hazardLevel,criticalViolationsWithinAYear, true);
             startActivity(intent);
         } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
