@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import java.util.List;
+
 /**
  * Contains the data about a restaurant and provides getters in an organized manner
  */
@@ -57,6 +59,23 @@ public class Restaurant implements Comparable<Restaurant> {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    /**
+     * Returns this restaurant's most recent inspection's hazard rating
+     * @return The hazard level of the most recent inspection for this restaurant
+     */
+    String getMostRecentInspectionHazardRating() {
+        // Get the list of inspections for this restaurant
+        InspectionManager inspectionManager = InspectionManager.getInstance();
+        List<Inspection> inspections =
+                inspectionManager.getInspections(this.getTrackingNumber());
+
+        // Get the most recent inspection
+        Inspection mostRecentInspection = inspectionManager.getMostRecentInspection(inspections);
+
+        // Return the most recent inspection's hazard rating
+        return mostRecentInspection.getHazardRating().toLowerCase();
     }
 
     /**

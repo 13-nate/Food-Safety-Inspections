@@ -97,7 +97,7 @@ public class InspectionManager {
     /**
      * If the inspection list is sorted, the most recent inspection will be the first inspection.
      */
-    public Inspection getMostRecentInspection(ArrayList<Inspection> inspections) {
+    public Inspection getMostRecentInspection(List<Inspection> inspections) {
         // Ensure that the list is sorted
         Collections.sort(inspections);
 
