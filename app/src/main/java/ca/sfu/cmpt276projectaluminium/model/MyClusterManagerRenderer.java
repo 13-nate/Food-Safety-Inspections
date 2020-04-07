@@ -16,6 +16,7 @@ import com.google.maps.android.ui.IconGenerator;
 
 
 import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 import ca.sfu.cmpt276projectaluminium.model.ClusterMarker;
 /**
  * This changes the ClusterMarkers to the related hazard image and sets there snippet and title
@@ -29,6 +30,7 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
     private final IconGenerator iconGenerator;
     private ImageView imageView;
     private boolean shouldRenderInfoWindow;
+    private boolean mapSearched;
 
     public MyClusterManagerRenderer(Context context, GoogleMap map,
                                     ClusterManager<ClusterMarker> clusterManager) {
@@ -73,6 +75,10 @@ public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMark
 
     public void setShouldRenderInfoWindow(boolean shouldRenderInfoWindow) {
         this.shouldRenderInfoWindow = shouldRenderInfoWindow;
+    }
+
+    public void setMapSearched(boolean mapSearched) {
+        this.mapSearched = mapSearched;
     }
 }
 

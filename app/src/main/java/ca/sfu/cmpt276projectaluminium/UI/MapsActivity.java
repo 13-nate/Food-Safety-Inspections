@@ -1,5 +1,13 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,16 +26,19 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -43,6 +54,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -64,10 +77,11 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
@@ -91,7 +105,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
  * https://www.youtube.com/playlist?list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi
  * The above sources are video playLists that where used to do alot of this class
  */
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterMarker>,
         ClusterManager.OnClusterItemClickListener<ClusterMarker> {
@@ -130,6 +144,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private MyLocationListener myLocListener;
     private boolean goToRestaurant;
+    private  ArrayList<ClusterMarker> mClusterMarkersCopy = new ArrayList<>();
 
     @Override
     protected void onResume() {
@@ -152,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         onBottomToolBarClick();
         setMenuColor();
+        getSupportActionBar().setTitle(getString(R.string.restaurants));
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -162,6 +178,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
+    }
+
+
+
+    // Sources: https://www.youtube.com/watch?v=oh4YOj9VkVE
+    // https://www.youtube.com/watch?v=sJ-Z9G0SDhc
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filter_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_Search);
+        SearchView searchView = (SearchView)searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                    Toast.makeText(MapsActivity.this, newText, Toast.LENGTH_SHORT).show();
+                    String searchText = newText.toLowerCase().trim();
+                    mClusterManager.clearItems();
+                    if(searchText == null || searchText.length() == 0){
+                        // in this case show all restaurants, mClusterMarkers has all of them
+                        mClusterManager.addItems(mClusterMarkers);
+                    } else {
+                        for(ClusterMarker clusterMarker: mClusterMarkers) {
+                            if(clusterMarker.getTitle().toLowerCase().contains(searchText)) {
+                                mClusterManager.addItem(clusterMarker);
+                            }
+                        }
+                    }
+                mClusterManager.cluster();
+                return false;
+            }
+        });
+        return true;
     }
 
     // Fill our model with the csv data
@@ -762,6 +817,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
             }
+            mClusterMarkersCopy = new ArrayList<>(mClusterMarkers);
             // adds every thing to the map at end of the loop
             mClusterManager.cluster();
         }
@@ -1086,12 +1142,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             return false;
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        locationManager.removeUpdates(myLocListener);
-        locationManager = null;
     }
 }
