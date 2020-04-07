@@ -7,7 +7,7 @@ import java.util.List;
  * This class is used to filter out restaurants that don't meet the filter requirements
  * To use it:
  * - Get an instance of the SearchFilter object
- * - Set any filters you want to use TODO: (Or reset filters you don't want to use)
+ * - Set any filters you want to use (Or reset filters you don't want to use)
  * - Call getRestaurants to get your list of filtered restaurants
  */
 public class SearchFilter {
@@ -86,6 +86,41 @@ public class SearchFilter {
     }
 
     /**
+     * If you do not want to filter by search term, call this method and it will reset the search
+     * term filter
+     */
+    public void resetSearchTerm() {
+        this.searchTerm = "";
+    }
+
+    /**
+     * If you do not want to filter by hazard rating, call this method and it will reset the hazard
+     * rating filter
+     */
+    public void resetHazardRating() {
+        this.hazardRating = "any";
+    }
+
+    /**
+     * If you do not want to filter by violations, call this method and it will reset the violations
+     * filter
+     */
+    public void resetViolationsFilters() {
+        this.violationsThreshold = 0;
+        this.violationFilterType = "none";
+    }
+
+    /**
+     * If you do not want to filter by anything, call this method and it will reset all filters
+     */
+    public void resetAllFilters() {
+        this.searchTerm = "";
+        this.hazardRating = "any";
+        this.violationsThreshold = 0;
+        this.violationFilterType = "none";
+    }
+
+    /**
      * Uses the searchTerm, hazardRating, violationsThreshold, and violationFilterType variables to
      * filter out restaurants.
      * - A list of all restaurants can be obtained using getInstance() from restaurant manager
@@ -94,11 +129,14 @@ public class SearchFilter {
      *   search criteria
      */
     private void filterRestaurants() {
+        // Reset the filtered restaurants
+        filteredRestaurants.clear();
+
         // Get all the restaurants that currently exist
         RestaurantManager allRestaurants = RestaurantManager.getInstance();
 
         // If a restaurant meets all the criteria, then add it to the list of filtered restaurants
-        for (Restaurant restaurant : filteredRestaurants) {
+        for (Restaurant restaurant : allRestaurants) {
             if (nameMatches(restaurant) &&
                 hazardRatingMatches(restaurant) &&
                 violationsMatch(restaurant)) {
