@@ -13,9 +13,9 @@ import java.util.List;
 public class SearchFilter {
     private List<Restaurant> filteredRestaurants;
     private String searchTerm;  // If the restaurant is not being searched for by name, this should be ""
-    private String hazardRating;  // Can be "any", "low", "moderate", or "high"
+    private String hazardRating;
     private int violationsThreshold;
-    private String violationFilterType;  // Can be "none", "below", or "above"
+    private String violationFilterType;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -27,7 +27,7 @@ public class SearchFilter {
         this.searchTerm = "";
         this.hazardRating = "any";
         this.violationsThreshold = 0;
-        this.violationFilterType = "none";  // Can be "none", "below", or "above"
+        this.violationFilterType = "none";
     }
     public static SearchFilter getInstance() {
         if (instance == null) {
@@ -54,16 +54,34 @@ public class SearchFilter {
      * @param searchTerm The string used to filter out restaurants
      */
     public void setSearchTerm(String searchTerm) {
-        this.searchTerm = searchTerm;
+        // The searchTerm cannot be null (If you want to clear the search term, just pass in "")
+        if (searchTerm != null) {
+            this.searchTerm = searchTerm;
+        } else {
+            // TODO: REPORT THE BAD TO THE DEVELOPER
+        }
+
     }
 
     /**
      * Any restaurants whose most recent inspection does not have the provided hazard rating will be
      * filtered out when the method getRestaurants() is called
+     * Hazard rating can be:
+     * - "any"
+     * - "low"
+     * - "moderate"
+     * - "high"
      * @param hazardRating The hazard rating used to filter out restaurants
      */
     public void setHazardRating(String hazardRating) {
-        this.hazardRating = hazardRating;
+        // The hazard rating must be one of four specified strings.  Also, it cannot be null.
+        if (hazardRating != null &&
+                (hazardRating.equals("any") || hazardRating.equals("low") ||
+                        hazardRating.equals("moderate") || hazardRating.equals("high"))) {
+            this.hazardRating = hazardRating;
+        } else {
+            // TODO: REPORT THE BAD TO THE DEVELOPER
+        }
     }
 
     /**
@@ -72,7 +90,12 @@ public class SearchFilter {
      * @param violationsThreshold The number of violations used to filter out restaurants
      */
     public void setViolationsThreshold(int violationsThreshold) {
-        this.violationsThreshold = violationsThreshold;
+        // The number of violations for the threshold can be any non-negative number
+        if (violationsThreshold >= 0) {
+            this.violationsThreshold = violationsThreshold;
+        } else {
+            // TODO: REPORT THE BAD TO THE DEVELOPER
+        }
     }
 
     /**
@@ -80,9 +103,21 @@ public class SearchFilter {
      * threshold.
      * Depending on the filter type, any restaurants will be checked if their number of violations
      * are above/below the threshold when the method getRestaurants() is called
+     * Filter type can be:
+     * - "none"
+     * - "below"
+     * - "above"
+     * @param violationFilterType The filter type is used to filter out restaurants
      */
     public void setViolationFilterType(String violationFilterType) {
-        this.violationFilterType = violationFilterType;
+        // The filter type must be one of three specified strings.  Also, it cannot be null.
+        if (violationFilterType != null &&
+                (violationFilterType.equals("none") || violationFilterType.equals("below") ||
+                        violationFilterType.equals("above"))) {
+            this.violationFilterType = violationFilterType;
+        } else {
+            // TODO: REPORT THE BAD TO THE DEVELOPER
+        }
     }
 
     /**
