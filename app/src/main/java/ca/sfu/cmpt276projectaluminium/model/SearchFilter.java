@@ -196,7 +196,7 @@ public class SearchFilter {
 
         // If a restaurant meets all the criteria, then add its tracking number to the filtered list
         for (Restaurant restaurant : allRestaurants) {
-            if (nameMatches(restaurant) &&
+            if (containsSearchTerm(restaurant) &&
                 hazardRatingMatches(restaurant) &&
                 violationsMatch(restaurant)) {
                 this.filteredRestaurantTrackingNumbers.add(restaurant.getTrackingNumber());
@@ -204,18 +204,26 @@ public class SearchFilter {
         }
     }
 
-    // Ensures that the name of the restaurant contains the query provided to the filter
-    // Returns true if the restaurant name contains the query
-    // Returns false if the restaurant name does not contain the query
-    private Boolean nameMatches(Restaurant restaurant) {
+    /**
+     * Ensures that the restaurant name contains the filter's search term
+     * @param restaurant The restaurant that may or may not be filtered out, depending on if it
+     *                   satisfies the filter
+     * @return True if the restaurant name contains the search term, False otherwise
+     */
+    private Boolean containsSearchTerm(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
         return restaurantName.contains(this.searchTerm);
     }
 
-    // Ensures that the most recent hazard rating of the restaurant matches the one provided to the
-    // filter
-    // Returns true if the restaurant rating matches
-    // Returns false if the restaurant rating doesn't match
+    /**
+     * Ensures that the restaurant's most recent inspection's hazard rating matches the filter's
+     * hazard rating
+     * @param restaurant The restaurant that may or may not be filtered out, depending on if it
+     *                   satisfies the filter
+     * @return True if the restaurant's most recent inspection's hazard rating matches the filter's
+     *         hazard rating,
+     *         False otherwise
+     */
     private Boolean hazardRatingMatches(Restaurant restaurant) {
         // Get the most recent inspection's hazard rating
         InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -236,9 +244,14 @@ public class SearchFilter {
         return restaurantMostRecentHazardRating.equals(this.hazardRating);
     }
 
-    // Ensures that the violations in the past year are at the level required by the filter
-    // Returns true if the restaurant's violations from the past year are within bounds
-    // Returns false if the restaurant's violations from the past year are not within bounds
+    /**
+     * Ensures that the restaurant's number of critical violations within the past year are within
+     * the filter's threshold
+     * @param restaurant The restaurant that may or may not be filtered out, depending on if it
+     *                   satisfies the filter
+     * @return True if the restaurant's violations within the year are within the threshold,
+     *         False otherwise
+     */
     private Boolean violationsMatch(Restaurant restaurant) {
         // Get the number of critical violations within the last year for the restaurant
         int critViolationsWithinYear = this.violationsThreshold;
