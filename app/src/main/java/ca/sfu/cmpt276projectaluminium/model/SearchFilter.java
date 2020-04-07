@@ -247,14 +247,14 @@ public class SearchFilter {
      */
     private Boolean violationsMatch(Restaurant restaurant) {
         // Get the number of critical violations within the last year for the restaurant
-        int critViolationsWithinYear = this.violationsThreshold;
-//TODO:        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
+        int criticalViolationsWithinYear = this.violationsThreshold;
+//TODO:        int criticalViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
 
         // Return true if the violation is within bounds, false if it is not
         if (this.violationFilterType.equals("below")) {
-            return critViolationsWithinYear <= this.violationsThreshold;
+            return criticalViolationsWithinYear <= this.violationsThreshold;
         } else if (this.violationFilterType.equals("above")) {
-            return critViolationsWithinYear >= this.violationsThreshold;
+            return criticalViolationsWithinYear >= this.violationsThreshold;
         } else {
             // If the number of violations is not provided to the filter, return true
             return true;
