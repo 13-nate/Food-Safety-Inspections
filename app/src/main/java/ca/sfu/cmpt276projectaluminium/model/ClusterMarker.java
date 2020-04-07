@@ -1,11 +1,26 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+
+import ca.sfu.cmpt276projectaluminium.R;
 
 /**
- * Renders custom cluster class to render images and add restaurant info to pegs
+ * These are the custom cluster items to hold some restaurant information when looking at them as
+ * markers
  */
 public class ClusterMarker implements ClusterItem {
 
@@ -51,6 +66,7 @@ public class ClusterMarker implements ClusterItem {
         return snippet;
     }
 
+
     public void setSnippet(String snippet) {
         this.snippet = snippet;
     }
@@ -70,5 +86,4 @@ public class ClusterMarker implements ClusterItem {
     public void setTrackingNum(String trackingNum) {
         this.trackingNum = trackingNum;
     }
-
 }
