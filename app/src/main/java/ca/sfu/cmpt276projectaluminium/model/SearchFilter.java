@@ -14,8 +14,8 @@ import java.util.List;
 public class SearchFilter {
     private List<Restaurant> filteredRestaurants;
     private String query;  // If the restaurant is not being searched for by name, this should be ""
-    private String hazardRating;  // Can be Any, Low, Moderate, or High
-    private int numOfCritViolations;
+    private String hazardRating;  // Can be "any", "low", "moderate", or "high"
+    private int violationsThreshold;
     private String violationFilterType;  // Can be "none", "below", or "above"
 
     /**
@@ -23,14 +23,14 @@ public class SearchFilter {
      * @param query Any restaurant that doesn't contain this string in its name will be filtered out
      * @param hazardRating Any restaurant with that doesn't have this hazard rating will be filtered
      *                     out
-     * @param numOfCritViolations Any restaurant with more critical violations than this number will
+     * @param violationsThreshold Any restaurant with more critical violations than this number will
      *                            be filtered out
      */
-    public SearchFilter(String query, String hazardRating, int numOfCritViolations,
+    public SearchFilter(String query, String hazardRating, int violationsThreshold,
                         String violationFilterType) {
         this.query = query.toLowerCase();
         this.hazardRating = hazardRating.toLowerCase();
-        this.numOfCritViolations = numOfCritViolations;
+        this.violationsThreshold = violationsThreshold;
         this.violationFilterType = violationFilterType.toLowerCase();
         this.filteredRestaurants = new ArrayList<>();
 
@@ -38,11 +38,63 @@ public class SearchFilter {
         filterRestaurants();
     }
 
+    /*
+        Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
+     */
+    private static SearchFilter instance;
+    // Private to prevent anyone else from instantiating
+    private SearchFilter() {
+        this.filteredRestaurants = new ArrayList<>();
+        this.query = "";
+        this.hazardRating = "any";
+        this.violationsThreshold = 0;
+        this.violationFilterType = "none";  // Can be "none", "below", or "above"
+    }
+    public static SearchFilter getInstance() {
+        if (instance == null) {
+            instance = new SearchFilter();
+        }
+
+        return instance;
+    }
+
     /**
      * @return All restaurants that match the search criteria
      */
     public List<Restaurant> getRestaurants() {
+        // Filter restaurants based on the preferences
+        filterRestaurants();
+
+        // Returned the filtered restaurants
         return this.filteredRestaurants;
+    }
+
+    /**
+     *
+     */
+    private void setQuery(String query) {
+
+    }
+
+    /**
+     *
+     */
+    private void setHazardRating(String hazardRating) {
+
+    }
+
+    /**
+     *
+     */
+    private void setViolationsThreshold(int violationsThreshold) {
+
+    }
+
+    /**
+     *
+     */
+    private void setViolationFilterType(String violationFilterType) {
+
     }
 
     /**
@@ -101,14 +153,14 @@ public class SearchFilter {
     // Returns false if the restaurant's violations from the past year are not within bounds
     private Boolean violationsMatch(Restaurant restaurant) {
         // Get the number of critical violations within the last year for the restaurant
-        int critViolationsWithinYear = this.numOfCritViolations;
+        int critViolationsWithinYear = this.violationsThreshold;
 //        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
 
         // Return true if the violation is within bounds, false if it is not
         if (this.violationFilterType.equals("below")) {
-            return critViolationsWithinYear <= this.numOfCritViolations;
+            return critViolationsWithinYear <= this.violationsThreshold;
         } else if (this.violationFilterType.equals("above")) {
-            return critViolationsWithinYear >= this.numOfCritViolations;
+            return critViolationsWithinYear >= this.violationsThreshold;
         } else {
             // If the number of violations is not provided to the filter, return true
             return true;
