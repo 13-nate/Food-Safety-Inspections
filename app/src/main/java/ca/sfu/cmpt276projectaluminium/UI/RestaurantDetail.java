@@ -1,25 +1,28 @@
 package ca.sfu.cmpt276projectaluminium.UI;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
 
@@ -32,6 +35,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 /**
  * Implements Restaurant details and gets data for it
  * Also grants access to the inspection details activity
+ * Also enables favourites
  * Sources:
  * https://www.flaticon.com/search?search-type=icons&word=Food&license=&color=&stroke=&current_section=&author_id=&pack_id=&family_id=&style_id=2&category_id=
  * https://stackoverflow.com/questions/14545139/android-back-button-in-the-title-bar
@@ -68,6 +72,45 @@ public class RestaurantDetail extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.restaurant_details_menu, menu);
+        MenuItem item = menu.findItem(R.id.favourite);
+        RestaurantManager restaurants = RestaurantManager.getInstance();
+        if (restaurants.isFavourite(id)){
+            item.setIcon(R.drawable.favourite);
+        }
+        item.getIcon().setTint(getResources().getColor(R.color.colorWhite));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //https://developer.android.com/training/appbar/actions#java
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.favourite) {
+            RestaurantManager restaurants = RestaurantManager.getInstance();
+            if (restaurants.isFavourite(id)){
+                restaurants.deleteFavourite(id);
+                item.setIcon(R.drawable.unfavourite);
+            }else{
+                restaurants.addFavourite(id);
+                item.setIcon(R.drawable.favourite);
+            }
+            item.getIcon().setTint(getResources().getColor(R.color.colorWhite));
+            String storeFavourites = "";
+            for (String favourites: restaurants.getFavourites()){
+                storeFavourites = storeFavourites + ", " + favourites;
+            }
+            SharedPreferences pref = getSharedPreferences(TAG, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString(TAG, storeFavourites);
+            editor.apply();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initializeVariables() {

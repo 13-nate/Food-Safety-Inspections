@@ -35,6 +35,7 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 /**
  * Displays a list of restaurants and some info on the most most recent inspection report for
  * each of the restaurants displayed
+ *
  */
 public class MainActivity extends AppCompatActivity {
     //for incorrect version
