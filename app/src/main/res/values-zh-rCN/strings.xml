@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name"></string>
 	<string name="critical_issues">危急：</string>
 	<string name="non_critical_issues">非关键：</string>
 	<string name="inspection_date">检验日期：</string>
 	<string name="restaurant_details">点评：</string>
-	<string name="name">Name:</string>
+	<string name="name">名称:</string>
 	<string name="latitude">纬度：</string>
 	<string name="longitude">经度：</string>
 	<string name="inspections">检查：</string>
@@ -18,7 +17,7 @@
 	<string name="hazard_rating">危害分级</string>
 	<string name="low">低</string>
 	<string name="high">高</string>
-	<string name="medium">介质</string>
+	<string name="medium">中等</string>
 	<string name="not_available">N / A</string>
 	<string name="address">地址</string>
 	<string name="critical">关键问题：</string>
@@ -60,8 +59,8 @@
 	<string name="violation402">员工没洗手</string>
 	<string name="violation403">员工缺乏卫生</string>
 	<string name="violation404">处所员工吸烟</string>
-	<string name="violation501">运营商缺少FOODSAFE</string>
-	<string name="violation502">工作人员失踪FOODSAFE</string>
+	<string name="violation501">运营商缺少但食物安全</string>
+	<string name="violation502">工作人员缺少但食物安全E</string>
 	<string name="invalid_id">无效的ID</string>
 	<string name="violations">违规行为：</string>
 	<string name="hazard_level">危险等级：</string>
@@ -70,5 +69,5 @@
 	<string name="title_activity_main2">Main2Activity</string>
 	<string name="no_current_location">=无法获取当前位置</string>
 	<string name="no_gps_do_u_want">=此应用程序需要GPS来正常工作，你要启用它？</string>
-	<string name="no_map_requests">=你可以\'吨使地图请求</string>
+	<string name="no_map_requests">=你没有打开地图请求</string>
 </resources>
