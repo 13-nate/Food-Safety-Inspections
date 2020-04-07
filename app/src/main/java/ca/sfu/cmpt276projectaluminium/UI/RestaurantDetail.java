@@ -3,6 +3,9 @@ package ca.sfu.cmpt276projectaluminium.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -79,6 +82,7 @@ public class RestaurantDetail extends AppCompatActivity {
         if (restaurants.isFavourite(id)){
             item.setIcon(R.drawable.favourite);
         }
+        item.getIcon().setTint(getResources().getColor(R.color.colorWhite));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -95,6 +99,7 @@ public class RestaurantDetail extends AppCompatActivity {
                 restaurants.addFavourite(id);
                 item.setIcon(R.drawable.favourite);
             }
+            item.getIcon().setTint(getResources().getColor(R.color.colorWhite));
             String storeFavourites = "";
             for (String favourites: restaurants.getFavourites()){
                 storeFavourites = storeFavourites + ", " + favourites;

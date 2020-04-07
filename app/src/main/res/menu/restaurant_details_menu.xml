@@ -6,5 +6,5 @@
         android:id="@+id/favourite"
         android:icon="@drawable/unfavourite"
         android:title="@string/restaurant_details"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 </menu>
