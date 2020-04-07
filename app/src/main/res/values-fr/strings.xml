@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="critical_issues">Critique:</string>
+	<string name="non_critical_issues">Non critique:</string>
+	<string name="inspection_date">Date d\'inspection:</string>
+	<string name="restaurant_details">Détails sur le restaurant:</string>
+	<string name="name">Nom:</string>
+	<string name="latitude">Latitude:</string>
+	<string name="longitude">Longitude:</string>
+	<string name="inspections">inspections:</string>
+	<string name="issues">Problèmes:</string>
+	<string name="Last_inspection">Dernière inspection:</string>
+	<string name="restaurant_name">Nom du restaurant</string>
+	<string name="of_issues">Nombre de questions</string>
+	<string name="date">Date</string>
+	<string name="restaurants">Restaurants</string>
+	<string name="hazard_rating">Hazard Rating</string>
+	<string name="low">Faible</string>
+	<string name="high">Haute</string>
+	<string name="medium">Moyen</string>
+	<string name="not_available">N / A</string>
+	<string name="address">Adresse</string>
+	<string name="critical">Des problèmes critiques:</string>
+	<string name="non_critical">Non-Critical Issues:</string>
+	<string name="inspectiontype">Inspection Type:</string>
+	<string name="id">ID:</string>
+	<string name="textview">affichage</string>
+	<string name="violation101">Plans / construction et non la réglementation</string>
+	<string name="violation102">exploitation des locaux non approuvés</string>
+	<string name="violation103">Est-ce que possède pas de permis valide</string>
+	<string name="violation104">Placé bien en évidence permet pas</string>
+	<string name="violation201">Les aliments contaminés ou impropres à la consommation</string>
+	<string name="violation202">Aliments non transformés en toute sécurité</string>
+	<string name="violation203">Aliments non refroidi en toute sécurité</string>
+	<string name="violation204">Nourriture non chauffée en toute sécurité</string>
+	<string name="violation205">Alimentation mal stocké au-dessus de 4 ° C</string>
+	<string name="violation206">Alimentation mal stocké en dessous de 60 ° C</string>
+	<string name="violation208">Aliments mal obtenu</string>
+	<string name="violation209">Aliments mal protégés</string>
+	<string name="violation210">Aliments mal décongelé</string>
+	<string name="violation211">Alimentation mal stocké au-dessus de -18 ° C</string>
+	<string name="violation212">manutention manuelle des aliments non fourni</string>
+	<string name="violation301">L\'équipement dans un état insalubre</string>
+	<string name="violation302">L\'équipement pas correctement lavé</string>
+	<string name="violation303">Matériel insuffisant</string>
+	<string name="violation304">Locaux non exempts d\'organismes nuisibles</string>
+	<string name="violation305">la prévention des ravageurs était insuffisante</string>
+	<string name="violation306">Locaux en état insalubre</string>
+	<string name="violation307">Équipement non de matériel approprié</string>
+	<string name="violation308">Équipement non en ordre de marche</string>
+	<string name="violation309">Produits chimiques mal stockés</string>
+	<string name="violation310">ustensiles jetables sont réutilisés</string>
+	<string name="violation311">Locaux non maintenus</string>
+	<string name="violation312">articles non reliés conservés dans les locaux</string>
+	<string name="violation313">Animaux vivants sur les lieux</string>
+	<string name="violation314">Manuel d\'assainissement non fourni</string>
+	<string name="violation315">Les thermomètres manquent</string>
+	<string name="violation401">stations de lavage des mains inadéquate</string>
+	<string name="violation402">L\'employé ne s\'est pas lavé les mains</string>
+	<string name="violation403">Manque d\'hygiène des employés</string>
+	<string name="violation404">Employé de fumer dans les locaux</string>
+	<string name="violation501">Opérateur disparu et sans danger pour les aliments</string>
+	<string name="violation502">Personnel manquant et sécurité alimentair</string>
+	<string name="invalid_id">ID invalide</string>
+	<string name="violations">violations:</string>
+	<string name="hazard_level">Niveau de risque:</string>
+	<string name="short_description">brève description</string>
+	<string name="title_activity_maps">Carte</string>
+	<string name="title_activity_main2">Main2Activity</string>
+	<string name="no_current_location">= Impossible d\'obtenir l\'emplacement actuel</string>
+	<string name="no_gps_do_u_want">= Cette application nécessite GPS fonctionne correctement, vous voulez l\'activer?</string>
+	<string name="no_map_requests">= Vous ne pouvez pas faire de demande de carte</string>
+</resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="critical_issues">Критический:</string>
+	<string name="non_critical_issues">Некритическое:</string>
+	<string name="inspection_date">Осмотр Дата:</string>
+	<string name="restaurant_details">Ресторан Подробнее:</string>
+	<string name="name">Название:</string>
+	<string name="latitude">Широта:</string>
+	<string name="longitude">Долгота:</string>
+	<string name="inspections">Осмотры:</string>
+	<string name="issues">Вопросы:</string>
+	<string name="Last_inspection">Последняя проверка:</string>
+	<string name="restaurant_name">Ресторан Имя</string>
+	<string name="of_issues"># Выпусков</string>
+	<string name="date">Дата</string>
+	<string name="restaurants">ресторан</string>
+	<string name="hazard_rating">Оценка опасности</string>
+	<string name="low">Низкий</string>
+	<string name="high">Высокая</string>
+	<string name="medium">Средняя</string>
+	<string name="not_available">N / A</string>
+	<string name="address">Адрес</string>
+	<string name="critical">Критические вопросы:</string>
+	<string name="non_critical">Некритические проблемы:</string>
+	<string name="inspectiontype">Осмотр Тип:</string>
+	<string name="id">Я БЫ:</string>
+	<string name="textview">TextView</string>
+	<string name="violation101">Планы / строительство не регулирование</string>
+	<string name="violation102">Несанкционированная эксплуатация помещений</string>
+	<string name="violation103">Не обладаю действительным разрешением</string>
+	<string name="violation104">Разрешение не помещается явно</string>
+	<string name="violation201">Питание загрязнена или небезопасна есть</string>
+	<string name="violation202">Пища не обрабатывается безопасно</string>
+	<string name="violation203">Пища не охлаждается безопасно</string>
+	<string name="violation204">Пища не нагревается безопасно</string>
+	<string name="violation205">Питание неправильно хранятся выше 4 ° С</string>
+	<string name="violation206">Питание неправильно храниться при температуре ниже 60 ° С</string>
+	<string name="violation208">Питание неправильно получается</string>
+	<string name="violation209">Питание неправильно защищен</string>
+	<string name="violation210">Питание неправильно размораживают</string>
+	<string name="violation211">Питание неправильно храниться при температурах выше -18 ° С</string>
+	<string name="violation212">Пищевая обработка руководство не предусмотрено</string>
+	<string name="violation301">Оборудование в антисанитарном состоянии</string>
+	<string name="violation302">Оборудование, не правильно мыть</string>
+	<string name="violation303">Оборудование не адекватна</string>
+	<string name="violation304">Помещения не вредители</string>
+	<string name="violation305">Недостаточная профилактика вредителей</string>
+	<string name="violation306">Помещения в антисанитарном состоянии</string>
+	<string name="violation307">Оборудование не надлежащего материала</string>
+	<string name="violation308">Оборудование не в рабочем состоянии</string>
+	<string name="violation309">Химические вещества неправильно хранятся</string>
+	<string name="violation310">Одноразовая посуда повторно</string>
+	<string name="violation311">Помещение не поддерживается</string>
+	<string name="violation312">Несвязанные элементы хранятся в помещениях</string>
+	<string name="violation313">Живые животные на территории</string>
+	<string name="violation314">Санитария руководство не предусмотрено</string>
+	<string name="violation315">Термометры отсутствуют</string>
+	<string name="violation401">Раковины для мытья рук станции неадекватным</string>
+	<string name="violation402">Сотрудник не мыл руки</string>
+	<string name="violation403">Сотрудник не хватает гигиены</string>
+	<string name="violation404">курение сотрудников в помещениях</string>
+	<string name="violation501">Оператор отсутствует и еда безопасна</string>
+	<string name="violation502">Персонал отсутствует и еда безопасна</string>
+	<string name="invalid_id">Неверный ID</string>
+	<string name="violations">Нарушения:</string>
+	<string name="hazard_level">Уровень опасности:</string>
+	<string name="short_description">Краткое описание</string>
+	<string name="title_activity_maps">карта</string>
+	<string name="title_activity_main2">Main2Activity</string>
+	<string name="no_current_location">= Не удается получить текущее местоположение</string>
+	<string name="no_gps_do_u_want">= Это приложение требует GPS работать должным образом, вы хотите, чтобы включить его?</string>
+	<string name="no_map_requests">= Вы не можете сделать запрос карты</string>
+</resources>
