@@ -180,7 +180,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         contextApp = getApplicationContext();
         onBottomToolBarClick();
         setMenuColor();
-        getSupportActionBar().setTitle(getString(R.string.restaurants));
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -204,6 +203,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MenuItem searchItem = menu.findItem(R.id.action_Search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setQueryHint("Enter a restaurant name");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
