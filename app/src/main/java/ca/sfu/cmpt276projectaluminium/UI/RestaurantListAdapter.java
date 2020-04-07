@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,12 +14,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
+import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 /*
 Sources:
@@ -30,13 +35,15 @@ Sources:
  * a list view
  */
 public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
-    private List<Restaurant> restaurants;
+    private List<Restaurant> allRestaurants;
+    private List<Restaurant> filteredRestaurants;
     private Context context;
 
     // Don't need to pass arguments because has references to outer class
     public RestaurantListAdapter(Context context, List<Restaurant> restaurants) {
         super(context, R.layout.restaurants_view, restaurants);
-        this.restaurants = restaurants;
+        this.allRestaurants = restaurants;
+        this.filteredRestaurants = new ArrayList<>(restaurants);
         this.context = context;
     }
 
@@ -122,7 +129,7 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         }
 
         // find restaurant to work with want different hazard images, name, and date and number of issues
-        Restaurant currentRestaurant = this.restaurants.get(position);
+        Restaurant currentRestaurant = this.allRestaurants.get(position);
 
         // Get relevant inspections
         InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -181,4 +188,56 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
                 + newestInspection.intelligentDate());
         return itemView;
     }
+
+//    private Filter restaurantFilter = new Filter() {
+//        @Override
+//        protected FilterResults performFiltering(CharSequence charSequence) {
+//            List<String> filteredRestaurantTrackingNumbers = new ArrayList<>();
+//
+//            // If nothing is being searched for...
+//            if (charSequence == null || charSequence.length() == 0) {
+//                // All restaurants should be accessible through the filtered list
+//                for (Restaurant restaurant : allRestaurants) {
+//                    // Reset what is being searched for in the search/filter class
+//                    SearchFilter searchFilter = SearchFilter.getInstance();
+//                    searchFilter.resetSearchTerm();
+//
+//                    // Add all existing restaurant tracking numbers to the filtered restaurants
+//                    filteredRestaurantTrackingNumbers.add(restaurant.getTrackingNumber());
+//                }
+//            } else {  // If something is being searched for...
+//                // Set the search term
+//                SearchFilter searchFilter = SearchFilter.getInstance();
+//                searchFilter.setSearchTerm(charSequence.toString());
+//
+//                // Get the restaurant tracking numbers that match the filter
+//                filteredRestaurantTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
+//            }
+//
+//            // Convert the filtered tracking numbers into a result that can be returned
+//            FilterResults results = new FilterResults();
+//            results.values = filteredRestaurantTrackingNumbers;
+//
+//            // Return the filtered results
+//            return results;
+//        }
+//
+//        @Override
+//        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+//            // Clear the old list of filtered restaurants
+//            filteredRestaurants.clear();
+//
+//            // Initialize the list of filtered restaurant tracking numbers
+//            List<String> filteredRestaurantTrackingNumbers =
+//                    new ArrayList<>(Collections.singleton((String) filterResults.values));
+//
+//            // Create the list of restaurants for the adapter
+//            RestaurantManager restaurantManager = RestaurantManager.getInstance();
+//            for (String trackingNumber : filteredRestaurantTrackingNumbers) {
+//                filteredRestaurants.add(restaurantManager.recreateRestaurant(trackingNumber));
+//            }
+//
+//            notifyDataSetChanged();
+//        }
+//    };
 }
