@@ -4,39 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The input to the class should be search criteria that we want to use such as:
- * - Search String (Ex. Part of a restaurant name)
- * - Hazard level of the most recent inspection
- * - Number of critical violations within the last year
- * - Whether we want violations below or above the provided number (or not at all)
- * The output from the class should be the restaurants that meet the search criteria (in a list)
+ * This class is used to filter out restaurants that don't meet the filter requirements
+ * To use it:
+ * - Get an instance of the SearchFilter object
+ * - Set any filters you want to use TODO: (Or reset filters you don't want to use)
+ * - Call getRestaurants to get your list of filtered restaurants
  */
 public class SearchFilter {
     private List<Restaurant> filteredRestaurants;
-    private String query;  // If the restaurant is not being searched for by name, this should be ""
+    private String searchTerm;  // If the restaurant is not being searched for by name, this should be ""
     private String hazardRating;  // Can be "any", "low", "moderate", or "high"
     private int violationsThreshold;
     private String violationFilterType;  // Can be "none", "below", or "above"
-
-    /**
-     * Initialize the search filter with the appropriate search criteria
-     * @param query Any restaurant that doesn't contain this string in its name will be filtered out
-     * @param hazardRating Any restaurant with that doesn't have this hazard rating will be filtered
-     *                     out
-     * @param violationsThreshold Any restaurant with more critical violations than this number will
-     *                            be filtered out
-     */
-    public SearchFilter(String query, String hazardRating, int violationsThreshold,
-                        String violationFilterType) {
-        this.query = query.toLowerCase();
-        this.hazardRating = hazardRating.toLowerCase();
-        this.violationsThreshold = violationsThreshold;
-        this.violationFilterType = violationFilterType.toLowerCase();
-        this.filteredRestaurants = new ArrayList<>();
-
-        // Put all restaurants that match the search criteria in a list
-        filterRestaurants();
-    }
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -45,7 +24,7 @@ public class SearchFilter {
     // Private to prevent anyone else from instantiating
     private SearchFilter() {
         this.filteredRestaurants = new ArrayList<>();
-        this.query = "";
+        this.searchTerm = "";
         this.hazardRating = "any";
         this.violationsThreshold = 0;
         this.violationFilterType = "none";  // Can be "none", "below", or "above"
@@ -70,35 +49,45 @@ public class SearchFilter {
     }
 
     /**
-     *
+     * Any restaurants that do not contain the provided search term will be filtered out when the
+     * method getRestaurants() is called
+     * @param searchTerm The string used to filter out restaurants
      */
-    private void setQuery(String query) {
-
+    public void setSearchTerm(String searchTerm) {
+        this.searchTerm = searchTerm;
     }
 
     /**
-     *
+     * Any restaurants whose most recent inspection does not have the provided hazard rating will be
+     * filtered out when the method getRestaurants() is called
+     * @param hazardRating The hazard rating used to filter out restaurants
      */
-    private void setHazardRating(String hazardRating) {
-
+    public void setHazardRating(String hazardRating) {
+        this.hazardRating = hazardRating;
     }
 
     /**
-     *
+     * Any restaurants that does not meet the provided number of violations within the past year
+     * will be filtered out when the method getRestaurants() is called
+     * @param violationsThreshold The number of violations used to filter out restaurants
      */
-    private void setViolationsThreshold(int violationsThreshold) {
-
+    public void setViolationsThreshold(int violationsThreshold) {
+        this.violationsThreshold = violationsThreshold;
     }
 
     /**
-     *
+     * This sets whether the number of violations being searched for must be above or below the
+     * threshold.
+     * Depending on the filter type, any restaurants will be checked if their number of violations
+     * are above/below the threshold when the method getRestaurants() is called
      */
-    private void setViolationFilterType(String violationFilterType) {
-
+    public void setViolationFilterType(String violationFilterType) {
+        this.violationFilterType = violationFilterType;
     }
 
     /**
-     * Uses the query, hazardRating, and numOfCritViolations variables to filter out restaurants.
+     * Uses the searchTerm, hazardRating, violationsThreshold, and violationFilterType variables to
+     * filter out restaurants.
      * - A list of all restaurants can be obtained using getInstance() from restaurant manager
      * - Any restaurants that match the search criteria should be put in this.restaurants
      * - Once this function finishes, this.restaurants should contain all restaurants that match the
@@ -123,7 +112,7 @@ public class SearchFilter {
     // Returns false if the restaurant name does not contain the query
     private Boolean nameMatches(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        return restaurantName.contains(this.query);
+        return restaurantName.contains(this.searchTerm);
     }
 
     // Ensures that the most recent hazard rating of the restaurant matches the one provided to the
@@ -154,7 +143,7 @@ public class SearchFilter {
     private Boolean violationsMatch(Restaurant restaurant) {
         // Get the number of critical violations within the last year for the restaurant
         int critViolationsWithinYear = this.violationsThreshold;
-//        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
+//TODO:        int critViolationsWithinYear = restaurant.getNumCriticalViolationsWithinYear();
 
         // Return true if the violation is within bounds, false if it is not
         if (this.violationFilterType.equals("below")) {
