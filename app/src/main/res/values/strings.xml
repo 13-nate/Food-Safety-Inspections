@@ -76,4 +76,7 @@
     <string name="Download">Download Prompt</string>
     <string name="progress">Downloading:</string>
     <string name="yes">Yes</string>
+    <string name="restaurants_at_location">Restaurants at tapped location:</string>
+    <string name="updated_restaurants">Updated Restaurants:</string>
+
 </resources>

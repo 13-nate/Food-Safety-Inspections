@@ -17,6 +17,7 @@ import java.util.List;
  * calling the following methods:
  * - getRestaurants();
  * - getInspections();
+ *
  */
 public class CSVFileParser {
     private static final String TAG = "CSVFileParser";

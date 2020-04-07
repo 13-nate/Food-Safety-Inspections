@@ -33,7 +33,6 @@ import ca.sfu.cmpt276projectaluminium.model.Violation;
 /**
  * Implements inspection details and gets data for it
  * Also responsible for grabbing the short descriptions from strings.xml
- *
  */
 
 public class InspectionDetails extends AppCompatActivity {

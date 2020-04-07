@@ -14,8 +14,9 @@ import androidx.fragment.app.FragmentManager;
 import ca.sfu.cmpt276projectaluminium.R;
 
 /**
- * The code behind the alert message
+ * The code behind the download message
  * Opens the progress message on ok
+ * Prompts user to download
  */
 
 public class DownloadMessage extends AppCompatDialogFragment{
