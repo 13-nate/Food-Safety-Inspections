@@ -10,13 +10,13 @@ import java.util.List;
  * To use it:
  * - Get an instance of the SearchFilter object
  * - Set any filters you want to use (Or reset filters you don't want to use)
- * - Call getRestaurants to get your list of filtered restaurants
+ * - Call getRestaurantTrackingNumbers() to get your list of filtered restaurants
  */
 public class SearchFilter {
     private static final String TAG = "model.SearchFilter";
 
-    private List<Restaurant> filteredRestaurants;
-    private String searchTerm;  // If the restaurant is not being searched for by name, this should be ""
+    private List<String> filteredRestaurantTrackingNumbers;
+    private String searchTerm;
     private String hazardRating;
     private int violationsThreshold;
     private String violationFilterType;
@@ -27,7 +27,7 @@ public class SearchFilter {
     private static SearchFilter instance;
     // Private to prevent anyone else from instantiating
     private SearchFilter() {
-        this.filteredRestaurants = new ArrayList<>();
+        this.filteredRestaurantTrackingNumbers = new ArrayList<>();
         this.searchTerm = "";
         this.hazardRating = "any";
         this.violationsThreshold = 0;
@@ -44,17 +44,17 @@ public class SearchFilter {
     /**
      * @return All restaurants that match the search criteria
      */
-    public List<Restaurant> getRestaurants() {
+    public List<String> getRestaurantTrackingNumbers() {
         // Filter restaurants based on the preferences
         filterRestaurants();
 
         // Returned the filtered restaurants
-        return this.filteredRestaurants;
+        return this.filteredRestaurantTrackingNumbers;
     }
 
     /**
      * Any restaurants that do not contain the provided search term will be filtered out when the
-     * method getRestaurants() is called
+     * method getRestaurantTrackingNumbers() is called
      * @param searchTerm The string used to filter out restaurants
      */
     public void setSearchTerm(String searchTerm) {
@@ -69,7 +69,7 @@ public class SearchFilter {
 
     /**
      * Any restaurants whose most recent inspection does not have the provided hazard rating will be
-     * filtered out when the method getRestaurants() is called
+     * filtered out when the method getRestaurantTrackingNumbers() is called
      * Hazard rating can be:
      * - "any"
      * - "low"
@@ -99,7 +99,7 @@ public class SearchFilter {
 
     /**
      * Any restaurants that does not meet the provided number of violations within the past year
-     * will be filtered out when the method getRestaurants() is called
+     * will be filtered out when the method getRestaurantTrackingNumbers() is called
      * @param violationsThreshold The number of violations used to filter out restaurants
      */
     public void setViolationsThreshold(int violationsThreshold) {
@@ -116,7 +116,7 @@ public class SearchFilter {
      * This sets whether the number of violations being searched for must be above or below the
      * threshold.
      * Depending on the filter type, any restaurants will be checked if their number of violations
-     * are above/below the threshold when the method getRestaurants() is called
+     * are above/below the threshold when the method getRestaurantTrackingNumbers() is called
      * Filter type can be:
      * - "none"
      * - "below"
@@ -182,23 +182,24 @@ public class SearchFilter {
      * Uses the searchTerm, hazardRating, violationsThreshold, and violationFilterType variables to
      * filter out restaurants.
      * - A list of all restaurants can be obtained using getInstance() from restaurant manager
-     * - Any restaurants that match the search criteria should be put in this.restaurants
-     * - Once this function finishes, this.restaurants should contain all restaurants that match the
-     *   search criteria
+     * - Any restaurants that match the search criteria will have their tracking numbers put in the
+     *   list of filtered tracking numbers
+     * - Once this function finishes, this.restaurants should contain all restaurant tracking
+     *   numbers that match the search criteria
      */
     private void filterRestaurants() {
         // Reset the filtered restaurants
-        filteredRestaurants.clear();
+        this.filteredRestaurantTrackingNumbers.clear();
 
         // Get all the restaurants that currently exist
         RestaurantManager allRestaurants = RestaurantManager.getInstance();
 
-        // If a restaurant meets all the criteria, then add it to the list of filtered restaurants
+        // If a restaurant meets all the criteria, then add its tracking number to the filtered list
         for (Restaurant restaurant : allRestaurants) {
             if (nameMatches(restaurant) &&
                 hazardRatingMatches(restaurant) &&
                 violationsMatch(restaurant)) {
-                filteredRestaurants.add(restaurant);
+                this.filteredRestaurantTrackingNumbers.add(restaurant.getTrackingNumber());
             }
         }
     }
@@ -223,6 +224,8 @@ public class SearchFilter {
         Inspection mostRecentInspection = inspectionManager.getMostRecentInspection(inspections);
         String restaurantMostRecentHazardRating =
                 mostRecentInspection.getHazardRating().toLowerCase();
+
+        // todo: restaurantMostRecentHazardRating = restaurant.getmostrecentinspectionhazardrating();
 
         // If no specific hazard rating is used for this filter (Any hazard rating fine)...
         if (this.hazardRating.equals("any")) {
