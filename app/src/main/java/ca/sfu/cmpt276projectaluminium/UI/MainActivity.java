@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -54,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
-       // setMenuColor();
+        // setMenuColor();
+
+        // Set up the filter icon's listener
+        addFilterIconClickListener();
     }
 
     private void populateListView() {
@@ -140,6 +144,18 @@ public class MainActivity extends AppCompatActivity {
     public static Intent makeIntent(Context context){
         Intent intent = new Intent(context, MainActivity.class);
         return intent;
+    }
+
+    // Attaches a listener to the filter icon that makes it switch to the filter activity upon click
+    private void addFilterIconClickListener() {
+        ImageView searchSettings = findViewById(R.id.searchSettingsMainActivity);
+        searchSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = FilterActivity.makeIntent(MainActivity.this);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
