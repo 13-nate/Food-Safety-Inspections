@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -26,7 +25,6 @@ import java.util.List;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
-import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 // Sources:
 // https://stackoverflow.com/questions/5089300/how-can-i-change-the-image-of-an-imageview
@@ -186,18 +184,4 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
-
-
-//    private ArrayList<View> applyFilters(ArrayList<View> views) {
-//        // Remove all views that don't match from the list of views
-//        SearchFilter searchFilter = SearchFilter.getInstance();
-//        List<String> filteredRestaurantTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
-//
-//        List<View> viewsToRemove = new ArrayList<>();
-//
-//        // TODO: Convert to an iterator
-//        adapter.getItem();
-//        adapter.
-//
-//    }
 }

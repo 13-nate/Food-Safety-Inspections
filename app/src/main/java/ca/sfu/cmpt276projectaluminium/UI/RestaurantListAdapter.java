@@ -2,22 +2,18 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
@@ -39,7 +35,6 @@ Sources:
  */
 public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements Filterable {
     private static final String TAG = "RestaurantListAdapter";
-    private List<Restaurant> allRestaurants;
     private List<Restaurant> filteredRestaurants;
     private Filter restaurantFilter;
     private Context context;
@@ -47,8 +42,7 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
     // Don't need to pass arguments because has references to outer class
     public RestaurantListAdapter(Context context, List<Restaurant> restaurants) {
         super(context, R.layout.restaurants_view, restaurants);
-        this.allRestaurants = restaurants;
-        this.filteredRestaurants = new ArrayList<>(restaurants);
+        this.filteredRestaurants = restaurants;
         this.context = context;
     }
 
@@ -134,8 +128,7 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
         }
 
         // find restaurant to work with want different hazard images, name, and date and number of issues
-        Restaurant currentRestaurant = this.allRestaurants.get(position);  // TODO: Change this from getting from a list, to getting from the arrayadapter
-//        Restaurant currentRestaurant = this.getItem(position);
+        Restaurant currentRestaurant = this.getItem(position);
 
         // Get relevant inspections
         InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -216,38 +209,39 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
             FilterResults results = new FilterResults();
             SearchFilter searchFilter = SearchFilter.getInstance();
 
+            // Get the list of all restaurants
+            RestaurantManager restaurantManager = RestaurantManager.getInstance();
+            List<Restaurant> allRestaurants = new ArrayList<>();
+            for (Restaurant restaurant : restaurantManager) {
+                allRestaurants.add(restaurant);
+            }
+
             // If nothing is being searched for... (Search box is empty...)
             if (constraint == null || constraint.length() == 0) {
-                Log.e(TAG, "performFiltering: ZERO", null);
                 // Reset the search filter search term
                 searchFilter.resetSearchTerm();
 
                 // Show all the restaurants then return
                 results.values = allRestaurants;
-                results.count = allRestaurants.size();
             } else {  // If something is being searched for... (Search box has text...)
-                Log.e(TAG, "performFiltering: NOT ZERO", null);
                 // Create a list for any filtered restaurants
                 List<Restaurant> filteredRestaurants = new ArrayList<>();
 
                 // Setup the filter
                 searchFilter.setSearchTerm(constraint.toString());
                 List<String> filteredTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
-                Log.e(TAG, "performFiltering: filterd tracking number list: " + Arrays.toString(filteredTrackingNumbers.toArray()), null);
 
                 // Apply the filter
                 for (Restaurant restaurant : allRestaurants) {
                     // If the current restaurant matches the filter, save it for display later
                     String restaurantTrackingNumber = restaurant.getTrackingNumber();
                     if (filteredTrackingNumbers.contains(restaurantTrackingNumber)) {
-                        Log.e(TAG, "performFiltering: Found a match, it's: " + restaurant.getName(), null);
                         filteredRestaurants.add(restaurant);
                     }
                 }
 
                 // Set the results to contain only the filtered restaurants
                 results.values = filteredRestaurants;
-                results.count = filteredRestaurants.size();
             }
 
             // Return the now-populated search results
@@ -258,12 +252,9 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             // Now we have to inform the adapter about the new list of filtered objects
-            if (results.count == 0) {
-                notifyDataSetInvalidated();
-            } else {
-                allRestaurants = (List<Restaurant>) results.values;
-                notifyDataSetChanged();
-            }
+            filteredRestaurants.clear();
+            filteredRestaurants.addAll((List<Restaurant>) results.values);
+            notifyDataSetChanged();
         }
     }
 }
