@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
-       // setMenuColor();
     }
 
     private void populateListView() {

@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorWhite"
-                android:text="@string/none"
+                android:text="Any"
                 android:textColor="@color/colorWhite" />
 
             <RadioButton
@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorWhite"
-                android:text="@string/less_than_or_equal_to"
+                android:text="@string/below"
                 android:textColor="@color/colorWhite" />
 
             <RadioButton
@@ -139,7 +139,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorWhite"
-                android:text="@string/greater_than_or_equal_to"
+                android:text="@string/above"
                 android:textColor="@color/colorWhite" />
         </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>

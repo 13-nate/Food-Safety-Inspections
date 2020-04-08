@@ -84,4 +84,6 @@
     <string name="less_than_or_equal_to">Less than or equal to</string>
     <string name="greater_than_or_equal_to">Greater than or equal to</string>
     <string name="pick_an_equality_first">Pick an equality first</string>
+    <string name="below">Below</string>
+    <string name="above">Above</string>
 </resources>

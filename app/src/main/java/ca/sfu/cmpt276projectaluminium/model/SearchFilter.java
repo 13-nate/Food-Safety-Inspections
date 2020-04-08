@@ -31,7 +31,7 @@ public class SearchFilter {
     private SearchFilter() {
         this.filteredRestaurantTrackingNumbers = new ArrayList<>();
         this.searchTerm = "";
-        this.hazardRating = "none";
+        this.hazardRating = "any";
         this.violationsThreshold = 0;
         this.violationFilterType = "none";
     }
@@ -90,11 +90,11 @@ public class SearchFilter {
         hazardRating = hazardRating.toLowerCase();
 
         // The hazard rating must be one of four specified strings.
-        if (hazardRating.equals("none") || hazardRating.equals("low") ||
+        if (hazardRating.equals("any") || hazardRating.equals("low") ||
                 hazardRating.equals("moderate") || hazardRating.equals("high")) {
             this.hazardRating = hazardRating;
         } else {
-            Log.e(TAG, "setSearchTerm: hazardRating can only be \"none\", \"low\", " +
+            Log.e(TAG, "setSearchTerm: hazardRating can only be \"any\", \"low\", " +
                     "\"moderate\", or \"high\".", null);
         }
     }
@@ -175,7 +175,7 @@ public class SearchFilter {
      */
     public void resetAllFilters() {
         setSearchTerm("");
-        setHazardRating("none");
+        setHazardRating("any");
         setViolationsThreshold(0);
         setViolationFilterType("none");
     }
@@ -214,7 +214,7 @@ public class SearchFilter {
      */
     private Boolean containsSearchTerm(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        return restaurantName.contains(this.searchTerm);
+        return restaurantName.startsWith(this.searchTerm);
     }
 
     /**
@@ -231,7 +231,7 @@ public class SearchFilter {
         String restaurantMostRecentHazardRating = restaurant.getMostRecentInspectionHazardRating();
 
         // If no specific hazard rating is used for this filter (Any hazard rating fine)...
-        if (this.hazardRating.equals("none")) {
+        if (this.hazardRating.equals("any")) {
             return true;
         }
 
