@@ -16,6 +16,7 @@ import android.widget.RadioGroup;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.QueryPreferences;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 public class FilterActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class FilterActivity extends AppCompatActivity {
     public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
     public static final int VIOLATION_PICKED = 1;
     public static final int VIOLATION_NOT_PICKED = 0;
+    private SearchFilter searchFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +38,10 @@ public class FilterActivity extends AppCompatActivity {
         onHazardFilterClick();
         violationsGroupClick();
         violationsNumber();
-
+        searchFilter = SearchFilter.getInstance();
 
         RadioGroup hazardGroup = findViewById(R.id.hazardGroup);
-        int hazardIndexSelected  = QueryPreferences.getStoredIntQuery(this,HAZARD_GROUP_INDEX);
+        int hazardIndexSelected  = searchFilter.getHazardIndex();
         if(hazardIndexSelected != 0) {
             ((RadioButton)hazardGroup.getChildAt(hazardIndexSelected)).setChecked(true);
         } else {
@@ -47,17 +49,12 @@ public class FilterActivity extends AppCompatActivity {
         }
 
         RadioGroup violationGroup = findViewById(R.id.violationGroup);
-        int violationIndexSelected  = QueryPreferences.getStoredIntQuery(this,VIOLATION_GROUP_INDEX);
+        int violationIndexSelected  = searchFilter.getViolationIndex();
         if(violationIndexSelected != 0) {
             ((RadioButton)violationGroup.getChildAt(violationIndexSelected)).setChecked(true);
             EditText violationNumber =  findViewById(R.id.numberOfViolations);
-            int wasAViolationPicked = QueryPreferences.getStoredIntQuery(MapsActivity.getContextApp(),
-                    IS_VIOLATIONS_PICKED);
-            if(wasAViolationPicked == VIOLATION_PICKED) {
-                int numberOfViolations = QueryPreferences.getStoredIntQuery(MapsActivity.getContextApp(),
-                        VIOLATIONS_NUMBER_PICKED);
-                violationNumber.setText("" + numberOfViolations);
-            }
+            int oldViolationThreshold = searchFilter.getViolationsThreshold();
+            violationNumber.setText("" + oldViolationThreshold);
         } else {
             ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
         }
@@ -73,7 +70,7 @@ public class FilterActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void onHazardFilterClick() {
-
+        searchFilter = SearchFilter.getInstance();
         //Sources: https://stackoverflow.com/questions/6780981/android-radiogroup-how-to-configure-the-event-listener
         RadioGroup hazardGroup = findViewById(R.id.hazardGroup);
         hazardGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -85,12 +82,14 @@ public class FilterActivity extends AppCompatActivity {
                 // If the radiobutton that has changed in check state is now checked...
                 if (isChecked) {
                     int index = hazardGroup.indexOfChild(findViewById(hazardGroup.getCheckedRadioButtonId()));
-                    QueryPreferences.setStoredIntQuery(FilterActivity.this,
-                            HAZARD_GROUP_INDEX, index);
+                    searchFilter.setHazardIndex(index);
+                   /* QueryPreferences.setStoredIntQuery(FilterActivity.this,
+                            HAZARD_GROUP_INDEX, index);*/
 
                     String hazardFilterWanted = checkedRadioButton.getText().toString();
-                    QueryPreferences.setStoredStringQuery(MapsActivity.getContextApp(),
-                            HAZARD_FILTER_PICKED, hazardFilterWanted);
+                    searchFilter.setHazardRating(hazardFilterWanted);
+                    /*QueryPreferences.setStoredStringQuery(MapsActivity.getContextApp(),
+                            HAZARD_FILTER_PICKED, hazardFilterWanted);*/
                 }
             }
         });
@@ -99,6 +98,7 @@ public class FilterActivity extends AppCompatActivity {
         RadioGroup violationGroup = findViewById(R.id.violationGroup);
         violationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                searchFilter = SearchFilter.getInstance();
                 // This will get the radiobutton that has changed in its check state
                 RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
                 // This puts the value (true/false) into the variable
@@ -106,15 +106,17 @@ public class FilterActivity extends AppCompatActivity {
                 // If the radiobutton that has changed in check state is now checked...
                 if (isChecked) {
                     int index = violationGroup.indexOfChild(findViewById(violationGroup.getCheckedRadioButtonId()));
-                    QueryPreferences.setStoredIntQuery(FilterActivity.this,
-                            VIOLATION_GROUP_INDEX, index);
+                    /*QueryPreferences.setStoredIntQuery(FilterActivity.this,
+                            VIOLATION_GROUP_INDEX, index);*/
+                    searchFilter.setViolationIndex(index);
 
                     String violationFilterWanted = checkedRadioButton.getText().toString();
-                    QueryPreferences.setStoredStringQuery(MapsActivity.getContextApp(),
-                            VIOLATION_FILTER_PICKED, violationFilterWanted);
+                    /*QueryPreferences.setStoredStringQuery(MapsActivity.getContextApp(),
+                            VIOLATION_FILTER_PICKED, violationFilterWanted);*/
+                    searchFilter.setViolationFilterType(violationFilterWanted);
                     if(index == 0) {
-                        QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
-                                IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);
+                        /*QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                                IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);*/
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setText("");
                         violationNumber.setHint(getString(R.string.pick_an_equality_first));
@@ -155,18 +157,20 @@ public class FilterActivity extends AppCompatActivity {
                 }
                 if(violationsText.equals("")){
                     ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
-                    SharedPreferences clearData = PreferenceManager.getDefaultSharedPreferences(MapsActivity.getContextApp());
+                    /*SharedPreferences clearData = PreferenceManager.getDefaultSharedPreferences(MapsActivity.getContextApp());
                     SharedPreferences.Editor editor = clearData.edit();
                     editor.remove(VIOLATIONS_NUMBER_PICKED);
                     editor.apply();
                     QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
-                            IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);
+                            IS_VIOLATIONS_PICKED, VIOLATION_NOT_PICKED);*/
+                    searchFilter.resetViolationsFilters();
                 } else {
                     int violationsNum = Integer.parseInt(violationsText);
-                    QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
+                    /*QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
                             VIOLATIONS_NUMBER_PICKED, violationsNum);
                     QueryPreferences.setStoredIntQuery(MapsActivity.getContextApp(),
-                            IS_VIOLATIONS_PICKED, VIOLATION_PICKED);
+                            IS_VIOLATIONS_PICKED, VIOLATION_PICKED);*/
+                    searchFilter.setViolationsThreshold(violationsNum);
                 }
             }
 

@@ -20,6 +20,8 @@ public class SearchFilter {
     private String hazardRating;
     private int violationsThreshold;
     private String violationFilterType;
+    private int hazardIndex = 0;
+    private int violationIndex = 0;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -29,7 +31,7 @@ public class SearchFilter {
     private SearchFilter() {
         this.filteredRestaurantTrackingNumbers = new ArrayList<>();
         this.searchTerm = "";
-        this.hazardRating = "any";
+        this.hazardRating = "none";
         this.violationsThreshold = 0;
         this.violationFilterType = "none";
     }
@@ -88,11 +90,11 @@ public class SearchFilter {
         hazardRating = hazardRating.toLowerCase();
 
         // The hazard rating must be one of four specified strings.
-        if (hazardRating.equals("any") || hazardRating.equals("low") ||
+        if (hazardRating.equals("none") || hazardRating.equals("low") ||
                 hazardRating.equals("moderate") || hazardRating.equals("high")) {
             this.hazardRating = hazardRating;
         } else {
-            Log.e(TAG, "setSearchTerm: hazardRating can only be \"any\", \"low\", " +
+            Log.e(TAG, "setSearchTerm: hazardRating can only be \"none\", \"low\", " +
                     "\"moderate\", or \"high\".", null);
         }
     }
@@ -156,7 +158,7 @@ public class SearchFilter {
      * rating filter
      */
     public void resetHazardRating() {
-        setHazardRating("any");
+        setHazardRating("none");
     }
 
     /**
@@ -173,7 +175,7 @@ public class SearchFilter {
      */
     public void resetAllFilters() {
         setSearchTerm("");
-        setHazardRating("any");
+        setHazardRating("none");
         setViolationsThreshold(0);
         setViolationFilterType("none");
     }
@@ -229,7 +231,7 @@ public class SearchFilter {
         String restaurantMostRecentHazardRating = restaurant.getMostRecentInspectionHazardRating();
 
         // If no specific hazard rating is used for this filter (Any hazard rating fine)...
-        if (this.hazardRating.equals("any")) {
+        if (this.hazardRating.equals("none")) {
             return true;
         }
 
@@ -260,5 +262,25 @@ public class SearchFilter {
             // If the number of violations is not provided to the filter, return true
             return true;
         }
+    }
+
+    public int getHazardIndex() {
+        return hazardIndex;
+    }
+
+    public void setHazardIndex(int hazardIndex) {
+        this.hazardIndex = hazardIndex;
+    }
+
+    public int getViolationIndex() {
+        return violationIndex;
+    }
+
+    public void setViolationIndex(int violationIndex) {
+        this.violationIndex = violationIndex;
+    }
+
+    public int getViolationsThreshold() {
+        return violationsThreshold;
     }
 }

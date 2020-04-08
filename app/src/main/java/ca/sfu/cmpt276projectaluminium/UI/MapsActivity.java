@@ -92,9 +92,9 @@ import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.MyClusterManagerRenderer;
-import ca.sfu.cmpt276projectaluminium.model.QueryPreferences;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 
 /**
@@ -135,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
     public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
     public static final int VIOLATION_PICKED = 1;
+    SearchFilter searchFilter;
 
     public static Context contextApp;
 
@@ -217,7 +218,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mClusterManager.clearItems();
                 if (searchText == null || searchText.length() == 0) {
                     // in this case show all restaurants, mClusterMarkers has all of them
-                    mClusterMarkers = applyFilters(mClusterMarkers);
+                    mClusterMarkers = applyFilters();
                     mClusterManager.addItems(mClusterMarkers);
                     mClusterManager.cluster();
                 } else {
@@ -225,7 +226,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (clusterMarker.getTitle().toLowerCase().startsWith(searchText)) {
                             mClusterMarkersCopy.add(clusterMarker);
                         }
-                        mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
+                        mClusterMarkersCopy = applyFilters();
                         mClusterManager.addItems(mClusterMarkersCopy);
                         mClusterManager.cluster();
                     }
@@ -568,11 +569,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     //sources: https://www.baeldung.com/java-concurrentmodificationexception
-    private ArrayList<ClusterMarker> applyFilters(ArrayList<ClusterMarker> markers) {
-        String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
-        List<ClusterMarker> toRemove = new ArrayList<>();
+    private ArrayList<ClusterMarker> applyFilters() {
+        searchFilter = SearchFilter.getInstance();
+        mClusterMarkersCopy.clear();
+        List<String> filterList = searchFilter.getRestaurantTrackingNumbers();
+         for(ClusterMarker clusterMarker: mClusterMarkers) {
+             String trackingNum = clusterMarker.getTrackingNum();
+             if (filterList.contains(trackingNum)) {
+                 mClusterMarkersCopy.add(clusterMarker);
+             }
+         }
 
-        if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
+
+
+        //String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
+        //List<ClusterMarker> toRemove = new ArrayList<>();
+
+        /*if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
             markers = mClusterMarkers;
         } else {
             for(ClusterMarker clusterMarker: markers) {
@@ -606,7 +619,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mClusterManager.clearItems();
         mClusterManager.addItems(markers);
-        return markers;
+         */
+        return mClusterMarkersCopy;
     }
 
 
@@ -803,7 +817,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
             mClusterMarkersCopy.addAll(mClusterMarkers);
-            mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
+            mClusterMarkersCopy = applyFilters();
             // adds every thing to the map at end of the loop
             mClusterManager.addItems(mClusterMarkersCopy);
             mClusterManager.cluster();
