@@ -14,6 +14,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -98,7 +99,7 @@ import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 
 /**
- * Displays the google map.
+ * Displays the google map
  *
  * It first asks for permissions then checks the location permissions and then will display there
  * location
@@ -134,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static Context contextApp;
 
 
+    private static final String favouritesTAG = "RestaurantId";
     private GoogleMap mMap;
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -236,19 +238,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         InspectionManager inspectionManager = InspectionManager.getInstance(inputStreamInspection);
     }
 
+    //gets data from the csv
+    //if there is no csv files on internal memory, take the default one
+    //also runs checkFileDate, which checks for download
     private void getData() {
         RestaurantManager restaurants = RestaurantManager.getInstance();
 
         if (restaurants.isUpdateData()){
+            getFavourites(restaurants);
+
             restaurants.setUpdateData(false);
             checkFileDate();
             InputStream inputStreamRestaurant = null;
             InputStream inputStreamInspection = null;
+
+            List<Restaurant> favouriteList = new ArrayList<>();
+            //keep old inspections around, to use later when checking for new inspections
+            List<List<Inspection>> inspections = new ArrayList<>();
+
+            getOldInspections(restaurants, favouriteList, inspections);
             try {
                 inputStreamRestaurant = openFileInput(ProgressMessage.fileFinalRestaurant);
                 inputStreamInspection = openFileInput(ProgressMessage.fileFinalInspection);
                 initializeManagers(inputStreamRestaurant, inputStreamInspection);
-
             } catch (FileNotFoundException e) {
                 try {
                     if (inputStreamRestaurant != null) {
@@ -260,9 +272,85 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 initializeManagers(getResources().openRawResource(R.raw.restaurants_itr1),
                         getResources().openRawResource(R.raw.inspectionreports_itr1));
             }
+
+            //compared the old data with the new ones.
+            if (restaurants.isCheckFavourites()) {
+                compareFavourites(restaurants, favouriteList, inspections);
+            }
+
+            deleteOldFavourites(restaurants);
         }
     }
 
+    private void getFavourites(RestaurantManager restaurants) {
+        SharedPreferences pref = getSharedPreferences(favouritesTAG, Context.MODE_PRIVATE);
+        String favourites = pref.getString(favouritesTAG, "");
+        String[] splitFavourites = favourites.split(", ");
+
+        //reset current favourite list
+        restaurants.resetFavourites();
+        for (String favourite: splitFavourites){
+            restaurants.addFavourite(favourite);
+        }
+    }
+
+    private void getOldInspections(RestaurantManager restaurants, List<Restaurant> favouriteList, List<List<Inspection>> inspections) {
+        //saves the current favourited restaurants to check later
+        //only runs when checkfavourite is true, which is set when download is complete
+        InspectionManager oldInspections = InspectionManager.getInstance();
+        if (restaurants.isCheckFavourites()){
+            for (Restaurant restaurant: restaurants){
+                if (restaurants.isFavourite(restaurant.getTrackingNumber())){
+                    favouriteList.add(restaurant);
+                    inspections.add(
+                            oldInspections.getInspections(restaurant.getTrackingNumber()));
+                }
+            }
+        }
+    }
+
+    private void compareFavourites(RestaurantManager restaurants,
+                                   List<Restaurant> favouriteList,
+                                   List<List<Inspection>> inspections) {
+
+        restaurants = RestaurantManager.getInstance();
+        restaurants.setCheckFavourites(false);
+
+        List<Restaurant> updatedFavourites = new ArrayList<>();
+
+        InspectionManager inspectionManager = InspectionManager.getInstance();
+        for (Restaurant restaurant : favouriteList) {
+            for (Restaurant newRestaurant : restaurants) {
+                //if the current restaurant is a favourite
+                if (restaurant.getTrackingNumber().equals(newRestaurant.getTrackingNumber())) {
+                    int oldInspectionSize = inspections.size();
+                    int newInspectionSize = inspectionManager
+                            .getInspections(newRestaurant.getTrackingNumber()).size();
+
+                    //if the inspections were updated
+                    if (oldInspectionSize != newInspectionSize) {
+                        updatedFavourites.add(newRestaurant);
+                    }
+                }
+            }
+        }
+        //figure out ui for showing the updated restaurants
+        showDialogPopup(updatedFavourites, getString(R.string.updated_restaurants));
+    }
+
+    private void deleteOldFavourites(RestaurantManager restaurants) {
+        for (String favourite: restaurants.getFavourites()){
+            boolean restaurantExists = false;
+            for (Restaurant restaurant: restaurants){
+                restaurantExists = true;
+            }
+            if (!restaurantExists){
+                restaurants.deleteFavourite(favourite);
+            }
+        }
+    }
+
+    //checks the file date to see if we should check for a new update
     private void checkFileDate(){
         Date currentDate = Calendar.getInstance().getTime();
 
@@ -285,9 +373,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             long diffInspection = TimeUnit.MILLISECONDS.toHours(timeDifferentInspection);
 
             if (diffInspection > 20 || diffRestaurant > 20){
+                //runs updatechecker, which is a new thread of execution that checks if
+                //whether there is new data on the website
                 new updateChecker().execute();
             }
         } else {
+            //runs updatechecker, which is a new thread of execution that checks if
+            //whether there is new data on the website
             new updateChecker().execute();
         }
     }
@@ -688,12 +780,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Create a dialog with a list filled with restaurants that are in the cluster
     // Then show it
-    private void showDialogPopup(List<Restaurant> restaurants) {
+    private void showDialogPopup(List<Restaurant> restaurants, String title) {
         // Create builder for dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,
                 R.style.darkDialogTheme);
         // Set attributes for dialog
-        builder.setTitle("Restaurants at tapped location:\n");
+        builder.setTitle(title + "\n");
 
         // Create cancel button for dialog
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -762,7 +854,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     restaurants.add(rManager.recreateRestaurant(cm.getTrackingNum()));
                 }
              // Create a dialog popup that has a list with all restaurants inside the cluster
-             showDialogPopup(restaurants);
+             showDialogPopup(restaurants, getString(R.string.restaurants_at_location));
              return false;
             });
             // for each restaurant get there details
@@ -993,6 +1085,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    //a new thread of execution that runs to check if there is new data avaliable
     private class updateChecker extends AsyncTask<Void, Void, Void> {
 
         private Date lastModifiedRestaurant;
@@ -1013,6 +1106,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            //if exception is raised, an error message will run instead of prompting download
             if (exceptionRaised){
                 FragmentManager manager = getSupportFragmentManager();
                 ErrorMessage dialog = new ErrorMessage();
@@ -1022,6 +1116,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+        //takes in a json and checks whether the csv file has updated
         private void readRestaurant() throws IOException, JSONException, ParseException {
             URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=restaurants");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -1032,6 +1127,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             String totalInput = "";
             String inputLine;
 
+            //reads in the entire json
             while ((inputLine = in.readLine()) != null) {
                 totalInput += inputLine;
             }
@@ -1052,8 +1148,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             connection.disconnect();
         }
 
-        //takes in the json that gives you the choice between varieties of files
-        //gets the csv containing useful data from it
+        //takes in a json and checks whether the csv file has updated
         private void readInspection() throws IOException, JSONException, ParseException {
             URL url = new URL("https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -1064,6 +1159,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             String totalInput = "";
             String inputLine;
 
+            //reads in the entire json
             while ((inputLine = in.readLine()) != null) {
                 totalInput += inputLine;
 
@@ -1085,6 +1181,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             connection.disconnect();
         }
 
+        //checks whether we should prompt a download
+        //this is based on whether there is new data, and whether we have asked the user before
         private void promptDownload() {
             String tempPath = MapsActivity.this.getFilesDir().getAbsolutePath();
 
@@ -1107,12 +1205,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     if (checkFirstTime()
                             && ((timeDifferentRestaurant) > 0 || (timeDifferentInspection) > 0)) {
+                        //opens up the download prompt
                         FragmentManager manager = getSupportFragmentManager();
                         DownloadMessage dialog = new DownloadMessage();
                         dialog.show(manager, MESSAGE_DIALOGUE);
                     }
                 }
             } else if (checkFirstTime()) {
+                //opens up the download prompt
                 FragmentManager manager = getSupportFragmentManager();
                 DownloadMessage dialog = new DownloadMessage();
                 dialog.show(manager, MESSAGE_DIALOGUE);
@@ -1120,6 +1220,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
+        //checks whether this is the first time the prompt has been raised this application run
         private boolean checkFirstTime(){
             RestaurantManager restaurants = RestaurantManager.getInstance();
 
