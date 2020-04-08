@@ -125,7 +125,7 @@ public class RestaurantDetail extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initializeVariables() {
+    private void initializeVariables() throws ParseException {
         id = getIntent().getStringExtra(TAG);
 
         // Create the restaurant object for the restaurant that was clicked on
