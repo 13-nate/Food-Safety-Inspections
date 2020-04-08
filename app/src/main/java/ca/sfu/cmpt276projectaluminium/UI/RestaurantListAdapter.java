@@ -2,18 +2,21 @@ package ca.sfu.cmpt276projectaluminium.UI;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,9 +37,11 @@ Sources:
  * This class is used to convert a list of restaurants objects into a list of display objects for
  * a list view
  */
-public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
+public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements Filterable {
+    private static final String TAG = "RestaurantListAdapter";
     private List<Restaurant> allRestaurants;
     private List<Restaurant> filteredRestaurants;
+    private Filter restaurantFilter;
     private Context context;
 
     // Don't need to pass arguments because has references to outer class
@@ -129,7 +134,8 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         }
 
         // find restaurant to work with want different hazard images, name, and date and number of issues
-        Restaurant currentRestaurant = this.allRestaurants.get(position);
+        Restaurant currentRestaurant = this.allRestaurants.get(position);  // TODO: Change this from getting from a list, to getting from the arrayadapter
+//        Restaurant currentRestaurant = this.getItem(position);
 
         // Get relevant inspections
         InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -189,55 +195,75 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         return itemView;
     }
 
-//    private Filter restaurantFilter = new Filter() {
-//        @Override
-//        protected FilterResults performFiltering(CharSequence charSequence) {
-//            List<String> filteredRestaurantTrackingNumbers = new ArrayList<>();
-//
-//            // If nothing is being searched for...
-//            if (charSequence == null || charSequence.length() == 0) {
-//                // All restaurants should be accessible through the filtered list
-//                for (Restaurant restaurant : allRestaurants) {
-//                    // Reset what is being searched for in the search/filter class
-//                    SearchFilter searchFilter = SearchFilter.getInstance();
-//                    searchFilter.resetSearchTerm();
-//
-//                    // Add all existing restaurant tracking numbers to the filtered restaurants
-//                    filteredRestaurantTrackingNumbers.add(restaurant.getTrackingNumber());
-//                }
-//            } else {  // If something is being searched for...
-//                // Set the search term
-//                SearchFilter searchFilter = SearchFilter.getInstance();
-//                searchFilter.setSearchTerm(charSequence.toString());
-//
-//                // Get the restaurant tracking numbers that match the filter
-//                filteredRestaurantTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
-//            }
-//
-//            // Convert the filtered tracking numbers into a result that can be returned
-//            FilterResults results = new FilterResults();
-//            results.values = filteredRestaurantTrackingNumbers;
-//
-//            // Return the filtered results
-//            return results;
-//        }
-//
-//        @Override
-//        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//            // Clear the old list of filtered restaurants
-//            filteredRestaurants.clear();
-//
-//            // Initialize the list of filtered restaurant tracking numbers
-//            List<String> filteredRestaurantTrackingNumbers =
-//                    new ArrayList<>(Collections.singleton((String) filterResults.values));
-//
-//            // Create the list of restaurants for the adapter
-//            RestaurantManager restaurantManager = RestaurantManager.getInstance();
-//            for (String trackingNumber : filteredRestaurantTrackingNumbers) {
-//                filteredRestaurants.add(restaurantManager.recreateRestaurant(trackingNumber));
-//            }
-//
-//            notifyDataSetChanged();
-//        }
-//    };
+    // Sauce:
+    // https://www.survivingwithandroid.com/android-listview-custom-filter/
+    @Override
+    public Filter getFilter() {
+        if (restaurantFilter == null) {
+            restaurantFilter = new RestaurantFilter();
+        }
+
+        return restaurantFilter;
+    }
+
+    // Sauce:
+    // https://www.survivingwithandroid.com/android-listview-custom-filter/
+    private class RestaurantFilter extends Filter {
+        // Invoked in a worker thread, tasked to filter results according to the constraint
+        // Constraint is the text that is being searched for
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            SearchFilter searchFilter = SearchFilter.getInstance();
+
+            // If nothing is being searched for... (Search box is empty...)
+            if (constraint == null || constraint.length() == 0) {
+                Log.e(TAG, "performFiltering: ZERO", null);
+                // Reset the search filter search term
+                searchFilter.resetSearchTerm();
+
+                // Show all the restaurants then return
+                results.values = allRestaurants;
+                results.count = allRestaurants.size();
+            } else {  // If something is being searched for... (Search box has text...)
+                Log.e(TAG, "performFiltering: NOT ZERO", null);
+                // Create a list for any filtered restaurants
+                List<Restaurant> filteredRestaurants = new ArrayList<>();
+
+                // Setup the filter
+                searchFilter.setSearchTerm(constraint.toString());
+                List<String> filteredTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
+                Log.e(TAG, "performFiltering: filterd tracking number list: " + Arrays.toString(filteredTrackingNumbers.toArray()), null);
+
+                // Apply the filter
+                for (Restaurant restaurant : allRestaurants) {
+                    // If the current restaurant matches the filter, save it for display later
+                    String restaurantTrackingNumber = restaurant.getTrackingNumber();
+                    if (filteredTrackingNumbers.contains(restaurantTrackingNumber)) {
+                        Log.e(TAG, "performFiltering: Found a match, it's: " + restaurant.getName(), null);
+                        filteredRestaurants.add(restaurant);
+                    }
+                }
+
+                // Set the results to contain only the filtered restaurants
+                results.values = filteredRestaurants;
+                results.count = filteredRestaurants.size();
+            }
+
+            // Return the now-populated search results
+            return results;
+        }
+
+        // Tasked to show the result set created by the performingFiltering method
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            // Now we have to inform the adapter about the new list of filtered objects
+            if (results.count == 0) {
+                notifyDataSetInvalidated();
+            } else {
+                allRestaurants = (List<Restaurant>) results.values;
+                notifyDataSetChanged();
+            }
+        }
+    }
 }

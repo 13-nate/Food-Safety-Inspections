@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final String TAG = "MainActivity";
 
-    ArrayAdapter<Restaurant> adapter;
+    private ArrayAdapter<Restaurant> adapter;
     private RestaurantManager manager = RestaurantManager.getInstance();
     private List<Restaurant> allRestaurants = new ArrayList<>();
 
@@ -186,4 +186,18 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
+
+//    private ArrayList<View> applyFilters(ArrayList<View> views) {
+//        // Remove all views that don't match from the list of views
+//        SearchFilter searchFilter = SearchFilter.getInstance();
+//        List<String> filteredRestaurantTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
+//
+//        List<View> viewsToRemove = new ArrayList<>();
+//
+//        // TODO: Convert to an iterator
+//        adapter.getItem();
+//        adapter.
+//
+//    }
 }
