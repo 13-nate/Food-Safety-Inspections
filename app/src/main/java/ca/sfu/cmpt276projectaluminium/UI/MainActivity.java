@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         list.setAdapter(adapter);
+
+        // Apply any filters from the filter class
+        adapter.getFilter().filter("");
     }
 
     public boolean onSupportNavigateUp() {
