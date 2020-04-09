@@ -68,6 +68,9 @@ public class FilterActivity extends AppCompatActivity {
             }
         });
 
+        // Set the state of the switch to be consistent with the search filter class favorite state
+        SearchFilter searchFilter = SearchFilter.getInstance();
+        favoritesSwitch.setChecked(searchFilter.getFavoriteCheck());
     }
 
     @Override

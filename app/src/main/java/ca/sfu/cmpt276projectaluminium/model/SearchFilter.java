@@ -327,4 +327,8 @@ public class SearchFilter {
     public String getSearchTerm() {
         return this.searchTerm;
     }
+
+    public Boolean getFavoriteCheck() {
+        return this.checkIsFavorite;
+    }
 }
