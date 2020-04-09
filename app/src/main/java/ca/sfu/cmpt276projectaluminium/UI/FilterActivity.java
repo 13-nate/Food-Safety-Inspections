@@ -59,6 +59,14 @@ public class FilterActivity extends AppCompatActivity {
         return true;
     }
     public void onBackPressed(){
+        // sets the filter to none if no numbers are entered
+        EditText violationNumber = findViewById(R.id.numberOfViolations);
+        String violationsText = violationNumber.getText().toString();
+        RadioGroup violationGroup = findViewById(R.id.violationGroup);
+        if(violationsText.equals("")) {
+            ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
+        }
+
         Intent fromIntent = getIntent();
         boolean isMap = fromIntent.getBooleanExtra(FILTER_ACTIVITY_IS_MAPS, false);
         Intent intent;
@@ -124,11 +132,6 @@ public class FilterActivity extends AppCompatActivity {
                         violationNumber.setHint(getString(R.string.enter_number_of_violations));
                         violationNumber.setClickable(true);
                         violationNumber.setEnabled(true);
-                        if(index == 1 )  {
-                            searchFilter.setViolationFilterType("below");
-                        } else if( index == 2) {
-                            searchFilter.setViolationFilterType("above");
-                        }
                     }
                 }
             }
@@ -162,6 +165,13 @@ public class FilterActivity extends AppCompatActivity {
                     searchFilter.resetViolationsFilters();
                 } else {
                     int violationsNum = Integer.parseInt(violationsText);
+                    int index = violationGroup.indexOfChild(findViewById(violationGroup.getCheckedRadioButtonId()));
+                    // set the type here that way if no text is entered the old violation text is not used;
+                    if(index == 1 )  {
+                        searchFilter.setViolationFilterType("below");
+                    } else if( index == 2) {
+                        searchFilter.setViolationFilterType("above");
+                    }
                     searchFilter.setViolationsThreshold(violationsNum);
                 }
             }
