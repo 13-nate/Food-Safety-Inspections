@@ -11,11 +11,9 @@
         android:id="@+id/imgViolation"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="10dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imgCritical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtViolaionId"
         app:layout_constraintTop_toTopOf="@+id/imgCritical"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/bad_building" />
@@ -25,8 +23,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toStartOf="@+id/txtViolaionId"
+        android:layout_marginTop="54dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/hazard_high" />
@@ -51,16 +48,15 @@
         android:id="@+id/txtViolaionId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="71dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="71dp"
         android:text="@string/textview"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/txtShortDescription"
         app:layout_constraintEnd_toStartOf="@+id/imgViolation"
         app:layout_constraintStart_toEndOf="@+id/imgCritical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.181" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
