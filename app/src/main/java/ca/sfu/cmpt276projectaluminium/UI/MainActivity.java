@@ -177,13 +177,11 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.e(TAG, "onQueryTextSubmit: " + s, null);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.e(TAG, "onQueryTextChange: " + s, null);
                 adapter.getFilter().filter(s);
                 return false;
             }
