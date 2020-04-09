@@ -78,4 +78,15 @@
 	<string name="yes">да</string>
 	<string name="restaurants_at_location">Рестораны в повернутом месте:</string>
 	<string name="updated_restaurants">Обновленные рестораны:</string>
+	<string name="critical_violation_within_the_last_year">Критическое нарушение в течение последнего года</string>
+	<string name="enter_number_of_violations">Введите число нарушений</string>
+	<string name="favourites">Избранные</string>
+	<string name="none">Никто</string>
+	<string name="moderate">умеренный</string>
+	<string name="any">любой</string>
+	<string name="less_than_or_equal_to">Меньше или равно</string>
+	<string name="greater_than_or_equal_to">Больше или равно</string>
+	<string name="pick_an_equality_first">Сначала выберите номер</string>
+	<string name="below">Ниже</string>
+	<string name="above">Выше</string>
 </resources>

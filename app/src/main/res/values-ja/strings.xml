@@ -78,4 +78,15 @@
 	<string name="yes">はい</string>
 	<string name="restaurants_at_location">タップした場所でのレストラン：</string>
 	<string name="updated_restaurants">更新のレストラン：</string>
+	<string name="critical_violation_within_the_last_year">最後の年以内に重大な違反</string>
+	<string name="enter_number_of_violations">違反の数を入力します。</string>
+	<string name="favourites">お気に入り</string>
+	<string name="none">なし</string>
+	<string name="moderate">適度</string>
+	<string name="any">どれか</string>
+	<string name="less_than_or_equal_to">より小さいか等しいです</string>
+	<string name="greater_than_or_equal_to">より大さいか等しいです</string>
+	<string name="pick_an_equality_first">最初に番号を選択してください</string>
+	<string name="below">未満</string>
+	<string name="above">より大きい</string>
 </resources>

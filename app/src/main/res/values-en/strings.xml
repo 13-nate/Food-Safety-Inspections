@@ -78,4 +78,15 @@
 	<string name="yes">Yes</string>
 	<string name="restaurants_at_location">Restaurants at tapped location:</string>
 	<string name="updated_restaurants">Updated Restaurants:</string>
+	<string name="critical_violation_within_the_last_year">Critical Violation Within The last Year</string>
+	<string name="enter_number_of_violations">Enter number of violations</string>
+	<string name="favourites">Favourites</string>
+	<string name="none">None</string>
+	<string name="moderate">Moderate</string>
+	<string name="any">Any</string>
+	<string name="less_than_or_equal_to">Less than or equal to</string>
+	<string name="greater_than_or_equal_to">Greater than or equal to</string>
+	<string name="pick_an_equality_first">Pick an equality first</string>
+	<string name="below">Below</string>
+	<string name="above">Above</string>
 </resources>

@@ -25,7 +25,7 @@
 	<string name="inspectiontype">检验类型：</string>
 	<string name="id">ID：</string>
 	<string name="textview">的TextView</string>
-	<string name="violation101">图/建筑不是管制</string>
+	<string name="violation101">建筑不合格</string>
 	<string name="violation102">房屋的未经批准的操作</string>
 	<string name="violation103">不具备有效的许可证</string>
 	<string name="violation104">允许不显眼放置</string>
@@ -78,4 +78,15 @@
 	<string name="yes">是</string>
 	<string name="restaurants_at_location">餐厅在挖掘地点：</string>
 	<string name="updated_restaurants">更新餐馆：</string>
+	<string name="critical_violation_within_the_last_year">在过去的一年严重危机</string>
+	<string name="enter_number_of_violations">输入违规次数</string>
+	<string name="favourites">收藏</string>
+	<string name="none">没有</string>
+	<string name="moderate">中等</string>
+	<string name="any">任何</string>
+	<string name="less_than_or_equal_to">小于或等于</string>
+	<string name="greater_than_or_equal_to">大于或等于</string>
+	<string name="pick_an_equality_first">首先选择一个数字</string>
+	<string name="below">小于</string>
+	<string name="above">大于</string>
 </resources>
