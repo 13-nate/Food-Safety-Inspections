@@ -212,8 +212,9 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
         // Constraint is the text that is being searched for
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
-            SearchFilter searchFilter = SearchFilter.getInstance();
+            FilterResults results = new FilterResults();  // Holds the results of this function
+            List<Restaurant> filteredRestaurants = new ArrayList<>();
+            SearchFilter searchFilter = SearchFilter.getInstance();  // Used to perform filtering
 
             // Get the list of all restaurants
             RestaurantManager restaurantManager = RestaurantManager.getInstance();
@@ -222,33 +223,29 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements F
                 allRestaurants.add(restaurant);
             }
 
-            // If nothing is being searched for... (Search box is empty...)
-            if (constraint == null || constraint.length() == 0) {
-                // Reset the search filter search term
+            // Set the search term depending on what's in the search box
+            if (constraint == null || constraint.length() == 0) {  // If search box is empty...
+                // Reset the search filter search term so it does not contain a search term
                 searchFilter.resetSearchTerm();
-
-                // Show all the restaurants then return
-                results.values = allRestaurants;
-            } else {  // If something is being searched for... (Search box has text...)
-                // Create a list for any filtered restaurants
-                List<Restaurant> filteredRestaurants = new ArrayList<>();
-
-                // Setup the filter
+            } else {  // If search box has text...
+                // Setup the filter to contain the search term
                 searchFilter.setSearchTerm(constraint.toString());
-                List<String> filteredTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
-
-                // Apply the filter
-                for (Restaurant restaurant : allRestaurants) {
-                    // If the current restaurant matches the filter, save it for display later
-                    String restaurantTrackingNumber = restaurant.getTrackingNumber();
-                    if (filteredTrackingNumbers.contains(restaurantTrackingNumber)) {
-                        filteredRestaurants.add(restaurant);
-                    }
-                }
-
-                // Set the results to contain only the filtered restaurants
-                results.values = filteredRestaurants;
             }
+
+            // Get the filtered tracking numbers
+            List<String> filteredTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
+
+            // Apply the filter
+            for (Restaurant restaurant : allRestaurants) {
+                // If the current restaurant matches the filter, save it for display later
+                String restaurantTrackingNumber = restaurant.getTrackingNumber();
+                if (filteredTrackingNumbers.contains(restaurantTrackingNumber)) {
+                    filteredRestaurants.add(restaurant);
+                }
+            }
+
+            // Set the results to contain only the filtered restaurants
+            results.values = filteredRestaurants;
 
             // Return the now-populated search results
             return results;

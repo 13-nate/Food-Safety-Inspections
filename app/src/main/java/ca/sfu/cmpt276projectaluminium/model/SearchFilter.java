@@ -62,7 +62,7 @@ public class SearchFilter {
     public void setSearchTerm(String searchTerm) {
         // The searchTerm cannot be null (If you want to clear the search term, just pass in "")
         if (searchTerm != null) {
-            this.searchTerm = searchTerm.toLowerCase();
+            this.searchTerm = searchTerm.toLowerCase().trim();
         } else {
             Log.e(TAG, "setSearchTerm: searchTerm cannot be null.", null);
         }
@@ -214,7 +214,7 @@ public class SearchFilter {
      */
     private Boolean containsSearchTerm(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        return restaurantName.startsWith(this.searchTerm);
+        return restaurantName.contains(this.searchTerm);
     }
 
     /**
