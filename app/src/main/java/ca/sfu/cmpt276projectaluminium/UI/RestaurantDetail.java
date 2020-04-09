@@ -91,6 +91,7 @@ public class RestaurantDetail extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.restaurant_details_menu, menu);
@@ -129,7 +130,6 @@ public class RestaurantDetail extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     private void initializeVariables() throws ParseException {
         id = getIntent().getStringExtra(TAG);

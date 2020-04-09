@@ -8,6 +8,18 @@
     android:background="@android:color/black"
     tools:context=".UI.MainActivity">
 
+    <ImageView
+        android:id="@+id/searchSettingsMainActivity"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="4dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutLow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layoutLow"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_settings_white_24dp" />
+
     <ListView
         android:id="@+id/restaurantListView"
         android:layout_width="0dp"
@@ -49,7 +61,7 @@
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintEnd_toStartOf="@+id/layoutMedium"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/searchSettingsMainActivity"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
