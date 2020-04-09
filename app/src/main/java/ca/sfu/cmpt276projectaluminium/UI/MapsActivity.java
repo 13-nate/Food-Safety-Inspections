@@ -196,10 +196,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter_menu, menu);
+        searchFilter = SearchFilter.getInstance();
+        String currentSearchText = searchFilter.getSearchTerm();
 
         MenuItem searchItem = menu.findItem(R.id.action_Search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        if(currentSearchText.equals("")){
+            //don't do anything
+        } else {
+            searchView.setQuery(currentSearchText, true);
+        }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
