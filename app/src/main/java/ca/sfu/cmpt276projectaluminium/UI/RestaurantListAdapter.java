@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 /*
 Sources:
@@ -30,14 +33,16 @@ Sources:
  * This class is used to convert a list of restaurant objects into a list of display objects for
  * a list view
  */
-public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
-    private List<Restaurant> restaurants;
+public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements Filterable {
+    private static final String TAG = "RestaurantListAdapter";
+    private List<Restaurant> filteredRestaurants;
+    private Filter restaurantFilter;
     private Context context;
 
     // Don't need to pass arguments because has references to outer class
     public RestaurantListAdapter(Context context, List<Restaurant> restaurants) {
         super(context, R.layout.restaurants_view, restaurants);
-        this.restaurants = restaurants;
+        this.filteredRestaurants = restaurants;
         this.context = context;
     }
 
@@ -123,7 +128,7 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         }
 
         // find restaurant to work with want different hazard images, name, and date and number of issues
-        Restaurant currentRestaurant = this.restaurants.get(position);
+        Restaurant currentRestaurant = this.getItem(position);
 
         // Get relevant inspections
         InspectionManager inspectionManager = InspectionManager.getInstance();
@@ -186,7 +191,73 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         TextView dateTxt = itemView.findViewById(R.id.txtdate);
         dateTxt.setText(context.getString(R.string.Last_inspection) + " "
                 + newestInspection.intelligentDate());
-
         return itemView;
+    }
+
+    // Sauce:
+    // https://www.survivingwithandroid.com/android-listview-custom-filter/
+    @Override
+    public Filter getFilter() {
+        if (restaurantFilter == null) {
+            restaurantFilter = new RestaurantFilter();
+        }
+
+        return restaurantFilter;
+    }
+
+    // Sauce:
+    // https://www.survivingwithandroid.com/android-listview-custom-filter/
+    private class RestaurantFilter extends Filter {
+        // Invoked in a worker thread, tasked to filter results according to the constraint
+        // Constraint is the text that is being searched for
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();  // Holds the results of this function
+            List<Restaurant> filteredRestaurants = new ArrayList<>();
+            SearchFilter searchFilter = SearchFilter.getInstance();  // Used to perform filtering
+
+            // Get the list of all restaurants
+            RestaurantManager restaurantManager = RestaurantManager.getInstance();
+            List<Restaurant> allRestaurants = new ArrayList<>();
+            for (Restaurant restaurant : restaurantManager) {
+                allRestaurants.add(restaurant);
+            }
+
+            // Set the search term depending on what's in the search box
+            if (constraint == null || constraint.length() == 0) {  // If search box is empty...
+                // Reset the search filter search term so it does not contain a search term
+                searchFilter.resetSearchTerm();
+            } else {  // If search box has text...
+                // Setup the filter to contain the search term
+                searchFilter.setSearchTerm(constraint.toString());
+            }
+
+            // Get the filtered tracking numbers
+            List<String> filteredTrackingNumbers = searchFilter.getRestaurantTrackingNumbers();
+
+            // Apply the filter
+            for (Restaurant restaurant : allRestaurants) {
+                // If the current restaurant matches the filter, save it for display later
+                String restaurantTrackingNumber = restaurant.getTrackingNumber();
+                if (filteredTrackingNumbers.contains(restaurantTrackingNumber)) {
+                    filteredRestaurants.add(restaurant);
+                }
+            }
+
+            // Set the results to contain only the filtered restaurants
+            results.values = filteredRestaurants;
+
+            // Return the now-populated search results
+            return results;
+        }
+
+        // Tasked to show the result set created by the performingFiltering method
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            // Now we have to inform the adapter about the new list of filtered objects
+            filteredRestaurants.clear();
+            filteredRestaurants.addAll((List<Restaurant>) results.values);
+            notifyDataSetChanged();
+        }
     }
 }

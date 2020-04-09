@@ -69,6 +69,8 @@ public class Inspection implements Comparable<Inspection> {
         return violations;
     }
 
+
+
     // Sources
     // - https://stackoverflow.com/questions/13624442/getting-last-day-of-the-month-in-a-given-string-date
     // - https://stackoverflow.com/questions/7829571/milliseconds-to-days

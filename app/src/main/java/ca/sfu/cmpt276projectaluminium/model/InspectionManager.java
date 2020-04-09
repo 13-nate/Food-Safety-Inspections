@@ -1,9 +1,15 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 // Sources:
 // https://stackoverflow.com/questions/5439529/determine-if-a-string-is-an-integer-in-java
@@ -91,7 +97,7 @@ public class InspectionManager {
     /**
      * If the inspection list is sorted, the most recent inspection will be the first inspection.
      */
-    public Inspection getMostRecentInspection(ArrayList<Inspection> inspections) {
+    public Inspection getMostRecentInspection(List<Inspection> inspections) {
         // Ensure that the list is sorted
         Collections.sort(inspections);
 
@@ -100,5 +106,29 @@ public class InspectionManager {
         } else {
             return noInspection;
         }
+    }
+    public int getNumCriticalViolationsWithinYear(String restaurantTrackingNumber) {
+        int criticalViolationsWithinAYear = 0;
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        ArrayList<Inspection> inspections = getInspections(restaurantTrackingNumber);
+        for(Inspection inspection: inspections) {
+            try {
+                int dateNumber = inspection.getInspectionDate();
+                // change inspection from an int to a string then finally to a date data type
+                String dateToFormat = String.valueOf(dateNumber);
+                Date inspectionDay = formatDate.parse(dateToFormat);
+
+                // Get today's date find the difference between it and the inspection date
+                Date today = Calendar.getInstance().getTime();
+                long differenceInMilliSec = today.getTime() - inspectionDay.getTime();
+                long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
+                if(diffInDays <= 365) {
+                    criticalViolationsWithinAYear += inspection.getNumCriticalViolations();
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return  criticalViolationsWithinAYear;
     }
 }

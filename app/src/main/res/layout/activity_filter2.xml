@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".UI.FilterActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35000002">
+
+        <TextView
+            android:id="@+id/violationsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/critical_violation_within_the_last_year"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/favoritesSwitch"
+            app:layout_constraintTop_toBottomOf="@+id/favoritesSwitch" />
+
+        <EditText
+            android:id="@+id/numberOfViolations"
+            android:layout_width="270dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/border_white"
+            android:ems="10"
+            android:hint="@string/enter_number_of_violations"
+            android:inputType="number"
+            android:padding="5dp"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:maxLength="5"
+            app:layout_constraintStart_toStartOf="@+id/violationGroup"
+            app:layout_constraintTop_toBottomOf="@+id/violationGroup" />
+
+        <TextView
+            android:id="@+id/textViewHazard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/hazard_level"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Switch
+            android:id="@+id/favoritesSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/favourites"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:trackTint="@color/colorWhite"
+            app:layout_constraintStart_toStartOf="@+id/hazardGroup"
+            app:layout_constraintTop_toBottomOf="@+id/hazardGroup" />
+
+        <RadioGroup
+            android:id="@+id/hazardGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/textViewHazard"
+            app:layout_constraintTop_toBottomOf="@+id/textViewHazard">
+
+            <RadioButton
+                android:id="@+id/radioButton6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="Any"
+                android:textColor="@color/colorWhite" />
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/low"
+                android:textColor="@color/colorWhite" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/moderate"
+                android:textColor="@color/colorWhite" />
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/high"
+                android:textColor="@color/colorWhite" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/violationGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/violationsTextView"
+            app:layout_constraintTop_toBottomOf="@+id/violationsTextView">
+
+            <RadioButton
+                android:id="@+id/radioButton7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/none"
+                android:textColor="@color/colorWhite" />
+
+            <RadioButton
+                android:id="@+id/radioButton4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/below"
+                android:textColor="@color/colorWhite" />
+
+            <RadioButton
+                android:id="@+id/radioButton5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="@string/above"
+                android:textColor="@color/colorWhite" />
+        </RadioGroup>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
