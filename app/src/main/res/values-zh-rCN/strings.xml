@@ -89,4 +89,6 @@
 	<string name="pick_an_equality_first">首先选择一个数字</string>
 	<string name="below">小于</string>
 	<string name="above">大于</string>
+	<string name="filter">过滤</string>
+	<string name="days">天</string>
 </resources>

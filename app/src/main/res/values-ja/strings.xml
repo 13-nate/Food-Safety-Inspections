@@ -89,4 +89,6 @@
 	<string name="pick_an_equality_first">最初に番号を選択してください</string>
 	<string name="below">未満</string>
 	<string name="above">より大きい</string>
+	<string name="filter">フィルタ</string>
+	<string name="days">日々</string>
 </resources>

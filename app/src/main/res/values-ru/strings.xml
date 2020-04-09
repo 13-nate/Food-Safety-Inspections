@@ -89,4 +89,6 @@
 	<string name="pick_an_equality_first">Сначала выберите номер</string>
 	<string name="below">Ниже</string>
 	<string name="above">Выше</string>
+	<string name="filter">Фильтр</string>
+	<string name="days">дней</string>
 </resources>

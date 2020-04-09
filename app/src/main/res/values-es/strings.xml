@@ -89,4 +89,6 @@
 	<string name="pick_an_equality_first">Elige un número primero</string>
 	<string name="below">Abajo</string>
 	<string name="above">Encima</string>
+	<string name="filter">Filtrar</string>
+	<string name="days">dias</string>
 </resources>
