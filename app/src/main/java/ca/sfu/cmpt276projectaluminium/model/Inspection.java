@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import android.content.Context;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +9,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 
 /**
  * Manages data about inspection reports by storing it and providing getters in an organized manner
@@ -82,12 +87,12 @@ public class Inspection implements Comparable<Inspection> {
      */
     public String intelligentDate() {
         // Used to format the inspection day String into a date
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.getDefault());
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.getDefault());
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements
@@ -103,7 +108,10 @@ public class Inspection implements Comparable<Inspection> {
             long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
 
             if(diffInDays < DAYS30) {
-                smartDate = diffInDays + " days";
+                Context context = MapsActivity.getContextApp();
+                String days = context.getString(R.string.days);
+
+                smartDate = diffInDays + " " + days;
 
             } else if (diffInDays < DAYS365) {
 
@@ -121,12 +129,12 @@ public class Inspection implements Comparable<Inspection> {
 
     public String fullDate() {
         // Used to format the inspection day String into a date
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.getDefault());
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.getDefault());
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements
