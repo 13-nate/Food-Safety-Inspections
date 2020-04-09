@@ -28,6 +28,7 @@ public class FilterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getString(R.string.filter));
         setContentView(R.layout.activity_filter2);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         onHazardFilterClick();
