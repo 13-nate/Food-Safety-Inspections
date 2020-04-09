@@ -3,19 +3,18 @@ package ca.sfu.cmpt276projectaluminium.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,10 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.cmpt276projectaluminium.R;
-import ca.sfu.cmpt276projectaluminium.model.Inspection;
-import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 // Sources:
 // https://stackoverflow.com/questions/5089300/how-can-i-change-the-image-of-an-imageview
@@ -42,9 +40,11 @@ import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
 public class MainActivity extends AppCompatActivity {
     //for incorrect version
     private static final int ERROR_DIALOG_REQUEST = 9001;
+    private static final String TAG = "MainActivity";
 
+    private ArrayAdapter<Restaurant> adapter;
     private RestaurantManager manager = RestaurantManager.getInstance();
-    private List<Restaurant> restaurantArray = new ArrayList<>();
+    private List<Restaurant> allRestaurants = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +55,28 @@ public class MainActivity extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
+
+        // Set up the filter icon's listener
+        addFilterIconClickListener();
     }
 
     private void populateListView() {
         // myListAdapter lets me work with the objects
-        ArrayAdapter<Restaurant> adapter = new RestaurantListAdapter(MainActivity.this, restaurantArray);
+        adapter = new RestaurantListAdapter(MainActivity.this, allRestaurants);
         ListView list = findViewById(R.id.restaurantListView);
 
         manager = manager.getInstance();
         for(Restaurant r: manager){
-            restaurantArray.add(r);
+            allRestaurants.add(r);
         }
 
         list.setAdapter(adapter);
+
+        // Apply any preexisting filters from inside the filter class
+        // This makes filters save between activity swaps
+        // This also makes search term save between activity swaps
+        SearchFilter searchFilter = SearchFilter.getInstance();
+        adapter.getFilter().filter(searchFilter.getSearchTerm());
     }
 
     public boolean onSupportNavigateUp() {
@@ -88,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 with using the tracking number
                 */
 
-                Restaurant clickedRestaurant = restaurantArray.get(position);
+                Restaurant clickedRestaurant = allRestaurants.get(position);
                 Intent intent = RestaurantDetail.makeIntent(MainActivity.this, clickedRestaurant.getTrackingNumber(), false);
                 startActivity(intent);
             }
@@ -140,5 +149,44 @@ public class MainActivity extends AppCompatActivity {
     public static Intent makeIntent(Context context){
         Intent intent = new Intent(context, MainActivity.class);
         return intent;
+    }
+
+    // Attaches a listener to the filter icon that makes it switch to the filter activity upon click
+    private void addFilterIconClickListener() {
+        ImageView searchSettings = findViewById(R.id.searchSettingsMainActivity);
+        searchSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = FilterActivity.makeIntent(MainActivity.this, false);
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Activate the options menu
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filter_menu, menu);
+
+        // Get the view object from the inflated menu item
+        MenuItem searchItem = menu.findItem(R.id.action_Search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        // Set the listener for the menu item
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
+        return true;
     }
 }

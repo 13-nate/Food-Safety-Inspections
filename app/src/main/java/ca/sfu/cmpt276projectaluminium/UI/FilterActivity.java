@@ -10,9 +10,11 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.QueryPreferences;
@@ -51,6 +53,21 @@ public class FilterActivity extends AppCompatActivity {
         } else {
             ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
         }
+
+        // Setup the favorites switch listener
+        Switch favoritesSwitch = findViewById(R.id.favoritesSwitch);
+        favoritesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                // isChecked status: True if on, false if off
+                // Update the search filter class
+                SearchFilter searchFilter = SearchFilter.getInstance();
+                // True turns on favorite filtering
+                // False turns off favorite filtering
+                searchFilter.setFavoriteCheck(isChecked);
+            }
+        });
+
     }
 
     @Override

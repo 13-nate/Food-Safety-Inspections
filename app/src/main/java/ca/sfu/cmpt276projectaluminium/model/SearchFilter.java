@@ -20,6 +20,7 @@ public class SearchFilter {
     private String hazardRating;
     private int violationsThreshold;
     private String violationFilterType;
+    private boolean checkIsFavorite;
     private int hazardIndex = 0;
     private int violationIndex = 0;
 
@@ -34,6 +35,7 @@ public class SearchFilter {
         this.hazardRating = "any";
         this.violationsThreshold = 0;
         this.violationFilterType = "none";
+        this.checkIsFavorite = false;
     }
     public static SearchFilter getInstance() {
         if (instance == null) {
@@ -62,7 +64,7 @@ public class SearchFilter {
     public void setSearchTerm(String searchTerm) {
         // The searchTerm cannot be null (If you want to clear the search term, just pass in "")
         if (searchTerm != null) {
-            this.searchTerm = searchTerm.toLowerCase();
+            this.searchTerm = searchTerm.toLowerCase().trim();
         } else {
             Log.e(TAG, "setSearchTerm: searchTerm cannot be null.", null);
         }
@@ -146,6 +148,17 @@ public class SearchFilter {
     }
 
     /**
+     * This lets the filter know if it should filter out restaurants that are not favorites
+     * checkIsFavorite can be:
+     * - True if we want to filter out restaurants that are not favorites
+     * - False if it doesn't matter whether or not a restaurant is a favorite
+     * @param checkIsFavorite Whether it matters if a restaurant is a favorite or not
+     */
+    public void setFavoriteCheck(Boolean checkIsFavorite) {
+        this.checkIsFavorite = checkIsFavorite;
+    }
+
+    /**
      * If you do not want to filter by search term, call this method and it will reset the search
      * term filter
      */
@@ -171,6 +184,14 @@ public class SearchFilter {
     }
 
     /**
+     * If you do not want to filter out favorite restaurants , call this method and it will reset
+     * the favorites filter
+     */
+    public void resetFavoriteCheck() {
+        setFavoriteCheck(false);
+    }
+
+    /**
      * If you do not want to filter by anything, call this method and it will reset all filters
      */
     public void resetAllFilters() {
@@ -178,6 +199,7 @@ public class SearchFilter {
         setHazardRating("any");
         setViolationsThreshold(0);
         setViolationFilterType("none");
+        this.checkIsFavorite = false;
     }
 
     /**
@@ -200,7 +222,8 @@ public class SearchFilter {
         for (Restaurant restaurant : allRestaurants) {
             if (containsSearchTerm(restaurant) &&
                 hazardRatingMatches(restaurant) &&
-                violationsMatch(restaurant)) {
+                violationsMatch(restaurant) &&
+                isFavorite(restaurant)) {
                 this.filteredRestaurantTrackingNumbers.add(restaurant.getTrackingNumber());
             }
         }
@@ -214,7 +237,7 @@ public class SearchFilter {
      */
     private Boolean containsSearchTerm(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        return restaurantName.startsWith(this.searchTerm);
+        return restaurantName.contains(this.searchTerm);
     }
 
     /**
@@ -264,6 +287,23 @@ public class SearchFilter {
         }
     }
 
+    /**
+     * Ensures that the restaurant that is passed in is a favorite.  If the filter is not checking
+     * for favorite restaurants, then the restaurant is not filtered out
+     * @param restaurant The restaurant that may or may not be filtered out, depending on if it
+     *                   satisfies the filter
+     * @return True if we are not filtering out non-favorites, or if the restaurant is a favorite,
+     *         false if we are filtering out non-favorites and the restaurant is not a favorite
+     */
+    private Boolean isFavorite(Restaurant restaurant) {
+        if (checkIsFavorite) {
+            RestaurantManager restaurantManager = RestaurantManager.getInstance();
+            return restaurantManager.isFavourite(restaurant.getTrackingNumber());
+        } else {
+            return true;
+        }
+    }
+
     public int getHazardIndex() {
         return hazardIndex;
     }
@@ -282,5 +322,9 @@ public class SearchFilter {
 
     public int getViolationsThreshold() {
         return violationsThreshold;
+    }
+
+    public String getSearchTerm() {
+        return this.searchTerm;
     }
 }
