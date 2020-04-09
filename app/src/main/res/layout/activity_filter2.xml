@@ -82,7 +82,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorWhite"
-                android:text="@string/any"
+                android:text="@string/anything
+"
                 android:textColor="@color/colorWhite" />
 
             <RadioButton
