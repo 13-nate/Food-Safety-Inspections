@@ -186,7 +186,6 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
         TextView dateTxt = itemView.findViewById(R.id.txtdate);
         dateTxt.setText(context.getString(R.string.Last_inspection) + " "
                 + newestInspection.intelligentDate());
-
         return itemView;
     }
 }

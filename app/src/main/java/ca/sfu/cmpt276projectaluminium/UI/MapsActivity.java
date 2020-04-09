@@ -30,10 +30,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -82,6 +84,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.cmpt276projectaluminium.R;
@@ -92,6 +95,7 @@ import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.MyClusterManagerRenderer;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 
 /**
@@ -125,6 +129,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
+    public static final String MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS = "make gps intent totalCriticalViolations";
+    SearchFilter searchFilter;
+
+    public static Context contextApp;
+
 
     private static final String favouritesTAG = "RestaurantId";
     private GoogleMap mMap;
@@ -144,7 +153,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager locationManager;
     private MyLocationListener myLocListener;
     private boolean goToRestaurant;
-    private  ArrayList<ClusterMarker> mClusterMarkersCopy = new ArrayList<>();
+    private ArrayList<ClusterMarker> mClusterMarkersCopy = new ArrayList<>();
 
     @Override
     protected void onResume() {
@@ -165,9 +174,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        contextApp = getApplicationContext();
         onBottomToolBarClick();
         setMenuColor();
-        getSupportActionBar().setTitle(getString(R.string.restaurants));
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -181,7 +190,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
     // Sources: https://www.youtube.com/watch?v=oh4YOj9VkVE
     // https://www.youtube.com/watch?v=sJ-Z9G0SDhc
     @Override
@@ -190,29 +198,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         inflater.inflate(R.menu.filter_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_Search);
-        SearchView searchView = (SearchView)searchItem.getActionView();
+        SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setQueryHint("Enter a restaurant name");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
-                    Toast.makeText(MapsActivity.this, newText, Toast.LENGTH_SHORT).show();
-                    String searchText = newText.toLowerCase().trim();
-                    mClusterManager.clearItems();
-                    if(searchText == null || searchText.length() == 0){
-                        // in this case show all restaurants, mClusterMarkers has all of them
-                        mClusterManager.addItems(mClusterMarkers);
-                    } else {
-                        for(ClusterMarker clusterMarker: mClusterMarkers) {
-                            if(clusterMarker.getTitle().toLowerCase().contains(searchText)) {
-                                mClusterManager.addItem(clusterMarker);
-                            }
-                        }
-                    }
-                mClusterManager.cluster();
+                mClusterMarkersCopy.clear();
+                String searchText = newText.toLowerCase().trim();
+                mClusterManager.clearItems();
+                if (searchText == null || searchText.length() == 0) {
+                    // in this case show all restaurants, mClusterMarkers has all of them
+                    searchFilter.resetSearchTerm();
+                    mClusterMarkersCopy = applyFilters();
+                    mClusterManager.addItems(mClusterMarkersCopy);
+                    mClusterManager.cluster();
+                } else {
+                    searchFilter.setSearchTerm(searchText);
+                    mClusterMarkersCopy = applyFilters();
+                    mClusterManager.addItems(mClusterMarkersCopy);
+                    mClusterManager.cluster();
+                }
                 return false;
             }
         });
@@ -626,7 +637,75 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(MapsActivity.this);
         getDeviceLocation();
+        filterClickCallBack();
     }
+
+    private void filterClickCallBack() {
+        ImageView searchSettings = findViewById(R.id.searchSettings);
+        searchSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = FilterActivity.makeIntent(MapsActivity.this, true);
+                startActivity(intent);
+            }
+        });
+    }
+
+    //sources: https://www.baeldung.com/java-concurrentmodificationexception
+    private ArrayList<ClusterMarker> applyFilters() {
+        searchFilter = SearchFilter.getInstance();
+        mClusterMarkersCopy.clear();
+        List<String> filterList = searchFilter.getRestaurantTrackingNumbers();
+         for(ClusterMarker clusterMarker: mClusterMarkers) {
+             String trackingNum = clusterMarker.getTrackingNum();
+             if (filterList.contains(trackingNum)) {
+                 mClusterMarkersCopy.add(clusterMarker);
+             }
+         }
+
+
+
+        //String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
+        //List<ClusterMarker> toRemove = new ArrayList<>();
+
+        /*if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
+            markers = mClusterMarkers;
+        } else {
+            for(ClusterMarker clusterMarker: markers) {
+                if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
+                    toRemove.add(clusterMarker);
+                }
+            }
+            markers.removeAll(toRemove);
+        }
+        toRemove.clear();
+        String violationFilter = QueryPreferences.getStoredStringQuery(contextApp, VIOLATION_FILTER_PICKED);
+        int violationNumber = QueryPreferences.getStoredIntQuery(contextApp, VIOLATIONS_NUMBER_PICKED);
+        int wasAViolationNumberPicked = QueryPreferences.getStoredIntQuery(contextApp, IS_VIOLATIONS_PICKED);
+        if(wasAViolationNumberPicked == VIOLATION_PICKED) {
+            if (violationFilter.equals("Less than or equal to")) {
+                for (ClusterMarker clusterMarker : markers) {
+                    if (clusterMarker.getCriticalViolationsWithInAYear() > violationNumber) {
+                        toRemove.add(clusterMarker);
+                    }
+                }
+                markers.removeAll(toRemove);
+            }
+            if (violationFilter.equals("Greater than or equal to")) {
+                for (ClusterMarker clusterMarker : markers) {
+                    if (clusterMarker.getCriticalViolationsWithInAYear() < violationNumber) {
+                        toRemove.add(clusterMarker);
+                    }
+                }
+                markers.removeAll(toRemove);
+            }
+        }
+        mClusterManager.clearItems();
+        mClusterManager.addItems(markers);
+         */
+        return mClusterMarkersCopy;
+    }
+
 
     public void onMapClickCallBack() {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -636,11 +715,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(restaurantCoordinatesRequest){
                     Log.d(TAGMAP, "ifStateMent");
                     mClusterManager.removeItem(restaurantClusterMarker);
+                    mClusterMarkersCopy.remove(restaurantClusterMarker);
+                    mClusterMarkers.remove(restaurantClusterMarker);
                     initManagerAndRenderer();
+                    mClusterManagerRenderer.setShouldRenderInfoWindow(false);
                     addMapMarkers();
                     restaurantCoordinatesRequest =false;
                     goToRestaurant = false;
-                    requestLocationUpdates();
                 }
             }
         });
@@ -658,7 +739,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if (task.isSuccessful()) {
                                 Log.d(TAGMAP, "found Location");
                                 Location currentLocation = (Location) task.getResult();
-
                                 moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM);
                             } else {
@@ -781,11 +861,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             restaurantManager = RestaurantManager.getInstance();
             for (Restaurant r : restaurantManager) {
                 String snippet;
+                int criticalViolationsWithinAYear = 0;
                 try {
                     // Get relevant inspections
                     InspectionManager inspectionManager = InspectionManager.getInstance();
                     ArrayList<Inspection> inspections;
                     inspections = inspectionManager.getInspections(r.getTrackingNumber());
+                    criticalViolationsWithinAYear = inspectionManager.getNumCriticalViolationsWithinYear(r.getTrackingNumber());
                     // Get the newest inspection
                     Inspection newestInspection = inspectionManager.getMostRecentInspection(inspections);
                     String hazardRating = newestInspection.getHazardRating();
@@ -806,23 +888,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             new LatLng(r.getLatitude(), r.getLongitude()),
                             r.getName(), //title
                             snippet,
+                            hazardRating,
                             iconHazard,
-                            r.getTrackingNumber()
+                            r.getTrackingNumber(),
+                            criticalViolationsWithinAYear
                     );
-                    // adds cluster to map
-                    mClusterManager.addItem(newClusterMarker);
                     // reference list for markers
                     mClusterMarkers.add(newClusterMarker);
                 } catch (NullPointerException e) {
                     Log.e(TAGMAP, "addMapMarkers: NullPointerException: " + e.getMessage());
                 }
             }
-            mClusterMarkersCopy = new ArrayList<>(mClusterMarkers);
+            mClusterMarkersCopy.addAll(mClusterMarkers);
+            mClusterMarkersCopy = applyFilters();
             // adds every thing to the map at end of the loop
+            mClusterManager.addItems(mClusterMarkersCopy);
             mClusterManager.cluster();
         }
     }
-
     /*Sources:
         https://androidwave.com/bottom-navigation-bar-android-example/
         https://stackoverflow.com/questions/48413808/android-bottomnavigationview-onnavigationitemselectedlistener-code-not-running
@@ -924,7 +1007,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public static Intent makeGPSIntent(Context context, double latitude, double longitude,
                                        String title, String trackingNum, String address,
-                                       String hazardRating, boolean gpsIntent) {
+                                       String hazardRating, int totalCriticalViolations, boolean gpsIntent) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra(MAKE_GPS_INTENT_LATITUDE, latitude);
         intent.putExtra(MAKE_GPS_INTENT_LONGITUDE, longitude);
@@ -933,6 +1016,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra(MAKE_GPS_INTENT_NUM, trackingNum);
         intent.putExtra(MAKE_GPS_INTENT_HAZARD_RATING, hazardRating);
         intent.putExtra(MAKE_GPS_INTENT_BOOL, gpsIntent);
+        intent.putExtra(MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS, totalCriticalViolations);
         return intent;
     }
 
@@ -964,6 +1048,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             String address = intent.getStringExtra(MAKE_GPS_INTENT_ADDRESS);
             String hazardRating = intent.getStringExtra(MAKE_GPS_INTENT_HAZARD_RATING);
             String trackingNum = intent.getStringExtra(MAKE_GPS_INTENT_NUM);
+            int criticalViolationsWithinAYear = intent.getIntExtra(MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS,0);
 
             String snippet = address + "\n "
                     + getString(R.string.hazard_level) + " " + hazardRating;
@@ -983,11 +1068,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     restaurantPosition,
                     title,
                     snippet,
+                    hazardRating,
                     iconHazard,
-                    trackingNum
+                    trackingNum,
+                    criticalViolationsWithinAYear
             );
             mClusterManager.addItem(restaurantMaker);
             mClusterMarkers.add(restaurantMaker);
+            mClusterMarkersCopy.add(restaurantMaker);
             restaurantClusterMarker = restaurantMaker;
         }
         try {
@@ -1143,4 +1231,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     }
+
+    public static Context getContextApp() {
+        return contextApp;
+    }
+
 }
