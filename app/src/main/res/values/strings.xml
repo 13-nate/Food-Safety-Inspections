@@ -90,4 +90,5 @@
     <string name="below">Below</string>
     <string name="above">Above</string>
     <string name="any">Any</string>
+    <string name="filter">Filter</string>
 </resources>
