@@ -196,11 +196,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter_menu, menu);
+        searchFilter = SearchFilter.getInstance();
+        String currentSearchText = searchFilter.getSearchTerm();
 
         MenuItem searchItem = menu.findItem(R.id.action_Search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setQueryHint("Enter a restaurant name");
+        if(currentSearchText.equals("")){
+            //don't do anything
+        } else {
+            searchView.setQuery(currentSearchText, true);
+        }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -662,47 +668,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                  mClusterMarkersCopy.add(clusterMarker);
              }
          }
-
-
-
-        //String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
-        //List<ClusterMarker> toRemove = new ArrayList<>();
-
-        /*if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
-            markers = mClusterMarkers;
-        } else {
-            for(ClusterMarker clusterMarker: markers) {
-                if(!clusterMarker.getHazardLevel().equals(HazardFilter)) {
-                    toRemove.add(clusterMarker);
-                }
-            }
-            markers.removeAll(toRemove);
-        }
-        toRemove.clear();
-        String violationFilter = QueryPreferences.getStoredStringQuery(contextApp, VIOLATION_FILTER_PICKED);
-        int violationNumber = QueryPreferences.getStoredIntQuery(contextApp, VIOLATIONS_NUMBER_PICKED);
-        int wasAViolationNumberPicked = QueryPreferences.getStoredIntQuery(contextApp, IS_VIOLATIONS_PICKED);
-        if(wasAViolationNumberPicked == VIOLATION_PICKED) {
-            if (violationFilter.equals("Less than or equal to")) {
-                for (ClusterMarker clusterMarker : markers) {
-                    if (clusterMarker.getCriticalViolationsWithInAYear() > violationNumber) {
-                        toRemove.add(clusterMarker);
-                    }
-                }
-                markers.removeAll(toRemove);
-            }
-            if (violationFilter.equals("Greater than or equal to")) {
-                for (ClusterMarker clusterMarker : markers) {
-                    if (clusterMarker.getCriticalViolationsWithInAYear() < violationNumber) {
-                        toRemove.add(clusterMarker);
-                    }
-                }
-                markers.removeAll(toRemove);
-            }
-        }
-        mClusterManager.clearItems();
-        mClusterManager.addItems(markers);
-         */
         return mClusterMarkersCopy;
     }
 
