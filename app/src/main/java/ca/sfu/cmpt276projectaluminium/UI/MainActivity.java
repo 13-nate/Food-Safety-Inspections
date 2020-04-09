@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         onBottomToolBarClick();
-        // setMenuColor();
 
         // Set up the filter icon's listener
         addFilterIconClickListener();
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         searchSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = FilterActivity.makeIntent(MainActivity.this);
+                Intent intent = FilterActivity.makeIntent(MainActivity.this, false);
                 startActivity(intent);
             }
         });

@@ -20,6 +20,8 @@ public class SearchFilter {
     private String hazardRating;
     private int violationsThreshold;
     private String violationFilterType;
+    private int hazardIndex = 0;
+    private int violationIndex = 0;
 
     /*
         Singleton Support (As per https://www.youtube.com/watch?v=evkPjPIV6cw - Brain Fraser)
@@ -156,7 +158,7 @@ public class SearchFilter {
      * rating filter
      */
     public void resetHazardRating() {
-        setHazardRating("any");
+        setHazardRating("none");
     }
 
     /**
@@ -212,7 +214,7 @@ public class SearchFilter {
      */
     private Boolean containsSearchTerm(Restaurant restaurant) {
         String restaurantName = restaurant.getName().toLowerCase();
-        return restaurantName.contains(this.searchTerm);
+        return restaurantName.startsWith(this.searchTerm);
     }
 
     /**
@@ -260,5 +262,25 @@ public class SearchFilter {
             // If the number of violations is not provided to the filter, return true
             return true;
         }
+    }
+
+    public int getHazardIndex() {
+        return hazardIndex;
+    }
+
+    public void setHazardIndex(int hazardIndex) {
+        this.hazardIndex = hazardIndex;
+    }
+
+    public int getViolationIndex() {
+        return violationIndex;
+    }
+
+    public void setViolationIndex(int violationIndex) {
+        this.violationIndex = violationIndex;
+    }
+
+    public int getViolationsThreshold() {
+        return violationsThreshold;
     }
 }

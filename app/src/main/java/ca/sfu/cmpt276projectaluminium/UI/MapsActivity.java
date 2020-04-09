@@ -93,9 +93,9 @@ import ca.sfu.cmpt276projectaluminium.model.CustomInfoWindowAdapter;
 import ca.sfu.cmpt276projectaluminium.model.Inspection;
 import ca.sfu.cmpt276projectaluminium.model.InspectionManager;
 import ca.sfu.cmpt276projectaluminium.model.MyClusterManagerRenderer;
-import ca.sfu.cmpt276projectaluminium.model.QueryPreferences;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 
 /**
@@ -129,13 +129,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
-    public static final String HAZARD_FILTER_PICKED = "hazard filter picked";
     public static final String MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS = "make gps intent totalCriticalViolations";
-
-    public static final String VIOLATION_FILTER_PICKED = "violation filter picked";
-    public static final String VIOLATIONS_NUMBER_PICKED = "violations number picked";
-    public static final String IS_VIOLATIONS_PICKED = " a violation was picked";
-    public static final int VIOLATION_PICKED = 1;
+    SearchFilter searchFilter;
 
     public static Context contextApp;
 
@@ -182,7 +177,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         contextApp = getApplicationContext();
         onBottomToolBarClick();
         setMenuColor();
-        getSupportActionBar().setTitle(getString(R.string.restaurants));
 
         if (checkMapServices()) {
             // checks that all three permissions granted
@@ -206,6 +200,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MenuItem searchItem = menu.findItem(R.id.action_Search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setQueryHint("Enter a restaurant name");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -219,18 +214,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mClusterManager.clearItems();
                 if (searchText == null || searchText.length() == 0) {
                     // in this case show all restaurants, mClusterMarkers has all of them
-                    mClusterMarkers = applyFilters(mClusterMarkers);
-                    mClusterManager.addItems(mClusterMarkers);
+                    searchFilter.resetSearchTerm();
+                    mClusterMarkersCopy = applyFilters();
+                    mClusterManager.addItems(mClusterMarkersCopy);
                     mClusterManager.cluster();
                 } else {
-                    for (ClusterMarker clusterMarker : mClusterMarkers) {
-                        if (clusterMarker.getTitle().toLowerCase().startsWith(searchText)) {
-                            mClusterMarkersCopy.add(clusterMarker);
-                        }
-                        mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
-                        mClusterManager.addItems(mClusterMarkersCopy);
-                        mClusterManager.cluster();
-                    }
+                    searchFilter.setSearchTerm(searchText);
+                    mClusterMarkersCopy = applyFilters();
+                    mClusterManager.addItems(mClusterMarkersCopy);
+                    mClusterManager.cluster();
                 }
                 return false;
             }
@@ -653,18 +645,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = FilterActivity.makeIntent(MapsActivity.this);
+                Intent intent = FilterActivity.makeIntent(MapsActivity.this, true);
                 startActivity(intent);
             }
         });
     }
 
     //sources: https://www.baeldung.com/java-concurrentmodificationexception
-    private ArrayList<ClusterMarker> applyFilters(ArrayList<ClusterMarker> markers) {
-        String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
-        List<ClusterMarker> toRemove = new ArrayList<>();
+    private ArrayList<ClusterMarker> applyFilters() {
+        searchFilter = SearchFilter.getInstance();
+        mClusterMarkersCopy.clear();
+        List<String> filterList = searchFilter.getRestaurantTrackingNumbers();
+         for(ClusterMarker clusterMarker: mClusterMarkers) {
+             String trackingNum = clusterMarker.getTrackingNum();
+             if (filterList.contains(trackingNum)) {
+                 mClusterMarkersCopy.add(clusterMarker);
+             }
+         }
 
-        if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
+
+
+        //String HazardFilter = QueryPreferences.getStoredStringQuery(contextApp, HAZARD_FILTER_PICKED);
+        //List<ClusterMarker> toRemove = new ArrayList<>();
+
+        /*if(HazardFilter.equals("No filter") || HazardFilter.equals("None")) {
             markers = mClusterMarkers;
         } else {
             for(ClusterMarker clusterMarker: markers) {
@@ -698,7 +702,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mClusterManager.clearItems();
         mClusterManager.addItems(markers);
-        return markers;
+         */
+        return mClusterMarkersCopy;
     }
 
 
@@ -895,7 +900,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
             mClusterMarkersCopy.addAll(mClusterMarkers);
-            mClusterMarkersCopy = applyFilters(mClusterMarkersCopy);
+            mClusterMarkersCopy = applyFilters();
             // adds every thing to the map at end of the loop
             mClusterManager.addItems(mClusterMarkersCopy);
             mClusterManager.cluster();
