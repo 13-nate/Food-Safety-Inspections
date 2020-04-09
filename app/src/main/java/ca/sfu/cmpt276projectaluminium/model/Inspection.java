@@ -82,12 +82,12 @@ public class Inspection implements Comparable<Inspection> {
      */
     public String intelligentDate() {
         // Used to format the inspection day String into a date
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.getDefault());
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.getDefault());
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements
@@ -121,12 +121,12 @@ public class Inspection implements Comparable<Inspection> {
 
     public String fullDate() {
         // Used to format the inspection day String into a date
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
         // Used to format the inspection date to get the year, month, or day respectively
-        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.ENGLISH);
-        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.ENGLISH);
+        SimpleDateFormat formatYear = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat formatMonth = new SimpleDateFormat("MMM", Locale.getDefault());
+        SimpleDateFormat formatDay = new SimpleDateFormat("dd", Locale.getDefault());
 
         // Set to N/A so that when a restaurant has no inspections displays N/A, otherwise set the
         // date base of if else statements
