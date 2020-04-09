@@ -84,9 +84,15 @@ public class FilterActivity extends AppCompatActivity {
                 if (isChecked) {
                     int index = hazardGroup.indexOfChild(findViewById(hazardGroup.getCheckedRadioButtonId()));
                     searchFilter.setHazardIndex(index);
-
-                    String hazardFilterWanted = checkedRadioButton.getText().toString();
-                    searchFilter.setHazardRating(hazardFilterWanted);
+                    if( index == 0) {
+                        searchFilter.setHazardRating("any");
+                    } else if (index == 1) {
+                        searchFilter.setHazardRating("low");
+                    } else if (index == 2) {
+                        searchFilter.setHazardRating("moderate");
+                    } else if (index == 3) {
+                        searchFilter.setHazardRating("high");
+                    }
 
                 }
             }
@@ -106,20 +112,23 @@ public class FilterActivity extends AppCompatActivity {
                     int index = violationGroup.indexOfChild(findViewById(violationGroup.getCheckedRadioButtonId()));
                     searchFilter.setViolationIndex(index);
 
-                    String violationFilterWanted = checkedRadioButton.getText().toString();
-                    searchFilter.setViolationFilterType(violationFilterWanted);
                     if(index == 0) {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setText("");
                         violationNumber.setHint(getString(R.string.pick_an_equality_first));
                         violationNumber.setEnabled(false);
                         violationNumber.setClickable(false);
-
+                        searchFilter.resetViolationsFilters();
                     } else {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setHint(getString(R.string.enter_number_of_violations));
                         violationNumber.setClickable(true);
                         violationNumber.setEnabled(true);
+                        if(index == 1 )  {
+                            searchFilter.setViolationFilterType("below");
+                        } else if( index == 2) {
+                            searchFilter.setViolationFilterType("above");
+                        }
                     }
                 }
             }

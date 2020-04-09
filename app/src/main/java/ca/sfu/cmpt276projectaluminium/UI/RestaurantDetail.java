@@ -267,9 +267,10 @@ public class RestaurantDetail extends AppCompatActivity {
         Log.i(TAG,"onBackPressed");
         Intent intent = null;
         if(isFromMap) {
+            mostRecentHazard = inspections.get(0).getHazardRating();
             intent =MapsActivity.makeGPSIntent(RestaurantDetail.this, restaurant.getLatitude(),
                     restaurant.getLongitude(), restaurant.getName(), restaurant.getTrackingNumber(),
-                    restaurant.getAddress(), hazardLevel,criticalViolationsWithinAYear, true);
+                    restaurant.getAddress(), mostRecentHazard, criticalViolationsWithinAYear, true);
             startActivity(intent);
         } else {
             intent = MainActivity.makeIntent(RestaurantDetail.this);
