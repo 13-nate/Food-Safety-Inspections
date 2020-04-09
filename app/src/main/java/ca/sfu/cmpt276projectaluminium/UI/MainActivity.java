@@ -25,6 +25,7 @@ import java.util.List;
 import ca.sfu.cmpt276projectaluminium.R;
 import ca.sfu.cmpt276projectaluminium.model.Restaurant;
 import ca.sfu.cmpt276projectaluminium.model.RestaurantManager;
+import ca.sfu.cmpt276projectaluminium.model.SearchFilter;
 
 // Sources:
 // https://stackoverflow.com/questions/5089300/how-can-i-change-the-image-of-an-imageview
@@ -71,8 +72,11 @@ public class MainActivity extends AppCompatActivity {
 
         list.setAdapter(adapter);
 
-        // Apply any filters from the filter class
-        adapter.getFilter().filter("");
+        // Apply any preexisting filters from inside the filter class
+        // This makes filters save between activity swaps
+        // This also makes search term save between activity swaps
+        SearchFilter searchFilter = SearchFilter.getInstance();
+        adapter.getFilter().filter(searchFilter.getSearchTerm());
     }
 
     public boolean onSupportNavigateUp() {

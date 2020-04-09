@@ -283,4 +283,8 @@ public class SearchFilter {
     public int getViolationsThreshold() {
         return violationsThreshold;
     }
+
+    public String getSearchTerm() {
+        return this.searchTerm;
+    }
 }
