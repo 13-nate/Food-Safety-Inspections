@@ -89,4 +89,5 @@
     <string name="pick_an_equality_first">Pick an equality first</string>
     <string name="below">Below</string>
     <string name="above">Above</string>
+    <string name="any">Any</string>
 </resources>
