@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
         // Get the view object from the inflated menu item
         MenuItem searchItem = menu.findItem(R.id.action_Search);
         SearchView searchView = (SearchView) searchItem.getActionView();
+        SearchFilter searchFilter = SearchFilter.getInstance();
+        String currentSearchText = searchFilter.getSearchTerm();
+        searchView.setQuery(currentSearchText, true);
 
         // Set the listener for the menu item
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
