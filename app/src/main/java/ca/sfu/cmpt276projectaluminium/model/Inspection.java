@@ -1,5 +1,7 @@
 package ca.sfu.cmpt276projectaluminium.model;
 
+import android.content.Context;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +9,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import ca.sfu.cmpt276projectaluminium.R;
+import ca.sfu.cmpt276projectaluminium.UI.MapsActivity;
 
 /**
  * Manages data about inspection reports by storing it and providing getters in an organized manner
@@ -103,7 +108,10 @@ public class Inspection implements Comparable<Inspection> {
             long diffInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliSec);
 
             if(diffInDays < DAYS30) {
-                smartDate = diffInDays + " days";
+                Context context = MapsActivity.getContextApp();
+                String days = context.getString(R.string.days);
+
+                smartDate = diffInDays + " " + days;
 
             } else if (diffInDays < DAYS365) {
 

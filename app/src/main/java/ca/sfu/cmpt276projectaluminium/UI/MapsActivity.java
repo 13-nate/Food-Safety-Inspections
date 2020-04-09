@@ -132,8 +132,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String MAKE_GPS_INTENT_TOTAL_CRITICAL_VIOLATIONS = "make gps intent totalCriticalViolations";
     SearchFilter searchFilter;
 
-    public static Context contextApp;
-
+    private static Context contextApp;
 
     private static final String favouritesTAG = "RestaurantId";
     private GoogleMap mMap;
