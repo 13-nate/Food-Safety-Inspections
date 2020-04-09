@@ -70,4 +70,12 @@
 	<string name="no_current_location">= No se puede obtener la ubicación actual</string>
 	<string name="no_gps_do_u_want">= Esta aplicación requiere que el GPS funcione correctamente, qué quiere que le permita?</string>
 	<string name="no_map_requests">= No puedes hacer una solicitud de mapa</string>
+	<string name="new_data_avaliable_would_you_like_to_download_now">Nuevos datos disponible: ¿Quieres que te para descargar ahora?</string>
+	<string name="error_could_not_check_for_updates">Error: No se pudo comprobar si hay actualizaciones</string>
+	<string name="ERROR">Se ha producido un error:</string>
+	<string name="Download">Indicador de descarga</string>
+	<string name="progress">Descargar:</string>
+	<string name="yes">si</string>
+	<string name="restaurants_at_location">Restaurantes en la ubicación tapping:</string>
+	<string name="updated_restaurants">Restaurantes Actualizado:</string>
 </resources>

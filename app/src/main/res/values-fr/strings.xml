@@ -70,4 +70,12 @@
 	<string name="no_current_location">= Impossible d\'obtenir l\'emplacement actuel</string>
 	<string name="no_gps_do_u_want">= Cette application nécessite GPS fonctionne correctement, vous voulez l\'activer?</string>
 	<string name="no_map_requests">= Vous ne pouvez pas faire de demande de carte</string>
+	<string name="new_data_avaliable_would_you_like_to_download_now">Nouvelles données disponibles: Voulez-vous télécharger maintenant?</string>
+	<string name="error_could_not_check_for_updates">Erreur: Impossible de vérifier les mises à jour</string>
+	<string name="ERROR">Une erreur est survenue:</string>
+	<string name="Download">Invite de Téléchargement</string>
+	<string name="progress">Téléchargement:</string>
+	<string name="yes">Oui</string>
+	<string name="restaurants_at_location">Restaurants à l\'emplacement: taraudés</string>
+	<string name="updated_restaurants">Restaurants Mise à jour:</string>
 </resources>

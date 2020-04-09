@@ -70,4 +70,12 @@
 	<string name="no_current_location">= Не удается получить текущее местоположение</string>
 	<string name="no_gps_do_u_want">= Это приложение требует GPS работать должным образом, вы хотите, чтобы включить его?</string>
 	<string name="no_map_requests">= Вы не можете сделать запрос карты</string>
+	<string name="new_data_avaliable_would_you_like_to_download_now">Новые данные Доступно: Would вам скачать сейчас нравится?</string>
+	<string name="error_could_not_check_for_updates">Ошибка: не удалось проверить наличие обновлений</string>
+	<string name="ERROR">Произошла ошибка:</string>
+	<string name="Download">Скачать Prompt</string>
+	<string name="progress">Загрузка:</string>
+	<string name="yes">да</string>
+	<string name="restaurants_at_location">Рестораны в повернутом месте:</string>
+	<string name="updated_restaurants">Обновленные рестораны:</string>
 </resources>

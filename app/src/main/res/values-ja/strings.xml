@@ -70,4 +70,12 @@
 	<string name="no_current_location">現在の位置を取得することができません=</string>
 	<string name="no_gps_do_u_want">=このアプリケーションは、正しく動作するにはGPSを必要とし、あなたがそれを有効にしたいですか？</string>
 	<string name="no_map_requests">=地図のリクエストはできません</string>
+	<string name="new_data_avaliable_would_you_like_to_download_now">利用可能な新しいデータ：今すぐダウンロードしますか？</string>
+	<string name="error_could_not_check_for_updates">エラー：更新を確認できませんでした</string>
+	<string name="ERROR">エラーが発生しました：</string>
+	<string name="Download">ダウンロードプロンプト</string>
+	<string name="progress">ダウンロード：</string>
+	<string name="yes">はい</string>
+	<string name="restaurants_at_location">タップした場所でのレストラン：</string>
+	<string name="updated_restaurants">更新のレストラン：</string>
 </resources>
