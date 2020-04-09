@@ -83,7 +83,7 @@
 	<string name="favourites">Избранные</string>
 	<string name="none">Никто</string>
 	<string name="moderate">умеренный</string>
-	<string name="any">любой</string>
+	<string name="anything">любой</string>
 	<string name="less_than_or_equal_to">Меньше или равно</string>
 	<string name="greater_than_or_equal_to">Больше или равно</string>
 	<string name="pick_an_equality_first">Сначала выберите номер</string>

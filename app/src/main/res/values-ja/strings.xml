@@ -83,7 +83,7 @@
 	<string name="favourites">お気に入り</string>
 	<string name="none">なし</string>
 	<string name="moderate">適度</string>
-	<string name="any">どれか</string>
+	<string name="anything">どれか</string>
 	<string name="less_than_or_equal_to">より小さいか等しいです</string>
 	<string name="greater_than_or_equal_to">より大さいか等しいです</string>
 	<string name="pick_an_equality_first">最初に番号を選択してください</string>

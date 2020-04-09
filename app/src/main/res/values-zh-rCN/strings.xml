@@ -83,7 +83,7 @@
 	<string name="favourites">收藏</string>
 	<string name="none">没有</string>
 	<string name="moderate">中等</string>
-	<string name="any">任何</string>
+	<string name="anything">任何</string>
 	<string name="less_than_or_equal_to">小于或等于</string>
 	<string name="greater_than_or_equal_to">大于或等于</string>
 	<string name="pick_an_equality_first">首先选择一个数字</string>

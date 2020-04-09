@@ -83,7 +83,7 @@
 	<string name="favourites">Favoris</string>
 	<string name="none">Aucun</string>
 	<string name="moderate">Modéré</string>
-	<string name="any">Tout</string>
+	<string name="anything">Tout</string>
 	<string name="less_than_or_equal_to">Inférieur ou égal à</string>
 	<string name="greater_than_or_equal_to">Plus grand ou égal à</string>
 	<string name="pick_an_equality_first">Choisissez d\'abord un numéro</string>

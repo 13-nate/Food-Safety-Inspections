@@ -83,7 +83,7 @@
     <string name="favourites">Favourites</string>
     <string name="none">None</string>
     <string name="moderate">Moderate</string>
-    <string name="any">Any</string>
+    <string name="anything">Any</string>
     <string name="less_than_or_equal_to">Less than or equal to</string>
     <string name="greater_than_or_equal_to">Greater than or equal to</string>
     <string name="pick_an_equality_first">Pick an equality first</string>
