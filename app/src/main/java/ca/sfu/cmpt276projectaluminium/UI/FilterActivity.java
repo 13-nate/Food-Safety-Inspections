@@ -76,6 +76,14 @@ public class FilterActivity extends AppCompatActivity {
         return true;
     }
     public void onBackPressed(){
+        // sets the filter to none if no numbers are entered
+        EditText violationNumber = findViewById(R.id.numberOfViolations);
+        String violationsText = violationNumber.getText().toString();
+        RadioGroup violationGroup = findViewById(R.id.violationGroup);
+        if(violationsText.equals("")) {
+            ((RadioButton)violationGroup.getChildAt(0)).setChecked(true);
+        }
+
         Intent fromIntent = getIntent();
         boolean isMap = fromIntent.getBooleanExtra(FILTER_ACTIVITY_IS_MAPS, false);
         Intent intent;
@@ -101,9 +109,15 @@ public class FilterActivity extends AppCompatActivity {
                 if (isChecked) {
                     int index = hazardGroup.indexOfChild(findViewById(hazardGroup.getCheckedRadioButtonId()));
                     searchFilter.setHazardIndex(index);
-
-                    String hazardFilterWanted = checkedRadioButton.getText().toString();
-                    searchFilter.setHazardRating(hazardFilterWanted);
+                    if( index == 0) {
+                        searchFilter.setHazardRating("any");
+                    } else if (index == 1) {
+                        searchFilter.setHazardRating("low");
+                    } else if (index == 2) {
+                        searchFilter.setHazardRating("moderate");
+                    } else if (index == 3) {
+                        searchFilter.setHazardRating("high");
+                    }
 
                 }
             }
@@ -123,15 +137,13 @@ public class FilterActivity extends AppCompatActivity {
                     int index = violationGroup.indexOfChild(findViewById(violationGroup.getCheckedRadioButtonId()));
                     searchFilter.setViolationIndex(index);
 
-                    String violationFilterWanted = checkedRadioButton.getText().toString();
-                    searchFilter.setViolationFilterType(violationFilterWanted);
                     if(index == 0) {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setText("");
                         violationNumber.setHint(getString(R.string.pick_an_equality_first));
                         violationNumber.setEnabled(false);
                         violationNumber.setClickable(false);
-
+                        searchFilter.resetViolationsFilters();
                     } else {
                         EditText violationNumber = findViewById(R.id.numberOfViolations);
                         violationNumber.setHint(getString(R.string.enter_number_of_violations));
@@ -170,6 +182,13 @@ public class FilterActivity extends AppCompatActivity {
                     searchFilter.resetViolationsFilters();
                 } else {
                     int violationsNum = Integer.parseInt(violationsText);
+                    int index = violationGroup.indexOfChild(findViewById(violationGroup.getCheckedRadioButtonId()));
+                    // set the type here that way if no text is entered the old violation text is not used;
+                    if(index == 1 )  {
+                        searchFilter.setViolationFilterType("below");
+                    } else if( index == 2) {
+                        searchFilter.setViolationFilterType("above");
+                    }
                     searchFilter.setViolationsThreshold(violationsNum);
                 }
             }
